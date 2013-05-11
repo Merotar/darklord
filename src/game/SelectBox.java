@@ -1,3 +1,4 @@
+package game;
 import java.io.FileInputStream;
 import java.util.Vector;
 
@@ -26,10 +27,10 @@ public class SelectBox
 		
 		try
 		{
-			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/select_block01.png")));
-			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/select_block02.png")));
-			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/select_block03.png")));
-			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/select_block04.png")));
+			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/select_block01.png")));
+			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/select_block02.png")));
+			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/select_block03.png")));
+			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/select_block04.png")));
 		} catch (Exception e)
 		{
 			e.printStackTrace();

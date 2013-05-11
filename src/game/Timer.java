@@ -1,3 +1,4 @@
+package game;
 
 //*****************************************************************************
 // This class can be used to create animations
