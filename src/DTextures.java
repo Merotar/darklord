@@ -18,9 +18,9 @@ public class DTextures
 		
 		try
 		{
-			player.add(TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/player01.png")));
-			player.add(TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/player02.png")));
-			player.add(TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/player03.png")));
+			player.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/player01.png")));
+			player.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/player02.png")));
+			player.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/player03.png")));
 		} catch (Exception e)
 		{
 			e.printStackTrace();
@@ -31,9 +31,9 @@ public class DTextures
 		block = new Vector<Texture>();
 		
 		try{
-			block.add(TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/background.png")));
-			block.add(TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/block_brown01.png")));
-			block.add(TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/block_red01.png")));
+			block.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/background.png")));
+			block.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/block_brown01.png")));
+			block.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/block_red01.png")));
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(0);

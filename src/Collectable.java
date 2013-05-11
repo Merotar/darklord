@@ -73,13 +73,13 @@ public class Collectable
 		try{
 			switch (type){
 			case 0:
-				this.texture = TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/background.png"));
+				this.texture = TextureLoader.getTexture("PNG", new FileInputStream("./img/background.png"));
 				break;
 			case 1:
-				this.texture = TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/block_brown01.png"));
+				this.texture = TextureLoader.getTexture("PNG", new FileInputStream("./img/block_brown01.png"));
 				break;
 			case 2:
-				this.texture = TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/block_red01.png"));
+				this.texture = TextureLoader.getTexture("PNG", new FileInputStream("./img/block_red01.png"));
 				break;
 			default:
 				texture = null;
