@@ -1,3 +1,10 @@
+/*
+ * describes the whole level including grid and player informations
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 import org.lwjgl.opengl.GL11;
 //import org.lwjgl.util.vector.Vector2f;
@@ -373,8 +380,8 @@ public class Level
 		int x_int = (int)Math.floor(mouseGrid.getX());
 		int y_int = (int)Math.floor(mouseGrid.getY());
 		
-		if (x_int < map.dimX && x_int >= 0 && y_int < map.dimY && y_int >= 0)
-		{
+//		if (x_int < map.dimX && x_int >= 0 && y_int < map.dimY && y_int >= 0)
+//		{
 			if (this.isBlockSolid(x_int, y_int))
 			{
 				mainSelectBox.setPos(x_int, y_int);
@@ -383,10 +390,10 @@ public class Level
 			{
 				mainSelectBox.hide();
 			}
-		} else
-		{
-			mainSelectBox.hide();
-		}
+//		} else
+//		{
+//			mainSelectBox.hide();
+//		}
 	}
 	
 	public void mouseDownReaction(Vector2f pos, int button) // 0: left, 1: right

@@ -1,3 +1,10 @@
+/*
+ * DEscribes objects which are collectable by the player
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 import java.io.FileInputStream;
 import java.io.Serializable;

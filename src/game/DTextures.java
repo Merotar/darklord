@@ -1,3 +1,10 @@
+/*
+ * class which loads and stores the used textures
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 import java.io.FileInputStream;
 import java.util.Vector;

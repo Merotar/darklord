@@ -1,3 +1,12 @@
+/*
+ * enum to describe different collectables
+ * 
+ * @deprecated
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 
 enum CollectableType

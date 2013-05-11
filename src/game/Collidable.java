@@ -1,3 +1,10 @@
+/*
+ * basic class for objects which can collide with each other
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 abstract class Collidable
 {

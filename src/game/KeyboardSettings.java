@@ -1,3 +1,10 @@
+/*
+ * class to map keys
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 import org.lwjgl.input.Keyboard;
 

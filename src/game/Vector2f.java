@@ -1,3 +1,10 @@
+/*
+ * basic description of an 2D float vector
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 
 import java.io.Serializable;

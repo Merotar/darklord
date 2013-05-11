@@ -1,3 +1,10 @@
+/*
+ * Description of one block
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 
 

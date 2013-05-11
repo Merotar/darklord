@@ -1,3 +1,10 @@
+/*
+ * describes the architecture of an level with blocks and enemies
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 
 import java.util.Random;

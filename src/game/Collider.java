@@ -1,3 +1,12 @@
+/*
+ * tool to check collision
+ * 
+ * @ deprecated
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 
 public class Collider

@@ -1,3 +1,10 @@
+/*
+ * description of an projectile
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 
 import org.lwjgl.opengl.GL11;

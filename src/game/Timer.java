@@ -1,3 +1,10 @@
+/*
+ * class used for timing 
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 
 //*****************************************************************************

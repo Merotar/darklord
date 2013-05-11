@@ -1,3 +1,10 @@
+/*
+ * description of an enemy which performs random movement
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 
 public class EnemyRandomMove extends Enemy

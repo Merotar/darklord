@@ -1,3 +1,12 @@
+/*
+ * describes the grid and collectable objects of the map
+ * 
+ * TODO: reorganize, merge with Level/Grid
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

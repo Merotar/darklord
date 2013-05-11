@@ -1,3 +1,10 @@
+/*
+ * describes the player character
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 import java.io.FileInputStream;
 import java.util.Vector;

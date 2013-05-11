@@ -1,3 +1,10 @@
+/*
+ * generator for various random variables
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 
 import java.util.Random;

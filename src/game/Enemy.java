@@ -1,3 +1,10 @@
+/*
+ * general description of an enemy
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 
 import org.lwjgl.opengl.GL11;

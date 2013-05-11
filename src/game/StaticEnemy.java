@@ -1,3 +1,10 @@
+/*
+ * describes a static enemy
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 
 public class StaticEnemy extends Enemy

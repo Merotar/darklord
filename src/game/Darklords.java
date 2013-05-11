@@ -1,3 +1,10 @@
+/*
+ * Main class which cointains the basic game flow 
+ * 
+ * @author Sebastian Artz
+ * 
+ */
+
 package game;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -29,6 +36,7 @@ import org.newdawn.slick.openal.SoundStore;
 public class Darklords {
 	
 	static int resX, resY;
+	static boolean fullscreen;
 	static int maxFPS;
 	static float ratio;
 	Level world;
@@ -50,6 +58,7 @@ public class Darklords {
 	{
 		resX = 800;
 		resY = 600;
+		fullscreen = false;
 		maxFPS = 30;
 		gameMode = 1;
 		devMode = false;
@@ -68,9 +77,18 @@ public class Darklords {
 		int fragShader = 0;
 		
 		try {
-			Display.setDisplayMode(new DisplayMode(resX, resY));
+			if (fullscreen)
+			{
+				Display.setDisplayMode(Display.getDesktopDisplayMode());
+				Display.setFullscreen(true);
+			} else 
+			{
+				Display.setDisplayMode(new DisplayMode(resX, resY));
+			}
 			Display.setVSyncEnabled(true);
 			Display.create();
+			
+			
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 			System.exit(0);
