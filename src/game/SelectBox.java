@@ -1,10 +1,3 @@
-/*
- * describes the selection box af a block
- * 
- * @author Sebastian Artz
- * 
- */
-
 package game;
 import java.io.FileInputStream;
 import java.util.Vector;
@@ -14,7 +7,14 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
-
+/**
+ * describes the selection box af a block
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
+ * 
+ */
 public class SelectBox
 {
 	private Vector<Texture> texture;

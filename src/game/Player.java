@@ -1,20 +1,19 @@
-/*
- * describes the player character
- * 
- * @author Sebastian Artz
- * 
- */
-
 package game;
-import java.io.FileInputStream;
 import java.util.Vector;
 //import game.CollectableType;
 
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.TextureLoader;
 
+/**
+ * enum to descrobe the players abilities
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
+ * 
+ */
 enum PlayerAbility
 {
 	TELEPORT(1), SHOOT(2), DIG(5);
@@ -27,6 +26,14 @@ enum PlayerAbility
 	}
 }
 
+/**
+ * describes the player character
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
+ * 
+ */
 public class Player extends Collidable
 {
 //	private float posX, posY, sizeX, sizeY;
@@ -39,7 +46,7 @@ public class Player extends Collidable
 	private static float blockAttackSpeed = 200.f;
 	private Timer animationTimer, invulnerableOnContactTimer;
 	private static float animationInterval = 500.f;
-	private static float invulnerableOnContact = 1000.f;
+	private static float invulnerableOnContact = 500.f;
 	private int[] abilities;
 	private PlayerAbility activeAbility;
 	private float teleportStep = 2.f;

@@ -1,31 +1,25 @@
-/*
+package game;
+
+import java.io.Serializable;
+import java.util.Vector;
+
+/**
  * describes the grid and collectable objects of the map
  * 
  * TODO: reorganize, merge with Level/Grid
  * 
  * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
  * 
  */
-
-package game;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.Random;
-import java.util.Vector;
-
-
-
 public class Map implements Serializable
 {
-	public int dimX, dimY;
+//	public int dimX, dimY;
 	Vector2f start, exit;
-	private Grid[][] worldGridRight;
-	private int gridRightDimX =1;
-	private int gridRightDimY =1;
+	private Grid worldGrid;
+//	private int gridRightDimX =1;
+//	private int gridRightDimY =1;
 //	private Block grid[][];
 	public Vector<Collectable> collectableObjects;
 //	public Vector<Enemy> enemies;
@@ -36,10 +30,9 @@ public class Map implements Serializable
 	{
 		start = new Vector2f(3.f, 3.f);
 		exit = new Vector2f();
-		dimX = 10;
-		dimY = 10;
-		worldGridRight = new Grid[gridRightDimX][gridRightDimY];
-		worldGridRight[0][0] = new Grid();
+//		dimX = 10;
+//		dimY = 10;
+		worldGrid = new Grid(10, 10);
 		collectableObjects = new Vector<Collectable>();
 //		enemies = new Vector<Enemy>();
 		
@@ -50,10 +43,9 @@ public class Map implements Serializable
 	{
 		start = new Vector2f(3.f, 3.f);
 		exit = new Vector2f();
-		dimX = x;
-		dimY = y;
-		worldGridRight = new Grid[gridRightDimX][gridRightDimY];
-		worldGridRight[0][0] = new Grid();
+//		dimX = x;
+//		dimY = y;
+		worldGrid = new Grid(x, y);
 		collectableObjects = new Vector<Collectable>();
 //		enemies = new Vector<Enemy>();
 		
@@ -62,7 +54,17 @@ public class Map implements Serializable
 	
 	public Vector<Enemy> getEnemies()
 	{
-		return worldGridRight[0][0].getEnemies();
+		return worldGrid.getEnemies();
+	}
+	
+	public int getMapSizeX()
+	{
+		return worldGrid.getGridSizeX();
+	}
+	
+	public int getMapSizeY()
+	{
+		return worldGrid.getGridSizeY();
 	}
 	
 	public Map(Map orig)
@@ -145,10 +147,12 @@ public class Map implements Serializable
 ////		collectableObjects.add(new Collectable(CollectableType.ABILITY_DIGGING, 6.25f, 2.25f));
 //	}
 
+	
 	public Block getBlockAt(int x, int y)
 	{
-		return worldGridRight[0][0].getBlockAt(x, y);
+		return worldGrid.getBlockAt(x, y);
 	}
+	
 	
 	public void writeToFile(String fileName)
 	{
@@ -244,9 +248,9 @@ public class Map implements Serializable
 
 	public void setBlock(int x_int, int y_int, int t)
 	{
-		if ((x_int > 0) && (x_int < dimX) && (y_int > 0) && (y_int < dimY))
+		if ((x_int > 0) && (x_int < worldGrid.gridSizeX) && (y_int > 0) && (y_int < worldGrid.gridSizeY))
 		{
-			worldGridRight[0][0].setTypeAt(x_int, y_int, t);
+			worldGrid.setTypeAt(x_int, y_int, t);
 		}
 	}
 }

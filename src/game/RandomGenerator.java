@@ -1,14 +1,15 @@
-/*
- * generator for various random variables
- * 
- * @author Sebastian Artz
- * 
- */
-
 package game;
 
 import java.util.Random;
 
+/**
+ * generator for various random variables
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
+ * 
+ */
 public class RandomGenerator
 {
 	private static Random rnd = new Random();

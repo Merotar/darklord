@@ -1,16 +1,13 @@
-/*
+package game;
+
+/**
  * class used for timing 
  * 
  * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
  * 
  */
-
-package game;
-
-//*****************************************************************************
-// This class can be used to create animations
-//*****************************************************************************
-
 public class Timer{
 	long time0;
 	boolean running;

@@ -1,73 +1,21 @@
-/*
- * describes the whole level including grid and player informations
- * 
- * @author Sebastian Artz
- * 
- */
-
 package game;
 import org.lwjgl.opengl.GL11;
 //import org.lwjgl.util.vector.Vector2f;
-
-import game.EnemyRandomMove.Direction;
 
 import java.util.Random;
 import java.util.Vector;
 import java.util.Iterator;
 
-
-
+/**
+ * describes the whole level including grid and player informations
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
+ * 
+ */
 public class Level
-{
-	public static class DevModeSettings
-	{
-		
-		static int maxActiveBlock = 4;
-//		static int maxActiveCollectable = 2;
-		static int activeBlock = 1;
-		static CollectableType activeCollectable = CollectableType.ABILITY_DIGGING;
-		
-		static void increaseActiveBlock()
-		{
-			activeBlock++;
-			if (activeBlock > maxActiveBlock) activeBlock = 0;
-		}
-		
-		static int getActiveBLock()
-		{
-			return activeBlock;
-		}
-		
-		static void increaseActiveCollectable()
-		{
-			if (activeCollectable == CollectableType.ABILITY_TELEPORT)
-			{
-				activeCollectable = CollectableType.BLOCK_BROWN;
-				return;
-			}
-			if (activeCollectable == CollectableType.BLOCK_BROWN)
-			{
-				activeCollectable = CollectableType.BLOCK_RED;
-				return;
-			}			
-			if (activeCollectable == CollectableType.BLOCK_RED)
-			{
-				activeCollectable = CollectableType.ABILITY_DIGGING;
-				return;
-			}
-			if (activeCollectable == CollectableType.ABILITY_DIGGING)
-			{
-				activeCollectable = CollectableType.ABILITY_TELEPORT;
-				return;
-			}
-		}
-		
-		static CollectableType getActiveCollectable()
-		{
-			return activeCollectable;
-		}
-	}
-	
+{	
 //	private int dimX, dimY;
 	private static float playerBorderX = 0.3f;
 	private static float playerBorderY = 0.3f; // in percent
@@ -81,7 +29,7 @@ public class Level
 	public Map map;
 	public Vector<Projectile> projectiles;
 	public static final int drawSize = 7;
-	
+
 	public Level()
 	{
 //		this.dimX = 20;
@@ -106,7 +54,7 @@ public class Level
 		map = new Map(sizeX, sizeY);
 //		grid = new Block[dimX][dimY];
 //		collectableObjects = new Vector<Collectable>();
-		mainPlayer = new Player(Grid.gridSize/2, Grid.gridSize/2);
+		mainPlayer = new Player(map.getMapSizeX()/2, map.getMapSizeY()/2);
 		map.getBlockAt((int) mainPlayer.getPosX(), (int) mainPlayer.getPosY()).setType(0);
 		mainSelectBox = new SelectBox();
 		projectiles = new Vector<Projectile>();
@@ -170,24 +118,24 @@ public class Level
 //	}
 
 	public int getDimX() {
-		return map.dimX;
+		return map.getMapSizeX();
 	}
 
-	public void setDimX(int dimX) {
-		map.dimX = dimX;
-	}
+//	public void setDimX(int dimX) {
+//		map.dimX = dimX;
+//	}
 
 	public int getDimY() {
-		return map.dimY;
+		return map.getMapSizeY();
 	}
 
-	public void setDimY(int dimY) {
-		map.dimY = dimY;
-	}
+//	public void setDimY(int dimY) {
+//		map.dimY = dimY;
+//	}
 	
 	public boolean isBlockSolid(int x, int y)
 	{
-		if ((x < 0) || (y < 0) || (x >= Grid.gridSize) || (y >= Grid.gridSize)) return false;
+		if ((x < 0) || (y < 0) || (x >= map.getMapSizeX()) || (y >= map.getMapSizeY())) return false;
 		return map.getBlockAt(x, y).isSolid();
 	}
 
@@ -217,6 +165,12 @@ public class Level
 		return true;
 	}
 	
+	/**
+	 * effect if player attacks a block
+	 * 
+	 * @param x x position
+	 * @param y y position
+	 */
 	public void attackBlock(int x, int y)
 	{
 		if (mainPlayer.canAttackBlock())
@@ -247,11 +201,14 @@ public class Level
 		return map.getBlockAt((int)Math.floor(x), (int)Math.floor(y)).isSolid();
 	}
 	
+	/**
+	 * @return returns true if block is solid
+	 */
 	public boolean checkSolid()
 	{
 		return isBlockSolid((int)Math.round(mainPlayer.getPosX()+0.5), (int)Math.round(mainPlayer.getPosY()+0.5));
 	}
-	
+
 	public void draw()
 	{	
 		GL11.glPushMatrix();
@@ -270,9 +227,9 @@ public class Level
 		Block backgroundBlock = new Block(0);
 		
 		int minX = Math.max(0, (int)mainPlayer.getPosX()-drawSize);
-		int maxX = Math.min(Grid.gridSize, (int)mainPlayer.getPosX()+drawSize);
+		int maxX = Math.min(map.getMapSizeX(), (int)mainPlayer.getPosX()+drawSize);
 		int minY = Math.max(0, (int)mainPlayer.getPosY()-drawSize);
-		int maxY = Math.min(Grid.gridSize, (int)mainPlayer.getPosY()+drawSize);
+		int maxY = Math.min(map.getMapSizeY(), (int)mainPlayer.getPosY()+drawSize);
 		
 		for (int i=minX;i<maxX;i++)
 		{
@@ -369,6 +326,10 @@ public class Level
 		this.posY = posY;
 	}
 	
+	/**
+	 * method which handles mouse position dependent events
+	 * @param pos
+	 */
 	public void mousePositionReaction(Vector2f pos)
 	{
 		Vector2f mouseGrid = new Vector2f(pos.getX()/this.gridSize, (Darklords.resY-pos.getY())/this.gridSize);
@@ -396,6 +357,11 @@ public class Level
 //		}
 	}
 	
+	/**
+	 * reaction to a pressed mouse button
+	 * @param pos
+	 * @param button
+	 */
 	public void mouseDownReaction(Vector2f pos, int button) // 0: left, 1: right
 	{
 		Vector2f mouseGrid = new Vector2f(pos.getX()/this.gridSize, (Darklords.resY-pos.getY())/this.gridSize);
@@ -443,6 +409,11 @@ public class Level
 
 	}
 	
+	/**
+	 * reaction to a pressed mouse button if in developer mode
+	 * @param pos
+	 * @param button
+	 */
 	public void mouseDownReactionDev(Vector2f pos, int button)
 	{
 		Vector2f mouseGrid = new Vector2f(pos.getX()/this.gridSize, (Darklords.resY-pos.getY())/this.gridSize);
@@ -465,11 +436,18 @@ public class Level
 		}
 	}
 	
+	/**
+	 * handles collision of a projectile with an block
+	 * @param p the projectile
+	 * @param x the blocks x component in the grid
+	 * @param y the blocks y component in the grid
+	 * @return return true if projectile and block collide
+	 */
 	public boolean collideProjectileWithBlock(Projectile p, int x, int y)
 	{
 		boolean collide = false;
 		
-		if ((x<0)||(x>=Grid.gridSize)||(y<0)||(y>=Grid.gridSize)) return false;
+		if ((x<0)||(x>=map.getMapSizeX())||(y<0)||(y>=map.getMapSizeY())) return false;
 		
 		if (map.getBlockAt(x, y).isSolid())
 		{
@@ -614,6 +592,10 @@ public class Level
 		this.playerBorderY = playerBorderY;
 	}
 	
+	/**
+	 * moves an EnemyRandomMove in a random direction
+	 * @param e enemy to move
+	 */
 	void moveRandom(EnemyRandomMove e)
 	{
 		int posX = (int)Math.round(e.getPosX());

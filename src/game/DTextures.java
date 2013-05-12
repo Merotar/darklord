@@ -1,21 +1,18 @@
-/*
- * class which loads and stores the used textures
- * 
- * @author Sebastian Artz
- * 
- */
-
 package game;
 import java.io.FileInputStream;
 import java.util.Vector;
 
-import org.lwjgl.opengl.GL11;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
-import static org.lwjgl.opengl.ARBTextureRectangle.GL_TEXTURE_RECTANGLE_ARB;
-
+/**
+ * class which loads and stores the used textures
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
+ * 
+ */
 public class DTextures
 {
 	public Vector<Texture> player;

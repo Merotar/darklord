@@ -1,18 +1,15 @@
-/*
- * basic description of an 2D float vector
- * 
- * @author Sebastian Artz
- * 
- */
-
 package game;
 
 import java.io.Serializable;
 
-//*****************************************************************************
-// A simple 2 dimensional vector with some vectorfunctions
-//*****************************************************************************
-
+/**
+ * basic description of an 2D float vector
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
+ * 
+ */
 public class Vector2f implements Serializable
 {
 	float x,y;

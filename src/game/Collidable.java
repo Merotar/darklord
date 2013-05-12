@@ -1,11 +1,13 @@
-/*
+package game;
+
+/**
  * basic class for objects which can collide with each other
  * 
  * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
  * 
  */
-
-package game;
 abstract class Collidable
 {
 	private float posX, posY, sizeX, sizeY;
@@ -72,6 +74,11 @@ abstract class Collidable
 		return ((Math.abs(x-a) < halfSizeX+halfSizeA) && (Math.abs(y-b) < halfSizeY+halfSizeB)); 
 	}
 	
+	/**
+	 * 
+	 * @param obj collidable to collide with
+	 * @return return true if objects collide
+	 */
 	public boolean collide(Collidable obj)
 	{
 		return collide(getPosX()+getSizeX()/2.f, getPosY()+getSizeY()/2.f, getSizeX()/2.f, getSizeY()/2.f, obj.getPosX()+obj.getSizeX()/2.f, obj.getPosY()+obj.getSizeY()/2.f, obj.getSizeX()/2.f, obj.getSizeY()/2.f);

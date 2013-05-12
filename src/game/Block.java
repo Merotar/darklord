@@ -1,21 +1,16 @@
-/*
- * Description of one block
- * 
- * @author Sebastian Artz
- * 
- */
-
 package game;
-
-
-import java.io.FileInputStream;
-import java.io.Serializable;
 
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
-import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.TextureLoader;
 
+/**
+ * Description of a block
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
+ * 
+ */
 public class Block
 {
 	private boolean visible, solid;
@@ -89,6 +84,9 @@ public class Block
 		this.hp -= damage;
 	}
 	
+	/**
+	 * sets block to empty block if HP < 0
+	 */
 	public void update()
 	{
 		if (this.getHp() <= 0)
@@ -101,8 +99,9 @@ public class Block
 		return type;
 	}
 	
-	// @return: returns if block is destroyed
-	// TODO: mit javadoc auseinandersetzen!
+	/**
+	 * @return returns true if object is destoyed
+	 */
 	public boolean attack()
 	{
 		if (this.destroyable)

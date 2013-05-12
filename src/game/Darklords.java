@@ -1,18 +1,7 @@
-/*
- * Main class which cointains the basic game flow 
- * 
- * @author Sebastian Artz
- * 
- */
-
 package game;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.util.Vector;
 
 import org.lwjgl.input.Keyboard;
@@ -23,16 +12,15 @@ import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
-//import org.lwjgl.util.vector.Vector2f;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.TextureLoader;
-import java.awt.Font;
-import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.openal.Audio;
-import org.newdawn.slick.openal.AudioLoader;
-import org.newdawn.slick.openal.SoundStore;
 
+/**
+ * Main class which contains the basic game flow 
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
+ * 
+ */
 public class Darklords {
 	
 	static int resX, resY;
@@ -53,11 +41,18 @@ public class Darklords {
 	private int program=0;
 	boolean useShader;
 	int locResX, locResY;
+	Vector2f gameScreenPos;
+	float gameScreenScale;
 	
+	/**
+	 * initializes global variables
+	 */
 	public void init()
 	{
 		resX = 800;
 		resY = 600;
+		gameScreenPos = new Vector2f(0.0f, 0.0f);
+		gameScreenScale = 1.0f;
 		fullscreen = false;
 		maxFPS = 30;
 		gameMode = 1;
@@ -72,6 +67,9 @@ public class Darklords {
 		myKeyboard = new KeyboardSettings();
 	}
 
+	/**
+	 * initializes graphics and runs main game loop
+	 */
 	public void start()
 	{	
 		int fragShader = 0;
@@ -88,7 +86,6 @@ public class Darklords {
 			Display.setVSyncEnabled(true);
 			Display.create();
 			
-			
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 			System.exit(0);
@@ -102,7 +99,11 @@ public class Darklords {
     		return;
     	}
     	finally {
-    		if(fragShader == 0) return;
+    		if(fragShader == 0)
+    		{
+    			System.err.println("initialization of shaders failed");
+    			return;
+    		}
     	}
     	
     	program = ARBShaderObjects.glCreateProgramObjectARB();
@@ -154,7 +155,7 @@ public class Darklords {
         
         // init other stuff
         
-		world = new Level(1,1);
+		world = new Level(10,10);
 		
 		worldTimer = new Timer();
 		rightMouseDelayTimer = new Timer();
@@ -162,8 +163,9 @@ public class Darklords {
 		worldTimer.start();
 		fpsTimer.start();
 		
-		while (!Display.isCloseRequested()) {
-			// this is the main loop repeated while the window is not closed
+		while (!Display.isCloseRequested())
+		{
+			// main loop repeated while the window is not closed
 			
 			//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);  
 			//GL11.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
@@ -337,7 +339,7 @@ public class Darklords {
 		
 	}
 	
-    /*
+    /**
     * With the exception of syntax, setting up vertex and fragment shaders
     * is the same.
     * @param the name and path to the vertex shader
@@ -424,11 +426,28 @@ public class Darklords {
         return source.toString();
     }
 	
+    /**
+     * transforms the mouse position into position in game screen area
+     * 
+     * @param mousePos global mouse position
+     * @return mouse position in game screen area
+     */
+    public Vector2f globalToGamescreen(Vector2f mousePos)
+    {
+    	Vector2f tmp = mousePos.sub(new Vector2f(gameScreenPos.getX()*resX/2.f, Mouse.getY()-gameScreenPos.getY()*resY/2.f));
+//		mousePos.set(Mouse.getX()-gameScreenPos.getX()*resX/2.f, Mouse.getY()-gameScreenPos.getY()*resY/2.f);
+    	return tmp;
+    }
+    
+    /**
+     * checks mouse input
+     */
 	public void checkMouse()
 	{		
 		while (Mouse.next())
 		{
-			mousePos.set(Mouse.getX(), Mouse.getY());
+//			mousePos.set(Mouse.getX()-gameScreenPos.getX()*resX/2.f, Mouse.getY()-gameScreenPos.getY()*resY/2.f);
+			mousePos = globalToGamescreen(new Vector2f(Mouse.getX(),Mouse.getY()));
 			
 			if (Mouse.getEventButtonState())
 			{
@@ -478,6 +497,9 @@ public class Darklords {
 		}
 	}
 	
+	/**
+	 * checks keybaord input
+	 */
 	public void checkKeyboard()
 	{
 		Keyboard.enableRepeatEvents(true);
@@ -490,11 +512,11 @@ public class Darklords {
 					System.exit(0);
 				}
 				
-//				if (Keyboard.isKeyDown(myKeyboard.KEY_F1))
-//				{
-//					System.out.println("edit mode on");
-//					devMode = true;
-//				}
+				if (Keyboard.isKeyDown(myKeyboard.KEY_F1))
+				{
+					System.out.println("edit mode on");
+					devMode = true;
+				}
 //				
 //				if (Keyboard.isKeyDown(Keyboard.KEY_F))
 //				{
@@ -562,6 +584,9 @@ public class Darklords {
 		}
 	}
 	
+	/**
+	 * checks mosue input if in developer mode
+	 */
 	public void checkMouseDev()
 	{		
 		while (Mouse.next())
@@ -611,6 +636,9 @@ public class Darklords {
 		}
 	}
 	
+	/**
+	 * used to check keyboard input if in developer mode
+	 */
 	public void checkKeyboardDev()
 	{
 		Keyboard.enableRepeatEvents(false);
@@ -658,18 +686,21 @@ public class Darklords {
 				}
 				if (Keyboard.isKeyDown(myKeyboard.KEY_Q))
 				{
-					Level.DevModeSettings.increaseActiveBlock();
-					System.out.println("active block: "+Level.DevModeSettings.getActiveBLock());
+					DevModeSettings.increaseActiveBlock();
+					System.out.println("active block: "+DevModeSettings.getActiveBLock());
 				}
 				if (Keyboard.isKeyDown(myKeyboard.KEY_E))
 				{
-					Level.DevModeSettings.increaseActiveCollectable();
-					System.out.println("active collectable: "+Level.DevModeSettings.getActiveCollectable());
+					DevModeSettings.increaseActiveCollectable();
+					System.out.println("active collectable: "+DevModeSettings.getActiveCollectable());
 				}
 			}
 		}
 	}
 	
+	/**
+	 * draws the whole scene
+	 */
 	public void draw()
 	{
 //		if (useShader)
@@ -678,6 +709,10 @@ public class Darklords {
 //		}
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
+		GL11.glScalef(gameScreenScale, gameScreenScale, 1.f);
+		GL11.glTranslatef(gameScreenPos.getX(), gameScreenPos.getY(), 0.f);
+		GL11.glClearColor(0.f, 0.f, 0.f, 1.f);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		world.draw();
 //		if(useShader)
 //		{

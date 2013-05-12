@@ -1,21 +1,16 @@
-/*
- * DEscribes objects which are collectable by the player
- * 
- * @author Sebastian Artz
- * 
- */
-
 package game;
-import java.io.FileInputStream;
-import java.io.Serializable;
 
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
-import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.TextureLoader;
 
-
-
+/**
+ * Describes objects which are collectable by the player
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
+ * 
+ */
 public class Collectable extends Collidable
 {
 //	private Vector2f pos;
@@ -38,6 +33,12 @@ public class Collectable extends Collidable
 		this.setType(t);
 	}
 	
+	/**
+	 * 
+	 * @param t type of the collectable
+	 * @param x x position
+	 * @param y y position
+	 */
 	public Collectable(CollectableType t, float x, float y)
 	{
 		this(t);

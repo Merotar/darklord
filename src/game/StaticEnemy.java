@@ -1,12 +1,13 @@
-/*
+package game;
+
+/**
  * describes a static enemy
  * 
  * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
  * 
  */
-
-package game;
-
 public class StaticEnemy extends Enemy
 {
 	public StaticEnemy()

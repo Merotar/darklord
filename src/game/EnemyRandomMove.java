@@ -1,12 +1,13 @@
-/*
+package game;
+
+/**
  * description of an enemy which performs random movement
  * 
  * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
  * 
  */
-
-package game;
-
 public class EnemyRandomMove extends Enemy
 {
 	Vector2f direction, oldPos;
@@ -65,6 +66,9 @@ public class EnemyRandomMove extends Enemy
 		return motionTimer.running();
 	}
 	
+	/**
+	 * updates position
+	 */
 	public void update()
 	{
 		if (motionTimer.getTimeDelta() > motionTime)

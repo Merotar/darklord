@@ -1,14 +1,15 @@
-/*
- * tool to check collision
- * 
- * @ deprecated
- * 
- * @author Sebastian Artz
- * 
- */
-
 package game;
 
+/**
+ * tool to check collision
+ * 
+ * @deprecated use class Collidable
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
+ * 
+ */
 public class Collider
 {
 	Collider(){};

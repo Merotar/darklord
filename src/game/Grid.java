@@ -1,33 +1,45 @@
-/*
- * describes the architecture of an level with blocks and enemies
- * 
- * @author Sebastian Artz
- * 
- */
-
 package game;
 
 import java.util.Random;
 import java.util.Vector;
 
+/**
+ * describes the architecture of an level with blocks and enemies
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
+ * 
+ */
 public class Grid
 {
 	private Block[][] theGrid;
 	private Vector<Enemy> enemies;
-	public static final int gridSize = 100;
+	public int gridSizeX, gridSizeY;
 	
 	public Grid()
 	{
-		theGrid = new Block[gridSize][gridSize];
+		gridSizeX = 10;
+		gridSizeY = 10;
+		theGrid = new Block[gridSizeX][gridSizeY];
+		enemies = new Vector<Enemy>();
+		initTest();
+	}
+	
+	public Grid(int x, int y)
+	{
+		gridSizeX = x;
+		gridSizeY = y;
+		theGrid = new Block[gridSizeX][gridSizeY];
 		enemies = new Vector<Enemy>();
 		initTest();
 	}
 	
 	private void initDefault()
 	{
-		for (int i=0;i<gridSize;i++)
+		for (int i=0;i<gridSizeX;i++)
 		{
-			for (int j=0; j<gridSize;j++)
+			for (int j=0; j<gridSizeY;j++)
 			{
 				theGrid[i][j] = new Block(0);
 			}
@@ -43,20 +55,20 @@ public class Grid
 	{
 		Random rnd = new Random();
 		
-		for (int i=0;i<gridSize;i++)
+		for (int i=0;i<gridSizeX;i++)
 		{
-			for (int j=0;j<gridSize;j++)
+			for (int j=0;j<gridSizeY;j++)
 			{
 				theGrid[i][j] = new Block(2);
 			}
 		}
 		
-		for (int i=0;i<gridSize;i++)
+		for (int i=0;i<gridSizeX;i++)
 		{
-			for (int j=0;j<gridSize;j++)
+			for (int j=0;j<gridSizeY;j++)
 			{
 //				grid[i][j] = new Block();
-				if ((i==0) || (j==0) || (i==gridSize-1) || (j==gridSize-1))
+				if ((i==0) || (j==0) || (i==gridSizeX-1) || (j==gridSizeY-1))
 				{
 					theGrid[i][j].setType(1);
 				} else // inner level
@@ -72,7 +84,7 @@ public class Grid
 						theGrid[i][j].setType(rndType);
 						if (rnd.nextGaussian() > 0.3)
 						{
-							if ((i+1)<gridSize-1)
+							if ((i+1)<gridSizeX-1)
 							{
 //								System.out.println(i+1+ ", "+j);
 								theGrid[i+1][j].setType(rndType);
@@ -85,8 +97,10 @@ public class Grid
 		theGrid[1][4].setType(0);
 		theGrid[1][3].setType(0);
 		theGrid[2][3].setType(0);
+		theGrid[7][7].setType(0);
 //		enemies.add(new StaticEnemy(1.f, 4.f));
 		enemies.add(new EnemyRandomMove(1.f, 4.f));
+		enemies.add(new StaticEnemy(7.f, 7.f));
 //		grid[(int)Math.round(mainPlayer.getPosX())][(int)Math.round(mainPlayer.getPosY())].setType(0);
 		
 //		collectableObjects.add(new Collectable(CollectableType.ABILITY_TELEPORT, 7.25f, 3.25f));
@@ -101,6 +115,22 @@ public class Grid
 	public Vector<Enemy> getEnemies()
 	{
 		return this.enemies;
+	}
+
+	public int getGridSizeX() {
+		return gridSizeX;
+	}
+
+	public void setGridSizeX(int gridSizeX) {
+		this.gridSizeX = gridSizeX;
+	}
+
+	public int getGridSizeY() {
+		return gridSizeY;
+	}
+
+	public void setGridSizeY(int gridSizeY) {
+		this.gridSizeY = gridSizeY;
 	}
 	
 }

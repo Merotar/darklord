@@ -1,14 +1,15 @@
-/*
+package game;
+
+/**
  * enum to describe different collectables
  * 
  * @deprecated
  * 
  * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
  * 
  */
-
-package game;
-
 enum CollectableType
 {
 	

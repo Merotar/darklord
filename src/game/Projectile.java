@@ -1,15 +1,16 @@
-/*
- * description of an projectile
- * 
- * @author Sebastian Artz
- * 
- */
-
 package game;
 
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 
+/**
+ * description of an projectile
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
+ * 
+ */
 public class Projectile extends Collidable
 {
 //	private Vector2f position, direction;

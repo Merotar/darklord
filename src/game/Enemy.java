@@ -1,15 +1,16 @@
-/*
- * general description of an enemy
- * 
- * @author Sebastian Artz
- * 
- */
-
 package game;
 
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 
+/**
+ * general description of an enemy
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 12-05-2013
+ * 
+ */
 public class Enemy extends Collidable
 {
 	int type;
