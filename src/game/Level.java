@@ -477,8 +477,11 @@ public class Level
 		// right mouse button
 		if (button == 1)
 		{
+			map.setBlock(x_int, y_int, 0);
+			map.getEnemies().add(new EnemyRandomMove(x_int, y_int));
 //			System.out.println("add collectable "+DevModeSettings.activeCollectable+ "at x: "+(x_int+0.25f)+", y: "+(y_int+0.25f));
 //			this.map.collectableObjects.add(new Collectable(DevModeSettings.activeCollectable, x_int+0.25f, y_int+0.25f));
+		
 		}
 	}
 	

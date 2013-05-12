@@ -662,9 +662,17 @@ public class Darklords {
 					devMode = false;
 				}
 				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_C))
+				{
+					if (world.map.getEnemies().size() != 0)
+					{
+						world.map.getEnemies().removeElementAt(world.map.getEnemies().size()-1);
+					}
+				}
+				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_PERIOD) && devMode)
 				{
-					world.map.writeToFile();
+					world.map.writeToFile(world.mainPlayer.getPos());
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_COMMA) && devMode)

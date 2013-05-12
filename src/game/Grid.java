@@ -23,7 +23,8 @@ public class Grid
 		gridSizeY = 10;
 		theGrid = new Block[gridSizeX][gridSizeY];
 		enemies = new Vector<Enemy>();
-		initTest();
+		initDefault();
+//		initTest();
 	}
 	
 	public Grid(int x, int y)
@@ -32,7 +33,8 @@ public class Grid
 		gridSizeY = y;
 		theGrid = new Block[gridSizeX][gridSizeY];
 		enemies = new Vector<Enemy>();
-		initTest();
+		initDefault();
+//		initTest();
 	}
 	
 	private void initDefault()
@@ -41,7 +43,13 @@ public class Grid
 		{
 			for (int j=0; j<gridSizeY;j++)
 			{
-				theGrid[i][j] = new Block(0);
+				if ((i==0) || (j==0) || (i==gridSizeX-1) || (j==gridSizeY-1))
+				{
+					theGrid[i][j] = new Block(1);
+				} else // inner level
+				{
+					theGrid[i][j] = new Block(0);
+				}
 			}
 		}
 	}

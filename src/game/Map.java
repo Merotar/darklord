@@ -159,7 +159,7 @@ public class Map implements Serializable
 	}
 	
 	
-	public void writeToFile(String fileName)
+	public void writeToFile(String fileName, Vector2f startPos)
 	{
 		ObjectOutputStream oos = null;
 		FileOutputStream fos = null;
@@ -172,7 +172,7 @@ public class Map implements Serializable
 //		  oos.writeObject(start.y);
 //		  oos.writeObject(exit.x);
 //		  oos.writeObject(exit.y);
-		  oos.writeObject(start);
+		  oos.writeObject(startPos);
 		  oos.writeObject(exit);
 		  
 		  for (int i=0;i<getMapSizeX();i++)
@@ -241,9 +241,9 @@ public class Map implements Serializable
 		}
 	}
 	
-	public void writeToFile()
+	public void writeToFile(Vector2f start)
 	{
-		writeToFile("defaultMap.map");
+		writeToFile("defaultMap.map", start);
 	}
 	
 	public void readFile()
