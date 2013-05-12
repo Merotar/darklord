@@ -1,5 +1,6 @@
 package game;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.Vector;
@@ -155,7 +156,7 @@ public class Darklords {
         
         // init other stuff
         
-		world = new Level(10,10);
+        world = new Level(10,10);
 		
 		worldTimer = new Timer();
 		rightMouseDelayTimer = new Timer();
@@ -165,6 +166,9 @@ public class Darklords {
 		
 		while (!Display.isCloseRequested())
 		{
+			int glErr = GL11.glGetError();
+			if (glErr != 0) Print.err("OpenglGL error: "+glErr);
+			
 			// main loop repeated while the window is not closed
 			
 			//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);  
@@ -434,7 +438,7 @@ public class Darklords {
      */
     public Vector2f globalToGamescreen(Vector2f mousePos)
     {
-    	Vector2f tmp = mousePos.sub(new Vector2f(gameScreenPos.getX()*resX/2.f, Mouse.getY()-gameScreenPos.getY()*resY/2.f));
+    	Vector2f tmp = mousePos.sub(new Vector2f(gameScreenPos.getX()*resX/2.f, gameScreenPos.getY()*resY/2.f));
 //		mousePos.set(Mouse.getX()-gameScreenPos.getX()*resX/2.f, Mouse.getY()-gameScreenPos.getY()*resY/2.f);
     	return tmp;
     }
@@ -446,7 +450,7 @@ public class Darklords {
 	{		
 		while (Mouse.next())
 		{
-//			mousePos.set(Mouse.getX()-gameScreenPos.getX()*resX/2.f, Mouse.getY()-gameScreenPos.getY()*resY/2.f);
+//			mousePos.set(Mouse.getX(), Mouse.getY());
 			mousePos = globalToGamescreen(new Vector2f(Mouse.getX(),Mouse.getY()));
 			
 			if (Mouse.getEventButtonState())
@@ -533,8 +537,7 @@ public class Darklords {
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_W))
 				{
-					if (Keyboard.isKeyDown((myKeyboard.KEY_1)) && world.mainPlayer.isActiveAbility(PlayerAbility.TELEPORT))
-					{
+					if (Keyboard.isKeyDown(myKeyboard.KEY_LSHIFT))					{
 						world.mainPlayer.setTeleportUp(true);
 					} else
 					{
@@ -544,7 +547,7 @@ public class Darklords {
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_S))
 				{
-					if (Keyboard.isKeyDown((myKeyboard.KEY_1)) && world.mainPlayer.isActiveAbility(PlayerAbility.TELEPORT))
+					if (Keyboard.isKeyDown(myKeyboard.KEY_LSHIFT))
 					{
 						world.mainPlayer.setTeleportDown(true);
 					} else
@@ -555,8 +558,7 @@ public class Darklords {
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_A))
 				{
-					if (Keyboard.isKeyDown((myKeyboard.KEY_1)) && world.mainPlayer.isActiveAbility(PlayerAbility.TELEPORT))
-					{
+					if (Keyboard.isKeyDown(myKeyboard.KEY_LSHIFT))					{
 						world.mainPlayer.setTeleportLeft(true);
 					} else
 					{
@@ -566,13 +568,16 @@ public class Darklords {
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_D))
 				{
-					if (Keyboard.isKeyDown((myKeyboard.KEY_1)) && world.mainPlayer.isActiveAbility(PlayerAbility.TELEPORT))
-					{
+					if (Keyboard.isKeyDown(myKeyboard.KEY_LSHIFT))					{
 						world.mainPlayer.setTeleportRight(true);
 					} else
 					{
 						world.mainPlayer.startRight();
 					}
+				}
+				if (Keyboard.isKeyDown(myKeyboard.KEY_E))
+				{
+					world.mainPlayer.inreaseActiveProjectile();
 				}
 			} else
 			{

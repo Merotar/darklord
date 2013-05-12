@@ -2,6 +2,7 @@ package game;
 import org.lwjgl.opengl.GL11;
 //import org.lwjgl.util.vector.Vector2f;
 
+import java.io.File;
 import java.util.Random;
 import java.util.Vector;
 import java.util.Iterator;
@@ -28,6 +29,7 @@ public class Level
 	SelectBox mainSelectBox;
 	public Map map;
 	public Vector<Projectile> projectiles;
+	public Vector<Projectile> hostileProjectiles;
 	public static final int drawSize = 7;
 
 	public Level()
@@ -41,6 +43,7 @@ public class Level
 		mainPlayer = new Player();
 		mainSelectBox = new SelectBox();
 		projectiles = new Vector<Projectile>();
+		hostileProjectiles = new Vector<Projectile>();
 		
 //		initTest();
 	}
@@ -51,13 +54,25 @@ public class Level
 //		this.dimY = sizeY;
 		posX = 1.f;
 		posY = 1.f;
-		map = new Map(sizeX, sizeY);
+		
+        File f = new File("defaultMap.map");
+        if (f.exists())
+        {
+        	map = new Map();
+        	map.readFile("defaultMap.map");
+        } else
+        {
+        	map = new Map(sizeX, sizeY);
+        }
+		
 //		grid = new Block[dimX][dimY];
 //		collectableObjects = new Vector<Collectable>();
-		mainPlayer = new Player(map.getMapSizeX()/2, map.getMapSizeY()/2);
+		mainPlayer = new Player(map.start.getX(), map.start.getY());
+		Print.out("created Player at "); map.start.print();
 		map.getBlockAt((int) mainPlayer.getPosX(), (int) mainPlayer.getPosY()).setType(0);
 		mainSelectBox = new SelectBox();
 		projectiles = new Vector<Projectile>();
+		hostileProjectiles = new Vector<Projectile>();
 		
 //		initTest();
 	}
@@ -72,6 +87,7 @@ public class Level
 		mainPlayer = new Player(orig.mainPlayer);
 		mainSelectBox = new SelectBox();
 		projectiles = new Vector<Projectile>();
+		hostileProjectiles = new Vector<Projectile>();
 	}
 	
 //	public void initTest()
@@ -305,8 +321,6 @@ public class Level
 			GL11.glPopMatrix();
 		}
 		
-		
-		
 		GL11.glPopMatrix();
 	}
 
@@ -341,7 +355,7 @@ public class Level
 		int x_int = (int)Math.floor(mouseGrid.getX());
 		int y_int = (int)Math.floor(mouseGrid.getY());
 		
-//		if (x_int < map.dimX && x_int >= 0 && y_int < map.dimY && y_int >= 0)
+		if (x_int < map.getMapSizeX() && x_int >= 0 && y_int < map.getMapSizeY() && y_int >= 0)
 //		{
 			if (this.isBlockSolid(x_int, y_int))
 			{
@@ -355,6 +369,17 @@ public class Level
 //		{
 //			mainSelectBox.hide();
 //		}
+	}
+	
+	public int getNumerOfPojectiles(int type)
+	{
+		int amount = 0;
+		for (Iterator<Projectile> object = projectiles.iterator(); object.hasNext();)
+		{
+			Projectile p = object.next();
+			if (p.getType() == type) amount++;
+		}
+		return amount;
 	}
 	
 	/**
@@ -395,18 +420,36 @@ public class Level
 		
 		if (button == 1)
 		{
+			startProjectile(mouseGrid);
+		}
+
+	}
+	
+	/**
+	 * starts an projectile if ammo is available
+	 * @param pos start position of the projectile
+	 */
+	public void startProjectile(Vector2f pos)
+	{
+		int ammo = 0;
+		if (mainPlayer.getActiveProjectile() == 0) ammo = mainPlayer.getBlocksRed();
+		if (mainPlayer.getActiveProjectile() == 1) ammo = mainPlayer.getBlocksBlue();
+		if (mainPlayer.getActiveProjectile() == 2) ammo = mainPlayer.getBlocksGreen();
+		
+		if (ammo > getNumerOfPojectiles(mainPlayer.getActiveProjectile()))
+		{
+			// shoot
 			Vector2f dir = new Vector2f();
-			dir = mouseGrid.sub(mainPlayer.getCenter());
+			dir = pos.sub(mainPlayer.getCenter());
 			dir.normalize();
 			Vector2f position =  new Vector2f(mainPlayer.getCenter());
 //			position = position.add(mainPlayer.getSize().mul(0.5f));
 			position = position.add(dir.mul(0.5f));
 			
-			projectiles.add(new Projectile(position, dir));
-			System.out.println("Create Projectile at ("+mouseGrid.getX()+", "+mouseGrid.getY()+")");;
-//			mainPlayer.switchActiveAbility();
+			projectiles.add(new Projectile(position, dir, mainPlayer.getActiveProjectile()));
+			System.out.println("Create Projectile at ("+pos.getX()+", "+pos.getY()+")");;
+//			mainPlayer.switchActiveAbility();	
 		}
-
 	}
 	
 	/**
@@ -425,14 +468,17 @@ public class Level
 		int x_int = (int)Math.floor(mouseGrid.getX());
 		int y_int = (int)Math.floor(mouseGrid.getY());
 
+		// left mouse button
 		if (button == 0)
 		{
 			this.map.setBlock(x_int, y_int, DevModeSettings.getActiveBLock());
 		}
+		
+		// right mouse button
 		if (button == 1)
 		{
-			System.out.println("add collectable "+DevModeSettings.activeCollectable+ "at x: "+(x_int+0.25f)+", y: "+(y_int+0.25f));
-			this.map.collectableObjects.add(new Collectable(DevModeSettings.activeCollectable, x_int+0.25f, y_int+0.25f));
+//			System.out.println("add collectable "+DevModeSettings.activeCollectable+ "at x: "+(x_int+0.25f)+", y: "+(y_int+0.25f));
+//			this.map.collectableObjects.add(new Collectable(DevModeSettings.activeCollectable, x_int+0.25f, y_int+0.25f));
 		}
 	}
 	
@@ -508,8 +554,7 @@ public class Level
 			}
 		}
 		
-		// update projectiles
-		
+		// update players projectiles
 		for (Iterator<Projectile> object = projectiles.iterator(); object.hasNext();)
 		{
 			Projectile tmp = object.next();
@@ -518,18 +563,118 @@ public class Level
 			int projectileX = (int)Math.floor(tmp.getPosX());
 			int projectileY = (int)Math.floor(tmp.getPosY());
 			
-//			System.out.println(projectileX+", "+projectileY);
-			boolean destroy = false;
-			destroy |= collideProjectileWithBlock(tmp, projectileX, projectileY);
-			destroy |= collideProjectileWithBlock(tmp, projectileX+1, projectileY);
-			destroy |= collideProjectileWithBlock(tmp, projectileX, projectileY+1);
-			destroy |= collideProjectileWithBlock(tmp, projectileX+1, projectileY+1);
+			// check for collision with block
+			boolean destroyed = false;
 			
-			if (destroy)
+			int tmpProjectileX, tmpProjectileY;
+			// check block top left
+			tmpProjectileX = projectileX;
+			tmpProjectileY = projectileY;
+			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
 			{
 				object.remove();
-				System.out.println("Projectile destroyed by block");
-			} else
+				destroyed = true;
+				
+
+				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 6)	// blue projectile
+				{
+					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					System.out.println("ice crystal destroyed");
+					mainPlayer.decreaseBlocksBlue();
+				}
+				
+				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 7)	// green projectile
+				{
+					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					System.out.println("plants destroyed");
+					mainPlayer.decreaseBlocksGreen();
+				}
+				continue;
+			}
+			
+			// check block top right
+			tmpProjectileX = projectileX+1;
+			tmpProjectileY = projectileY;
+			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+			{
+				object.remove();
+				destroyed = true;
+				
+
+				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 6)	// blue projectile
+				{
+					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					System.out.println("ice crystal destroyed");
+					mainPlayer.decreaseBlocksBlue();
+				}
+				
+				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 7)	// green projectile
+				{
+					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					System.out.println("plants destroyed");
+					mainPlayer.decreaseBlocksGreen();
+				}
+				continue;
+			}
+			
+			// check block bottom left
+			tmpProjectileX = projectileX;
+			tmpProjectileY = projectileY+1;
+			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+			{
+				object.remove();
+				destroyed = true;
+				
+
+				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 6)	// blue projectile
+				{
+					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					System.out.println("ice crystal destroyed");
+					mainPlayer.decreaseBlocksBlue();
+				}
+				
+				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 7)	// green projectile
+				{
+					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					System.out.println("plants destroyed");
+					mainPlayer.decreaseBlocksGreen();
+				}
+				continue;
+			}
+			
+			// check block bottom right
+			tmpProjectileX = projectileX+1;
+			tmpProjectileY = projectileY+1;
+			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+			{
+				object.remove();
+				destroyed = true;
+				
+
+				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 6)	// blue projectile
+				{
+					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					System.out.println("ice crystal destroyed");
+					mainPlayer.decreaseBlocksBlue();
+				}
+				
+				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 7)	// green projectile
+				{
+					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					System.out.println("plants destroyed");
+					mainPlayer.decreaseBlocksGreen();
+				}
+				continue;
+			}
+
+			
+			
+//			destroy |= collideProjectileWithBlock(tmp, projectileX, projectileY);
+//			destroy |= collideProjectileWithBlock(tmp, projectileX+1, projectileY);
+//			destroy |= collideProjectileWithBlock(tmp, projectileX, projectileY+1);
+//			destroy |= collideProjectileWithBlock(tmp, projectileX+1, projectileY+1);
+			
+			if (!destroyed)
 			{
 				// check for collision with enemy
 				for (Iterator<Enemy> obj2 = map.getEnemies().iterator(); obj2.hasNext();)
@@ -537,12 +682,70 @@ public class Level
 					Enemy e = obj2.next();
 					if (e.collide(tmp))
 					{
-						System.out.println("Enemy destroyed by projectile");
-						if (e.decreaseHp(1)) obj2.remove();
+						if (tmp.getType() == 0)	// red projectile
+						{
+							System.out.println("Enemy damaged by projectile");
+							mainPlayer.decreaseBlocksRed();
+							if (e.decreaseHp(1)) obj2.remove();	
+						}
 						object.remove();
 						break;
 					}
 				}
+			}
+		}
+		
+		// update hostile projectiles
+		for (Iterator<Projectile> object = hostileProjectiles.iterator(); object.hasNext();)
+		{
+			Projectile tmp = object.next();
+			tmp.update();
+			
+			int projectileX = (int)Math.floor(tmp.getPosX());
+			int projectileY = (int)Math.floor(tmp.getPosY());
+			
+			// check for collision with block
+			boolean destroyed = false;
+			
+			int tmpProjectileX, tmpProjectileY;
+			// check block top left
+			tmpProjectileX = projectileX;
+			tmpProjectileY = projectileY;
+			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+			{
+				object.remove();
+				destroyed = true;
+				continue;
+			}
+			
+			// check block top right
+			tmpProjectileX = projectileX+1;
+			tmpProjectileY = projectileY;
+			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+			{
+				object.remove();
+				destroyed = true;
+				continue;
+			}
+			
+			// check block bottom left
+			tmpProjectileX = projectileX;
+			tmpProjectileY = projectileY+1;
+			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+			{
+				object.remove();
+				destroyed = true;
+				continue;
+			}
+			
+			// check block bottom right
+			tmpProjectileX = projectileX+1;
+			tmpProjectileY = projectileY+1;
+			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+			{
+				object.remove();
+				destroyed = true;
+				continue;
 			}
 		}
 		
@@ -573,6 +776,23 @@ public class Level
 			}
 			
 			e.update();
+		}
+		
+		// update blocks
+		
+		for (int i=0;i<map.getMapSizeX();i++)
+		{
+			for (int j=0;j<map.getMapSizeY();j++)
+			{
+				map.getBlockAt(i, j).update();
+				// workaround
+				if (map.getBlockAt(i, j).getType() == 6)	// ice block
+				{
+					Vector2f pos = new Vector2f(i, j);
+					Vector2f dir = new Vector2f(1.f, 0.f);
+					hostileProjectiles.add(new Projectile(pos, dir, 3));
+				}
+			}
 		}
 	}
 

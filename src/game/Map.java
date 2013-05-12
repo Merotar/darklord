@@ -1,5 +1,10 @@
 package game;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Vector;
 
@@ -156,94 +161,94 @@ public class Map implements Serializable
 	
 	public void writeToFile(String fileName)
 	{
-//		ObjectOutputStream oos = null;
-//		FileOutputStream fos = null;
-//		try {
-//		  fos = new FileOutputStream(fileName);
-//		  oos = new ObjectOutputStream(fos);
-//		  oos.writeInt(dimX);
-//		  oos.writeInt(dimY);
-////		  oos.writeObject(start.x);
-////		  oos.writeObject(start.y);
-////		  oos.writeObject(exit.x);
-////		  oos.writeObject(exit.y);
-//		  oos.writeObject(start);
-//		  oos.writeObject(exit);
-//		  
-//		  for (int i=0;i<dimX;i++)
-//		  {
-//			  for (int j=0;j<dimY;j++)
-//			  {
-//				  oos.writeInt(grid[i][j].getType());
-//			  }
-//		  }
-//		  
-//		  oos.writeInt(collectableObjects.size());
-//		  for (int i=0;i<collectableObjects.size();i++)
-//		  {
-//			  oos.writeObject(collectableObjects.get(i).getType());
-//			  oos.writeObject(collectableObjects.get(i).getPos());
-//		  }
-//
-//		}
-//		catch (IOException e) {
-//		  e.printStackTrace();
-//		}
-//		finally {
-//		  if (oos != null) try { oos.close(); } catch (IOException e) {}
-//		  if (fos != null) try { fos.close(); } catch (IOException e) {}
-//		}
+		ObjectOutputStream oos = null;
+		FileOutputStream fos = null;
+		try {
+		  fos = new FileOutputStream(fileName);
+		  oos = new ObjectOutputStream(fos);
+		  oos.writeInt(getMapSizeX());
+		  oos.writeInt(getMapSizeY());
+//		  oos.writeObject(start.x);
+//		  oos.writeObject(start.y);
+//		  oos.writeObject(exit.x);
+//		  oos.writeObject(exit.y);
+		  oos.writeObject(start);
+		  oos.writeObject(exit);
+		  
+		  for (int i=0;i<getMapSizeX();i++)
+		  {
+			  for (int j=0;j<getMapSizeY();j++)
+			  {
+				  oos.writeInt(worldGrid.getBlockAt(i, j).getType());
+			  }
+		  }
+		  
+		  oos.writeInt(collectableObjects.size());
+		  for (int i=0;i<collectableObjects.size();i++)
+		  {
+			  oos.writeObject(collectableObjects.get(i).getType());
+			  oos.writeObject(collectableObjects.get(i).getPos());
+		  }
+
+		}
+		catch (IOException e) {
+		  e.printStackTrace();
+		}
+		finally {
+		  if (oos != null) try { oos.close(); } catch (IOException e) {}
+		  if (fos != null) try { fos.close(); } catch (IOException e) {}
+		}
 	}
 	
 	public void readFile(String fileName)
 	{
-//		ObjectInputStream ois = null;
-//		FileInputStream fis = null;
-//		try {
-//		  fis = new FileInputStream(fileName);
-//		  ois = new ObjectInputStream(fis);
-//		  dimX = ois.readInt();
-//		  dimY = ois.readInt();
-//
-//		  start = (Vector2f)ois.readObject();
-//		  exit = (Vector2f)ois.readObject();
-//		  
-//		  grid = null;  
-//		  grid = new Block[dimX][dimY];
-//		  for (int i=0;i<dimX;i++)
-//		  {
-//			  for (int j=0;j<dimY;j++)
-//			  {
-//				  grid[i][j] = new Block(ois.readInt());
-//			  }
-//		  }
-//		  
-//		  int size = ois.readInt();
-//		  collectableObjects.clear();
-//		  for (int i=0;i<size;i++)
-//		  {
-//			  collectableObjects.add(new Collectable((CollectableType)ois.readObject()));
-//			  collectableObjects.get(i).setPos((Vector2f)ois.readObject());
-//		  }
-//
-//		}
-//		catch (Exception e) {
-//		  e.printStackTrace();
-//		}
-//		finally {
-//		  if (ois != null) try { ois.close(); } catch (IOException e) {}
-//		  if (fis != null) try { fis.close(); } catch (IOException e) {}
-//		}
+		ObjectInputStream ois = null;
+		FileInputStream fis = null;
+		try {
+		  fis = new FileInputStream(fileName);
+		  ois = new ObjectInputStream(fis);
+		  int dimX, dimY;
+		  dimX = ois.readInt();
+		  dimY = ois.readInt();
+
+		  start = (Vector2f)ois.readObject();
+		  exit = (Vector2f)ois.readObject();
+		  
+		  worldGrid = new Grid(dimX, dimY);
+		  for (int i=0;i<dimX;i++)
+		  {
+			  for (int j=0;j<dimY;j++)
+			  {
+				  worldGrid.setTypeAt(i, j, ois.readInt());
+			  }
+		  }
+		  
+		  int size = ois.readInt();
+		  collectableObjects.clear();
+		  for (int i=0;i<size;i++)
+		  {
+			  collectableObjects.add(new Collectable((CollectableType)ois.readObject()));
+			  collectableObjects.get(i).setPos((Vector2f)ois.readObject());
+		  }
+
+		}
+		catch (Exception e) {
+		  e.printStackTrace();
+		}
+		finally {
+		  if (ois != null) try { ois.close(); } catch (IOException e) {}
+		  if (fis != null) try { fis.close(); } catch (IOException e) {}
+		}
 	}
 	
 	public void writeToFile()
 	{
-		writeToFile("defaultMap.ser");
+		writeToFile("defaultMap.map");
 	}
 	
 	public void readFile()
 	{
-		readFile("defaultMap.ser");
+		readFile("defaultMap.map");
 	}
 
 	public void setBlock(int x_int, int y_int, int t)

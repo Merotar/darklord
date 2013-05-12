@@ -52,7 +52,17 @@ public class Player extends Collidable
 	private float teleportStep = 2.f;
 	private int maxAbilities;
 	private int blocksRed, blocksBlue, blocksGreen;
+	private int activeProjectile; // 0: red, 1: blue, 2: green
+	private static int maxProjectile = 2;
 	
+	public int getActiveProjectile() {
+		return activeProjectile;
+	}
+
+	public void setActiveProjectile(int activeProjectile) {
+		this.activeProjectile = activeProjectile;
+	}
+
 	public Player()
 	{
 		setPosX(1.f);
@@ -69,6 +79,7 @@ public class Player extends Collidable
 		texture = new Vector<Texture>();
 		animationTimer = new Timer();
 		animationTimer.start();
+		setActiveProjectile(0);
 //		animationInterval = 500.f;
 //		blockAttackSpeed = 200.f;
 		try
@@ -94,7 +105,7 @@ public class Player extends Collidable
 		activeAbility = PlayerAbility.DIG;
 	}
 	
-	public Player(int thePosX, int thePosY)
+	public Player(float thePosX, float thePosY)
 	{
 		this();
 		setPosX(thePosX);
@@ -115,6 +126,7 @@ public class Player extends Collidable
 		blocksGreen = orig.blocksGreen;
 		maxAbilities = orig.maxAbilities;
 		abilities = new int[maxAbilities];
+		setActiveProjectile(0);
 		for (int i=0;i<maxAbilities;i++)
 		{
 			abilities[i] = orig.abilities[i];
@@ -179,16 +191,36 @@ public class Player extends Collidable
 		blocksRed++;
 	}
 	
-	public int getBlockRed()
+	public int getBlocksRed()
 	{
 		return blocksRed;
 	}
 	
-	public boolean decreaseBlockRed()
+	public boolean decreaseBlocksRed()
 	{
 		if (blocksRed > 0)
 		{
 			blocksRed--;
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean decreaseBlocksBlue()
+	{
+		if (blocksBlue > 0)
+		{
+			blocksBlue--;
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean decreaseBlocksGreen()
+	{
+		if (blocksGreen > 0)
+		{
+			blocksGreen--;
 			return true;
 		}
 		return false;
@@ -425,6 +457,15 @@ public class Player extends Collidable
 	public void setTeleportStep(float teleportStep) {
 		this.teleportStep = teleportStep;
 	}
+	
+	public void inreaseActiveProjectile()
+	{
+		activeProjectile++;
+		if (activeProjectile > maxProjectile)
+		{
+			activeProjectile = 0;
+		}
+	}
 
 //	public float getSizeX() {
 //		return sizeX;
@@ -455,7 +496,7 @@ public class Player extends Collidable
 		if ((abilities[0] > 0) && teleportUp)
 		{
 			this.teleportUp = true;
-			this.abilities[0]--;
+//			this.abilities[0]--;
 		} else
 		{
 			this.teleportUp = false;
@@ -473,7 +514,7 @@ public class Player extends Collidable
 		if ((abilities[0] > 0) && teleportDown)
 		{
 			this.teleportDown = true;
-			this.abilities[0]--;
+//			this.abilities[0]--;
 		} else
 		{
 			this.teleportDown = false;
@@ -490,7 +531,7 @@ public class Player extends Collidable
 		if ((abilities[0] > 0) && teleportLeft)
 		{
 			this.teleportLeft = true;
-			this.abilities[0]--;
+//			this.abilities[0]--;
 		} else
 		{
 			this.teleportLeft = false;
@@ -506,7 +547,7 @@ public class Player extends Collidable
 		if ((abilities[0] > 0) && teleportRight)
 		{
 			this.teleportRight = true;
-			this.abilities[0]--;
+//			this.abilities[0]--;
 		} else
 		{
 			this.teleportRight = false;
@@ -517,8 +558,14 @@ public class Player extends Collidable
 	{
 		switch (type)
 		{
-		case BLOCK_BROWN:
-			// TODO: pick up block?
+		case BLOCK_RED:
+			blocksRed++;
+			break;
+		case BLOCK_BLUE:
+			blocksBlue++;
+			break;
+		case BLOCK_GREEN:
+			blocksGreen++;
 			break;
 		case ABILITY_TELEPORT:
 			abilities[0]++;
@@ -546,5 +593,25 @@ public class Player extends Collidable
 		hp -= f;
 		if (hp <= 0) return true;
 		return false;
+	}
+
+	public void setBlocksRed(int blocksRed) {
+		this.blocksRed = blocksRed;
+	}
+
+	public int getBlocksBlue() {
+		return blocksBlue;
+	}
+
+	public void setBlocksBlue(int blocksBlue) {
+		this.blocksBlue = blocksBlue;
+	}
+
+	public int getBlocksGreen() {
+		return blocksGreen;
+	}
+
+	public void setBlocksGreen(int blocksGreen) {
+		this.blocksGreen = blocksGreen;
 	}
 }

@@ -8,7 +8,7 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
 /**
- * describes the selection box af a block
+ * describes the selection box for a block
  * 
  * @author Sebastian Artz
  * @version 0.1
@@ -75,7 +75,7 @@ public class SelectBox
 	public void draw()
 	{
 		if (!visible) return;
-		
+
 		int textureNum = (int)Math.floor(animationTimer.getTimeDelta() / animationInterval);
 //		System.out.println("dt: "+(animationTimer.getTimeDelta()));
 		if (textureNum >= texture.size())

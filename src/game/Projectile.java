@@ -21,7 +21,16 @@ public class Projectile extends Collidable
 	private float speed;
 	private float timePassed;
 	private float size;
+	private int type;
 	
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
 	public float getSize() {
 		return size;
 	}
@@ -41,6 +50,13 @@ public class Projectile extends Collidable
 		speed = 2.f;
 		timePassed = 0.f;
 		size = 0.3f;
+		setType(0);
+	}
+	
+	public Projectile(int t)
+	{
+		this();
+		setType(t);
 	}
 	
 //	public Projectile(float posX, float posY)
@@ -50,9 +66,9 @@ public class Projectile extends Collidable
 //		position.setY(posY);
 //	}
 	
-	public Projectile(Vector2f pos, Vector2f dir)
+	public Projectile(Vector2f pos, Vector2f dir, int type)
 	{
-		this();
+		this(type);
 		setPosX(pos.getX());
 		setPosY(pos.getY());
 		direction = dir;
@@ -93,7 +109,7 @@ public class Projectile extends Collidable
 		GL11.glEnable(GL11.GL_TEXTURE_2D);  
 		Color.white.bind();
 		
-		Darklords.textures.projectile01.bind();
+		Darklords.textures.projectile.get(getType()).bind();
 		
 //		texture.bind();
 		GL11.glBegin(GL11.GL_QUADS);

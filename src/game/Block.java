@@ -122,40 +122,44 @@ public class Block
 		
 		try{
 			switch (type){
-			case 0:		//none
-//				this.texture = Darklords.textures.block.get(0);
+			case 0:		// background
 				solid = false;
 				destroyable = false;
 				setMaxHp(1);
 				break;
-			case 1:		//
-//				this.texture = Darklords.textures.block.get(1);
+			case 1:		// rock
 				solid = true;
 				destroyable = false;
 				setMaxHp(1);
 				break;
 			case 2:		// dirt
-//				this.texture = Darklords.textures.block.get(2);
 				solid = true;
 				destroyable = true;
 				setMaxHp(2);
 				break;
 			case 3:		// red
-//				this.texture = Darklords.textures.block.get(3);
 				solid = true;
 				destroyable = true;
 				setMaxHp(1);
 				break;
-			case 4:		//
-//				this.texture = Darklords.textures.block.get(4);
+			case 4:		// blue
 				solid = true;
 				destroyable = true;
 				setMaxHp(1);
 				break;
-			case 5:		//
-//				this.texture = Darklords.textures.block.get(4);
+			case 5:		// green
 				solid = true;
 				destroyable = true;
+				setMaxHp(1);
+				break;
+			case 6:		// ice
+				solid = true;
+				destroyable = false;
+				setMaxHp(1);
+				break;
+			case 7:		// plants
+				solid = true;
+				destroyable = false;
 				setMaxHp(1);
 				break;
 			default:

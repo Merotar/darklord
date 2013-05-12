@@ -18,7 +18,7 @@ public class DTextures
 	public Vector<Texture> player;
 	public Vector<Texture> block;
 	public Texture crack;
-	public Texture projectile01;
+	public Vector<Texture> projectile;
 	public Vector<Texture> enemies;
 	
 	public DTextures()
@@ -26,6 +26,7 @@ public class DTextures
 		// player textures
 		player = new Vector<Texture>();
 		enemies = new Vector<Texture>();
+		projectile = new Vector<Texture>();
 		
 		try
 		{
@@ -38,7 +39,7 @@ public class DTextures
 			System.exit(0);
 		}
 		
-		// block textures
+		// block & other textures
 		block = new Vector<Texture>();
 		
 		try{
@@ -48,9 +49,17 @@ public class DTextures
 			block.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/block_red01.png")));
 			block.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/block_blue01.png")));
 			block.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/block_green01.png")));
-			block.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/block_door_red01.png")));
+//			block.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/block_door_red01.png")));
+			block.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/block_ice.png")));
+			block.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/block_plants.png")));
+			
 			crack = TextureLoader.getTexture("PNG", new FileInputStream("./img/crack01.png"));
-			projectile01 = TextureLoader.getTexture("PNG", new FileInputStream("./img/projectile01_01.png"));
+			
+			projectile.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/projectile01_01.png")));
+			projectile.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/projectile02_01.png")));
+			projectile.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/projectile03_01.png")));
+			projectile.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/projectile04_01.png")));
+			
 			enemies.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/enemy01_01.png")));
 			enemies.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/enemy02_01.png")));
 		} catch (Exception e) {
