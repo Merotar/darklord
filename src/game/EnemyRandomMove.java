@@ -25,9 +25,19 @@ public class EnemyRandomMove extends Enemy
 		this(1.f, 1.f);
 	}
 	
+	public EnemyRandomMove(EnemyRandomMove e)
+	{
+		super(e);
+	}
+	
 	public EnemyRandomMove(float x, float y)
 	{
-		super(x, y, 1);
+		this(x, y,1);
+	}
+	
+	public EnemyRandomMove(float x, float y, int type)
+	{
+		super(x, y, type);
 		direction = new Vector2f();
 //		speed = 1.f;
 		motionTimer = new Timer();

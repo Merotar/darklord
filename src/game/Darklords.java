@@ -156,7 +156,7 @@ public class Darklords {
         
         // init other stuff
         
-        world = new Level(10,10);
+        world = new Level(15,15);
 		
 		worldTimer = new Timer();
 		rightMouseDelayTimer = new Timer();

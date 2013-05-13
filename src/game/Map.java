@@ -189,6 +189,13 @@ public class Map implements Serializable
 			  oos.writeObject(collectableObjects.get(i).getType());
 			  oos.writeObject(collectableObjects.get(i).getPos());
 		  }
+		  
+		  oos.writeInt(getEnemies().size());
+		  for (int i=0;i<getEnemies().size();i++)
+		  {
+			  oos.writeInt(getEnemies().get(i).getType());
+			  oos.writeObject(getEnemies().get(i).getPos());
+		  }
 
 		}
 		catch (IOException e) {
@@ -229,6 +236,15 @@ public class Map implements Serializable
 		  {
 			  collectableObjects.add(new Collectable((CollectableType)ois.readObject()));
 			  collectableObjects.get(i).setPos((Vector2f)ois.readObject());
+		  }
+		  
+		  int sizeEnemies = ois.readInt();
+		  getEnemies().clear();
+		  for (int i=0;i<sizeEnemies;i++)
+		  {
+			  int t = ois.readInt();
+			  Vector2f tmpPos = (Vector2f)ois.readObject();
+			  getEnemies().add(new EnemyRandomMove(tmpPos.getX(), tmpPos.getY(), t));
 		  }
 
 		}

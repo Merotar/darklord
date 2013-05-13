@@ -30,7 +30,7 @@ public class Level
 	public Map map;
 	public Vector<Projectile> projectiles;
 	public Vector<Projectile> hostileProjectiles;
-	public static final int drawSize = 7;
+	public static final int drawSize = 15;
 
 	public Level()
 	{

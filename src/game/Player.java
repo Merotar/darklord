@@ -69,7 +69,7 @@ public class Player extends Collidable
 		setPosX(4.f);
 		setSizeX(0.75f);
 		setSizeY(0.75f);
-		speed = 0.2f;
+		speed = 0.18f;
 		blocksRed = blocksBlue = blocksGreen = 0;
 		moveUp = moveDown = moveLeft = moveRight = false;
 		teleportUp = teleportDown = teleportLeft = teleportRight = false;
@@ -120,7 +120,7 @@ public class Player extends Collidable
 		setSizeY(orig.getSizeY());
 		hp = orig.hp;
 		maxHp = orig.maxHp;
-		speed = 0.2f;
+		speed = orig.getSpeed();
 		blocksRed = orig.blocksRed;
 		blocksBlue = orig.blocksBlue;
 		blocksGreen = orig.blocksGreen;

@@ -25,6 +25,14 @@ public class Enemy extends Collidable
 		setSizeY(1.f);
 	}
 	
+	public Enemy(Enemy e)
+	{
+		this.setPos(e.getPos());
+		this.setSizeX(e.getSizeX());
+		this.setSizeY(e.getSizeY());
+		this.setType(e.getType());
+	}
+	
 	public Enemy(int t)
 	{
 		this();
