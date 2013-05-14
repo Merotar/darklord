@@ -3,11 +3,11 @@ darklord
 
 CONTROLS:
 
-move: W, S, A, D
-attack near block: left mouse button
-shoot: right mouse button
-quit: Esc
-LEFT SHIFT + W/S/A/D: teleport
+- W/S/A/D: move
+- LEFT MOUSE BUTTON: attack near block
+- RIGHT MOUSE BUTTON: shoot
+- ESC: quit
+- LEFT SHIFT + W/S/A/D: teleport
 
 RULES:
 - monsters can only be destroyed by red shots
