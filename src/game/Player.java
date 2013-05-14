@@ -54,6 +54,7 @@ public class Player extends Collidable
 	private int blocksRed, blocksBlue, blocksGreen;
 	private int activeProjectile; // 0: red, 1: blue, 2: green
 	private static int maxProjectile = 2;
+	private Drawable appearance;
 	
 	public int getActiveProjectile() {
 		return activeProjectile;
@@ -70,6 +71,14 @@ public class Player extends Collidable
 		setSizeX(0.75f);
 		setSizeY(0.75f);
 		speed = 0.18f;
+		
+		appearance = new Animation();
+		((Animation)appearance).addTextureRegion(new TextureRegion(0, 7, 128));
+		((Animation)appearance).addTextureRegion(new TextureRegion(1, 7, 128));
+		((Animation)appearance).addTextureRegion(new TextureRegion(2, 7, 128));
+		((Animation)appearance).setSize(getSizeX(), getSizeY());
+		
+		
 		blocksRed = blocksBlue = blocksGreen = 0;
 		moveUp = moveDown = moveLeft = moveRight = false;
 		teleportUp = teleportDown = teleportLeft = teleportRight = false;
@@ -414,45 +423,49 @@ public class Player extends Collidable
 	
 	public void draw()
 	{
-		int textureNum = (int)Math.floor(animationTimer.getTimeDelta() / animationInterval);
-//		System.out.println("dt: "+(animationTimer.getTimeDelta()));
-		if (textureNum >= Darklords.textures.player.size())
-		{
-//			System.out.println("Reset timer!");
-			textureNum = 0;
-			animationTimer.reset();
-		}
+		Darklords.sprites01.begin();
+		appearance.draw();
+		Darklords.sprites01.end();
 		
-		GL11.glEnable(GL11.GL_TEXTURE_2D);  
-		Color.white.bind();
-		
-		Darklords.textures.shadows.get(getActiveProjectile()).bind();	
-		GL11.glBegin(GL11.GL_QUADS);
-//		float size = 1.0f;
-		GL11.glTexCoord2f(0.f, 1.f);
-		GL11.glVertex2f(0.f, getSizeY());
-		GL11.glTexCoord2f(1.f, 1.f);
-		GL11.glVertex2f(getSizeX(), getSizeY());
-		GL11.glTexCoord2f(1.f, 0.f);
-		GL11.glVertex2f(getSizeX(), 0.f);
-		GL11.glTexCoord2f(0f, 0f);
-		GL11.glVertex2f(0.f, 0.f);
-		GL11.glEnd();
-
-		Darklords.textures.player.get(textureNum).bind();	
-		GL11.glBegin(GL11.GL_QUADS);
-//		float size = 1.0f;
-		GL11.glTexCoord2f(0.f, 1.f);
-		GL11.glVertex2f(0.f, getSizeY());
-		GL11.glTexCoord2f(1.f, 1.f);
-		GL11.glVertex2f(getSizeX(), getSizeY());
-		GL11.glTexCoord2f(1.f, 0.f);
-		GL11.glVertex2f(getSizeX(), 0.f);
-		GL11.glTexCoord2f(0f, 0f);
-		GL11.glVertex2f(0.f, 0.f);
-		GL11.glEnd();
-		
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
+//		int textureNum = (int)Math.floor(animationTimer.getTimeDelta() / animationInterval);
+////		System.out.println("dt: "+(animationTimer.getTimeDelta()));
+//		if (textureNum >= Darklords.textures.player.size())
+//		{
+////			System.out.println("Reset timer!");
+//			textureNum = 0;
+//			animationTimer.reset();
+//		}
+//		
+//		GL11.glEnable(GL11.GL_TEXTURE_2D);
+//		Color.white.bind();
+//		
+//		Darklords.textures.shadows.get(getActiveProjectile()).bind();	
+//		GL11.glBegin(GL11.GL_QUADS);
+////		float size = 1.0f;
+//		GL11.glTexCoord2f(0.f, 1.f);
+//		GL11.glVertex2f(0.f, getSizeY());
+//		GL11.glTexCoord2f(1.f, 1.f);
+//		GL11.glVertex2f(getSizeX(), getSizeY());
+//		GL11.glTexCoord2f(1.f, 0.f);
+//		GL11.glVertex2f(getSizeX(), 0.f);
+//		GL11.glTexCoord2f(0f, 0f);
+//		GL11.glVertex2f(0.f, 0.f);
+//		GL11.glEnd();
+//
+//		Darklords.textures.player.get(textureNum).bind();	
+//		GL11.glBegin(GL11.GL_QUADS);
+////		float size = 1.0f;
+//		GL11.glTexCoord2f(0.f, 1.f);
+//		GL11.glVertex2f(0.f, getSizeY());
+//		GL11.glTexCoord2f(1.f, 1.f);
+//		GL11.glVertex2f(getSizeX(), getSizeY());
+//		GL11.glTexCoord2f(1.f, 0.f);
+//		GL11.glVertex2f(getSizeX(), 0.f);
+//		GL11.glTexCoord2f(0f, 0f);
+//		GL11.glVertex2f(0.f, 0.f);
+//		GL11.glEnd();
+//		
+//		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
 
 	public float getSpeed() {

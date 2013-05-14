@@ -16,6 +16,8 @@ public class Block
 	private boolean visible, solid;
 	private int id, type, hp, maxHp;
 	private boolean destroyable;
+//	private TextureRegion textureRegion;
+	private Drawable appearance;
 	
 	
 	public Block()
@@ -25,6 +27,8 @@ public class Block
 	
 	public Block(int t)
 	{
+//		textureRegion = new TextureRegion();
+		appearance = new Sprite();
 		setType(t);
 	}
 
@@ -125,46 +129,55 @@ public class Block
 			case 0:		// background
 				solid = false;
 				destroyable = false;
+				((Sprite)appearance).setTextureRegion(0*128, 0*128, 128, 128);
 				setMaxHp(1);
 				break;
 			case 1:		// rock
 				solid = true;
 				destroyable = false;
+				((Sprite)appearance).setTextureRegion(1*128, 0*128, 128, 128);
 				setMaxHp(1);
 				break;
 			case 2:		// dirt
 				solid = true;
 				destroyable = true;
+				((Sprite)appearance).setTextureRegion(2*128, 0*128, 128, 128);
 				setMaxHp(2);
 				break;
 			case 3:		// red
 				solid = true;
 				destroyable = true;
+				((Sprite)appearance).setTextureRegion(3*128, 0*128, 128, 128);
 				setMaxHp(1);
 				break;
 			case 4:		// blue
 				solid = true;
 				destroyable = true;
+				((Sprite)appearance).setTextureRegion(4*128, 0*128, 128, 128);
 				setMaxHp(1);
 				break;
 			case 5:		// green
 				solid = true;
 				destroyable = true;
+				((Sprite)appearance).setTextureRegion(5*128, 0*128, 128, 128);
 				setMaxHp(1);
 				break;
 			case 6:		// ice
 				solid = true;
 				destroyable = false;
+				((Sprite)appearance).setTextureRegion(6*128, 0*128, 128, 128);
 				setMaxHp(1);
 				break;
 			case 7:		// plants
 				solid = true;
 				destroyable = false;
+				((Sprite)appearance).setTextureRegion(7*128, 0*128, 128, 128);
 				setMaxHp(1);
 				break;
 			default:
 //				texture = null;
 				solid = true;
+				((Sprite)appearance).setTextureRegion(0*128, 10*128, 128, 128);
 				setMaxHp(1);
 				break;
 			}
@@ -176,49 +189,51 @@ public class Block
 	
 	public void draw()
 	{
-//		if (texture != null)
-		{
-			GL11.glEnable(GL11.GL_TEXTURE_2D);  
-			Color.white.bind();
-			
-			Darklords.textures.block.get(type).bind();
-			
-//			texture.bind();
-			GL11.glBegin(GL11.GL_QUADS);
-			float size = 1.0f;//Level.scale;
-			GL11.glTexCoord2f(0.f, 1.f);
-			GL11.glVertex2f(0.f, size);
-			GL11.glTexCoord2f(1.f, 1.f);
-			GL11.glVertex2f(size, size);
-			GL11.glTexCoord2f(1.f, 0.f);
-			GL11.glVertex2f(size, 0.f);
-			GL11.glTexCoord2f(0f, 0f);
-			GL11.glVertex2f(0.f, 0.f);
-			GL11.glEnd();
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			
-			if (this.hp < this.maxHp)
-			{
-				GL11.glEnable(GL11.GL_TEXTURE_2D);  
-				Color.white.bind();
-				
-				Darklords.textures.crack.bind();
-				
-//				texture.bind();
-				GL11.glBegin(GL11.GL_QUADS);
-				size = 1.0f;//Level.scale;
-				GL11.glTexCoord2f(0.f, 1.f);
-				GL11.glVertex2f(0.f, size);
-				GL11.glTexCoord2f(1.f, 1.f);
-				GL11.glVertex2f(size, size);
-				GL11.glTexCoord2f(1.f, 0.f);
-				GL11.glVertex2f(size, 0.f);
-				GL11.glTexCoord2f(0f, 0f);
-				GL11.glVertex2f(0.f, 0.f);
-				GL11.glEnd();
-				GL11.glDisable(GL11.GL_TEXTURE_2D);
-			}
-		}
+		appearance.draw();
+//		Darklords.sprites01.draw(getTextureRegion());
+////		if (texture != null)
+//		{
+//			GL11.glEnable(GL11.GL_TEXTURE_2D);  
+//			Color.white.bind();
+//			
+//			Darklords.textures.block.get(type).bind();
+//			
+////			texture.bind();
+//			GL11.glBegin(GL11.GL_QUADS);
+//			float size = 1.0f;//Level.scale;
+//			GL11.glTexCoord2f(0.f, 1.f);
+//			GL11.glVertex2f(0.f, size);
+//			GL11.glTexCoord2f(1.f, 1.f);
+//			GL11.glVertex2f(size, size);
+//			GL11.glTexCoord2f(1.f, 0.f);
+//			GL11.glVertex2f(size, 0.f);
+//			GL11.glTexCoord2f(0f, 0f);
+//			GL11.glVertex2f(0.f, 0.f);
+//			GL11.glEnd();
+//			GL11.glDisable(GL11.GL_TEXTURE_2D);
+//			
+//			if (this.hp < this.maxHp)
+//			{
+//				GL11.glEnable(GL11.GL_TEXTURE_2D);  
+//				Color.white.bind();
+//				
+//				Darklords.textures.crack.bind();
+//				
+////				texture.bind();
+//				GL11.glBegin(GL11.GL_QUADS);
+//				size = 1.0f;//Level.scale;
+//				GL11.glTexCoord2f(0.f, 1.f);
+//				GL11.glVertex2f(0.f, size);
+//				GL11.glTexCoord2f(1.f, 1.f);
+//				GL11.glVertex2f(size, size);
+//				GL11.glTexCoord2f(1.f, 0.f);
+//				GL11.glVertex2f(size, 0.f);
+//				GL11.glTexCoord2f(0f, 0f);
+//				GL11.glVertex2f(0.f, 0.f);
+//				GL11.glEnd();
+//				GL11.glDisable(GL11.GL_TEXTURE_2D);
+//			}
+//		}
 	}
 
 	public boolean isDestroyable() {

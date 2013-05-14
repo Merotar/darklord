@@ -21,6 +21,7 @@ public class DTextures
 	public Vector<Texture> projectile;
 	public Vector<Texture> enemies;
 	public Vector<Texture> shadows;
+	public Texture panelBottom;
 	
 	public DTextures()
 	{
@@ -60,6 +61,8 @@ public class DTextures
 			shadows.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/glow_green.png")));
 			
 			crack = TextureLoader.getTexture("PNG", new FileInputStream("./img/crack01.png"));
+			
+			panelBottom = TextureLoader.getTexture("PNG", new FileInputStream("./img/panel_bottom.png"));
 			
 			projectile.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/projectile01_01.png")));
 			projectile.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/projectile02_01.png")));

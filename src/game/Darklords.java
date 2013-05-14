@@ -13,6 +13,7 @@ import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.Color;
 
 /**
  * Main class which contains the basic game flow 
@@ -44,6 +45,7 @@ public class Darklords {
 	int locResX, locResY;
 	Vector2f gameScreenPos;
 	float gameScreenScale;
+	static SpriteSheet sprites01;
 	
 	/**
 	 * initializes global variables
@@ -52,9 +54,10 @@ public class Darklords {
 	{
 		resX = 800;
 		resY = 600;
-		gameScreenPos = new Vector2f(0.0f, 0.0f);
 		gameScreenScale = 1.0f;
+		gameScreenPos = new Vector2f(0.f, 0.f);
 		fullscreen = false;
+		useShader = false;
 		maxFPS = 30;
 		gameMode = 1;
 		devMode = false;
@@ -92,64 +95,66 @@ public class Darklords {
 			System.exit(0);
 		}
 		
-    	try {
-            fragShader = createShader("shaders/screen.frag",ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
-    	}
-    	catch(Exception exc) {
-    		exc.printStackTrace();
-    		return;
-    	}
-    	finally {
-    		if(fragShader == 0)
-    		{
-    			System.err.println("initialization of shaders failed");
-    			return;
-    		}
-    	}
-    	
-    	program = ARBShaderObjects.glCreateProgramObjectARB();
-    	
-    	if(program == 0) return;
-		
-//    	ARBShaderObjects.glAttachObjectARB(program, vertShader);
-        ARBShaderObjects.glAttachObjectARB(program, fragShader);
-        
-        ARBShaderObjects.glLinkProgramARB(program);
-        if (ARBShaderObjects.glGetObjectParameteriARB(program, ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB) == GL11.GL_FALSE)
-        {
-            System.err.println(getLogInfo(program));
-            return;
-        }
-        
-        ARBShaderObjects.glValidateProgramARB(program);
-        if (ARBShaderObjects.glGetObjectParameteriARB(program, ARBShaderObjects.GL_OBJECT_VALIDATE_STATUS_ARB) == GL11.GL_FALSE)
-        {
-        	System.err.println(getLogInfo(program));
-        	return;
-        }
-        
-        useShader = true;
-        
-		ARBShaderObjects.glUseProgramObjectARB(program);
-        
-        locResX = ARBShaderObjects.glGetUniformLocationARB(program,"resX");
-        ARBShaderObjects.glUniform1iARB(locResX,resX);
-        
-        locResY = ARBShaderObjects.glGetUniformLocationARB(program,"resY");
-        ARBShaderObjects.glUniform1iARB(locResY,resY);
-
+		if (useShader)
+		{
+			try {
+	            fragShader = createShader("shaders/screen.frag",ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
+	    	}
+	    	catch(Exception exc) {
+	    		exc.printStackTrace();
+	    		return;
+	    	}
+	    	finally {
+	    		if(fragShader == 0)
+	    		{
+	    			System.err.println("initialization of shaders failed");
+	    			return;
+	    		}
+	    	}
+	    	
+	    	program = ARBShaderObjects.glCreateProgramObjectARB();
+	    	
+	    	if(program == 0) return;
+			
+//	    	ARBShaderObjects.glAttachObjectARB(program, vertShader);
+	        ARBShaderObjects.glAttachObjectARB(program, fragShader);
+	        
+	        ARBShaderObjects.glLinkProgramARB(program);
+	        if (ARBShaderObjects.glGetObjectParameteriARB(program, ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB) == GL11.GL_FALSE)
+	        {
+	            System.err.println(getLogInfo(program));
+	            return;
+	        }
+	        
+	        ARBShaderObjects.glValidateProgramARB(program);
+	        if (ARBShaderObjects.glGetObjectParameteriARB(program, ARBShaderObjects.GL_OBJECT_VALIDATE_STATUS_ARB) == GL11.GL_FALSE)
+	        {
+	        	System.err.println(getLogInfo(program));
+	        	return;
+	        }
+	        
+//	        useShader = true;
+	        
+			ARBShaderObjects.glUseProgramObjectARB(program);
+	        
+	        locResX = ARBShaderObjects.glGetUniformLocationARB(program,"resX");
+	        ARBShaderObjects.glUniform1iARB(locResX,resX);
+	        
+	        locResY = ARBShaderObjects.glGetUniformLocationARB(program,"resY");
+	        ARBShaderObjects.glUniform1iARB(locResY,resY);
+		}
     	
 		// load textures
 		textures = new DTextures();
 		
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		//GL11.glOrtho(0, resX, 0, resY, 1, -1);
+//		GL11.glOrtho(0, resX, 0, resY, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glClearDepth(1);
+//		GL11.glDisable(GL11.GL_DEPTH_TEST);
+//		GL11.glDisable(GL11.GL_LIGHTING);
+//		GL11.glClearDepth(1);
 		
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -157,7 +162,8 @@ public class Darklords {
         // init other stuff
         
         world = new Level(15,15);
-		
+        sprites01 = new SpriteSheet("./img/textures.png");
+        
 		worldTimer = new Timer();
 		rightMouseDelayTimer = new Timer();
 		Timer fpsTimer = new Timer();
@@ -330,6 +336,7 @@ public class Darklords {
 			}
 //			System.out.println("FPS: "+1000./waitingTime);
 			Display.update();
+//			Display.sync(30);
 			fpsTimer.reset();
 			
 			if (rightMouseDelayTimer.getTimeDelta() > rightMouseDelay)
@@ -722,11 +729,47 @@ public class Darklords {
 //		}
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
-		GL11.glScalef(gameScreenScale, gameScreenScale, 1.f);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT); 
+//		GL11.glScalef(gameScreenScale, gameScreenScale, 1.f);
+		
+		GL11.glPushMatrix();
 		GL11.glTranslatef(gameScreenPos.getX(), gameScreenPos.getY(), 0.f);
-		GL11.glClearColor(0.f, 0.f, 0.f, 1.f);
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+//		GL11.glClearColor(0.f, 0.f, 0.f, 1.f);
+//		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		world.draw();
+		GL11.glPopMatrix();
+		
+//		float ratio = 1.f*resX/resY;
+//		GL11.glEnable(GL11.GL_TEXTURE_2D); 
+//		Color.white.bind();
+////		Print.outln("s:"+Darklords.textures.panelBottom.getImageWidth());
+//		Darklords.textures.block.get(1).bind();
+//		GL11.glBegin(GL11.GL_QUADS);
+////		float size = 1.0f;
+////		GL11.glTexCoord2f(0.f, 0.15f);
+////		GL11.glVertex2f(0.f, 0.f);
+////		GL11.glTexCoord2f(1.f, 0.15f);
+////		GL11.glVertex2f(resX, 0.f);
+////		GL11.glTexCoord2f(1.f, 0.f);
+////		GL11.glVertex2f(resX, 0.2f*resY);
+////		GL11.glTexCoord2f(0.f, 0.f);
+////		GL11.glVertex2f(0.f, 0.2f*resY);
+//		GL11.glTexCoord2f(0.f, 0.5f);
+//		GL11.glVertex2f(-1.f, -0.8f);
+//		GL11.glTexCoord2f(0.5f, 0.5f);
+//		GL11.glVertex2f(1.f, -0.8f);
+//		GL11.glTexCoord2f(0.5f, 0.f);
+//		GL11.glVertex2f(1.f, -1.f);
+//		GL11.glTexCoord2f(0.f, 0.f);
+//		GL11.glVertex2f(-1.f, -1.f);
+//		GL11.glEnd();
+//		GL11.glDisable(GL11.GL_TEXTURE_2D);  
+		
+//		SpriteSheet s = new SpriteSheet("./img/textures.png");
+//		s.begin();
+//		s.draw(new TextureRegion(128, 0, 128, 128));
+//		s.end();
+		
 //		if(useShader)
 //		{
 //			ARBShaderObjects.glUseProgramObjectARB(0);

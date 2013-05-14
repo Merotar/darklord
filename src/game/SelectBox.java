@@ -20,17 +20,18 @@ public class SelectBox
 	private Vector<Texture> texture;
 	private boolean visible;
 	private Vector2f pos;
-	private Timer animationTimer;
-	private float animationInterval;
+	private Drawable appearance;
 	
 	public SelectBox()
 	{
 		texture = new Vector<Texture>();
 		visible = false;
 		pos = new Vector2f(0.f, 0.f);
-		animationTimer = new Timer();
-		animationTimer.start();
-		animationInterval = 100.f;
+		appearance = new Animation();
+		((Animation)appearance).addTextureRegion(new TextureRegion(0, 2, 128));
+		((Animation)appearance).addTextureRegion(new TextureRegion(1, 2, 128));
+		((Animation)appearance).addTextureRegion(new TextureRegion(2, 2, 128));
+		((Animation)appearance).addTextureRegion(new TextureRegion(3, 2, 128));
 		
 		try
 		{
@@ -75,34 +76,29 @@ public class SelectBox
 	public void draw()
 	{
 		if (!visible) return;
-
-		int textureNum = (int)Math.floor(animationTimer.getTimeDelta() / animationInterval);
-//		System.out.println("dt: "+(animationTimer.getTimeDelta()));
-		if (textureNum >= texture.size())
-		{
-//			System.out.println("Reset timer!");
-			textureNum = 0;
-			animationTimer.reset();
-		}
 		
-		GL11.glEnable(GL11.GL_TEXTURE_2D); 
-		Color.white.bind();
-		texture.get(textureNum).bind();
+		Darklords.sprites01.begin();
+		appearance.draw();
+		Darklords.sprites01.end();
 		
-		float x1, x2, y1, y2;
-		float size = 1.0f;
-		x1 = 0.f; x2 = size; y1 = 0.f; y2 = size;
-		
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glTexCoord2f(0.f, 1.0f);
-		GL11.glVertex2f(x1, y2);
-		GL11.glTexCoord2f(1.f, 1.f);
-		GL11.glVertex2f(x2, y2);
-		GL11.glTexCoord2f(1.f, 0.f);
-		GL11.glVertex2f(x2, y1);
-		GL11.glTexCoord2f(0f, 0f);
-		GL11.glVertex2f(x1, y1);
-		GL11.glEnd();
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
+//		GL11.glEnable(GL11.GL_TEXTURE_2D); 
+//		Color.white.bind();
+//		texture.get(textureNum).bind();
+//		
+//		float x1, x2, y1, y2;
+//		float size = 1.0f;
+//		x1 = 0.f; x2 = size; y1 = 0.f; y2 = size;
+//		
+//		GL11.glBegin(GL11.GL_QUADS);
+//		GL11.glTexCoord2f(0.f, 1.0f);
+//		GL11.glVertex2f(x1, y2);
+//		GL11.glTexCoord2f(1.f, 1.f);
+//		GL11.glVertex2f(x2, y2);
+//		GL11.glTexCoord2f(1.f, 0.f);
+//		GL11.glVertex2f(x2, y1);
+//		GL11.glTexCoord2f(0f, 0f);
+//		GL11.glVertex2f(x1, y1);
+//		GL11.glEnd();
+//		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
 }

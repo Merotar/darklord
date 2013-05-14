@@ -226,13 +226,14 @@ public class Level
 	}
 
 	public void draw()
-	{	
+	{
 		GL11.glPushMatrix();
 		
 		float posXgrid = posX*(gridSize/Darklords.resX)*2.f;
 		float posYgrid = -posY*(gridSize/Darklords.resY)*2.f;
 		GL11.glTranslatef(posXgrid, posYgrid, 0.f);
 		
+		// TODO: fix orientation
 		GL11.glScaled(1., -1., 1.);
 		GL11.glTranslated(-1., -1., 0.);
 //		GL11.glTranslated(-2.f*posX/(Darklords.resX), -2.f*posY/(Darklords.resY), 0.);
@@ -246,6 +247,9 @@ public class Level
 		int maxX = Math.min(map.getMapSizeX(), (int)mainPlayer.getPosX()+drawSize);
 		int minY = Math.max(0, (int)mainPlayer.getPosY()-drawSize);
 		int maxY = Math.min(map.getMapSizeY(), (int)mainPlayer.getPosY()+drawSize);
+		
+		
+		Darklords.sprites01.begin();
 		
 		for (int i=minX;i<maxX;i++)
 		{
@@ -269,6 +273,8 @@ public class Level
 				GL11.glPopMatrix();
 			}
 		}
+		
+		Darklords.sprites01.end();
 		
 		// draw collectable objects
 		for (Iterator<Collectable> object = map.collectableObjects.iterator(); object.hasNext();)
