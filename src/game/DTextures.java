@@ -20,6 +20,7 @@ public class DTextures
 	public Texture crack;
 	public Vector<Texture> projectile;
 	public Vector<Texture> enemies;
+	public Vector<Texture> shadows;
 	
 	public DTextures()
 	{
@@ -27,6 +28,7 @@ public class DTextures
 		player = new Vector<Texture>();
 		enemies = new Vector<Texture>();
 		projectile = new Vector<Texture>();
+		shadows = new Vector<Texture>();
 		
 		try
 		{
@@ -52,6 +54,10 @@ public class DTextures
 //			block.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/block_door_red01.png")));
 			block.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/block_ice.png")));
 			block.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/block_plants.png")));
+			
+			shadows.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/glow_red.png")));
+			shadows.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/glow_blue.png")));
+			shadows.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/glow_green.png")));
 			
 			crack = TextureLoader.getTexture("PNG", new FileInputStream("./img/crack01.png"));
 			

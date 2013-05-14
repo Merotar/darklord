@@ -425,9 +425,8 @@ public class Player extends Collidable
 		
 		GL11.glEnable(GL11.GL_TEXTURE_2D);  
 		Color.white.bind();
-
-		Darklords.textures.player.get(textureNum).bind();
 		
+		Darklords.textures.shadows.get(getActiveProjectile()).bind();	
 		GL11.glBegin(GL11.GL_QUADS);
 //		float size = 1.0f;
 		GL11.glTexCoord2f(0.f, 1.f);
@@ -439,6 +438,20 @@ public class Player extends Collidable
 		GL11.glTexCoord2f(0f, 0f);
 		GL11.glVertex2f(0.f, 0.f);
 		GL11.glEnd();
+
+		Darklords.textures.player.get(textureNum).bind();	
+		GL11.glBegin(GL11.GL_QUADS);
+//		float size = 1.0f;
+		GL11.glTexCoord2f(0.f, 1.f);
+		GL11.glVertex2f(0.f, getSizeY());
+		GL11.glTexCoord2f(1.f, 1.f);
+		GL11.glVertex2f(getSizeX(), getSizeY());
+		GL11.glTexCoord2f(1.f, 0.f);
+		GL11.glVertex2f(getSizeX(), 0.f);
+		GL11.glTexCoord2f(0f, 0f);
+		GL11.glVertex2f(0.f, 0.f);
+		GL11.glEnd();
+		
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
 
