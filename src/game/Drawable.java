@@ -15,4 +15,5 @@ public interface Drawable
 {
 	
 	public void draw();
+	public void draw(float posX, float posY, float sizeX, float sizeY);
 }

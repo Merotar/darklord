@@ -22,6 +22,7 @@ public class Projectile extends Collidable
 	private float timePassed;
 	private float size;
 	private int type;
+	private Drawable appearance;
 	
 	public int getType() {
 		return type;
@@ -29,6 +30,30 @@ public class Projectile extends Collidable
 
 	public void setType(int type) {
 		this.type = type;
+		
+		try{
+			switch (type){
+			case 0:		// red
+				((Sprite)appearance).setTextureRegion(7*128, 1*128+0*32, 32, 32);
+				break;
+			case 1:		// blue
+				((Sprite)appearance).setTextureRegion(7*128, 1*128+1*32, 32, 32);
+				break;
+			case 2:		// green
+				((Sprite)appearance).setTextureRegion(7*128, 1*128+2*32, 32, 32);
+				break;
+			case 3:		// ice
+				((Sprite)appearance).setTextureRegion(7*128, 1*128+3*32, 32, 32);
+				break;
+			default:
+//				texture = null;
+				((Sprite)appearance).setTextureRegion(0*128, 10*128+0*32, 128, 128);
+				break;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
 	}
 
 	public float getSize() {
@@ -50,6 +75,7 @@ public class Projectile extends Collidable
 		speed = 2.f;
 		timePassed = 0.f;
 		size = 0.3f;
+		appearance = new Sprite();
 		setType(0);
 	}
 	
@@ -106,23 +132,26 @@ public class Projectile extends Collidable
 	
 	public void draw()
 	{
-		GL11.glEnable(GL11.GL_TEXTURE_2D);  
-		Color.white.bind();
-		
-		Darklords.textures.projectile.get(getType()).bind();
-		
-//		texture.bind();
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glTexCoord2f(0.f, 1.f);
-		GL11.glVertex2f(0.f, size);
-		GL11.glTexCoord2f(1.f, 1.f);
-		GL11.glVertex2f(size, size);
-		GL11.glTexCoord2f(1.f, 0.f);
-		GL11.glVertex2f(size, 0.f);
-		GL11.glTexCoord2f(0f, 0f);
-		GL11.glVertex2f(0.f, 0.f);
-		GL11.glEnd();
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		Darklords.sprites01.begin();
+		appearance.draw(0, 0, getSize(), getSize());
+		Darklords.sprites01.end();
+//		GL11.glEnable(GL11.GL_TEXTURE_2D);  
+//		Color.white.bind();
+//		
+//		Darklords.textures.projectile.get(getType()).bind();
+//		
+////		texture.bind();
+//		GL11.glBegin(GL11.GL_QUADS);
+//		GL11.glTexCoord2f(0.f, 1.f);
+//		GL11.glVertex2f(0.f, size);
+//		GL11.glTexCoord2f(1.f, 1.f);
+//		GL11.glVertex2f(size, size);
+//		GL11.glTexCoord2f(1.f, 0.f);
+//		GL11.glVertex2f(size, 0.f);
+//		GL11.glTexCoord2f(0f, 0f);
+//		GL11.glVertex2f(0.f, 0.f);
+//		GL11.glEnd();
+//		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
 	
 	public boolean collideWithBlock(float x, float y)

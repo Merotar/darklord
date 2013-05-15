@@ -33,16 +33,16 @@ public class SelectBox
 		((Animation)appearance).addTextureRegion(new TextureRegion(2, 2, 128));
 		((Animation)appearance).addTextureRegion(new TextureRegion(3, 2, 128));
 		
-		try
-		{
-			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/select_block01.png")));
-			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/select_block02.png")));
-			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/select_block03.png")));
-			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/select_block04.png")));
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+//		try
+//		{
+//			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/select_block01.png")));
+//			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/select_block02.png")));
+//			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/select_block03.png")));
+//			texture.add(TextureLoader.getTexture("PNG", new FileInputStream("./img/select_block04.png")));
+//		} catch (Exception e)
+//		{
+//			e.printStackTrace();
+//		}
 	}
 	
 	public void show()

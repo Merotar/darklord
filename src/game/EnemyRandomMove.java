@@ -14,6 +14,7 @@ public class EnemyRandomMove extends Enemy
 //	float speed;
 	Timer motionTimer;
 	float motionTime;	// time to move to the next tile
+	private Drawable appearance;
 	
 	enum Direction
 	{
@@ -43,6 +44,11 @@ public class EnemyRandomMove extends Enemy
 		motionTimer = new Timer();
 		motionTime = 1000;
 		oldPos = getPos();
+		
+		appearance = new Animation();
+		((Animation)appearance).addTextureRegion(new TextureRegion(0, 5, 128));
+		((Animation)appearance).addTextureRegion(new TextureRegion(1, 5, 128));
+		((Animation)appearance).addTextureRegion(new TextureRegion(2, 5, 128));
 	}
 	
 	public void setDirection(Vector2f d)
@@ -91,6 +97,13 @@ public class EnemyRandomMove extends Enemy
 			float path = 1.f*motionTimer.getTimeDelta()/motionTime;
 			setPos(oldPos.add(direction.mul(path)));
 		}
+	}
+	
+	public void draw()
+	{
+		Darklords.sprites01.begin();
+		appearance.draw();
+		Darklords.sprites01.end();
 	}
 
 //	public float getSpeed() {

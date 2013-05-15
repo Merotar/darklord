@@ -36,7 +36,7 @@ public class Darklords {
 	Vector2f mousePos;
 	Timer worldTimer, rightMouseDelayTimer;
 	int rightMouseDelay = 200;
-	static DTextures textures;
+//	static DTextures textures;
 	KeyboardSettings myKeyboard;
 	boolean devMode;
 	int gameMode;
@@ -145,7 +145,7 @@ public class Darklords {
 		}
     	
 		// load textures
-		textures = new DTextures();
+//		textures = new DTextures();
 		
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();

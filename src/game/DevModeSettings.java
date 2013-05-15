@@ -11,7 +11,7 @@ package game;
 public class DevModeSettings
 {
 	
-	static int maxActiveBlock = 7;
+	static int maxActiveBlock = 8;
 //		static int maxActiveCollectable = 2;
 	static int activeBlock = 1;
 	static CollectableType activeCollectable = CollectableType.ABILITY_DIGGING;

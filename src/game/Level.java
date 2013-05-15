@@ -262,6 +262,7 @@ public class Level
 				GL11.glPushMatrix();
 //				GL11.glTranslated((float)i*gridSize, (float)j*gridSize, 0.f);
 				GL11.glTranslated(i, j, 0.);
+
 //				GL11.glScaled(1., -1., 1.);
 //				GL11.glScaled(1./Darklords.resX, 1./Darklords.resY, 1.);
 //				Vector2f pos = gridToScreen(new Vector2f(i,j));

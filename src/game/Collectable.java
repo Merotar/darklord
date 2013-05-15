@@ -17,9 +17,11 @@ public class Collectable extends Collidable
 //	private Texture texture;
 	private CollectableType type;
 //	private float size;
+	private Drawable appearance;
 	
 	public Collectable()
 	{
+		appearance = new Sprite();
 		this.setType(CollectableType.BLOCK_BROWN);
 		setPosX(0.f);
 		setPosY(0.f);
@@ -81,57 +83,64 @@ public class Collectable extends Collidable
 	public void setType(CollectableType type) {
 		this.type = type;
 		
-//		try{
-//			switch (type){
-//			case NONE:
-//				this.texture = TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/background.png"));
-//				break;
-//			case BLOCK_BROWN:
-//				this.texture = TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/block_brown01.png"));
-//				break;
-//			case BLOCK_RED:
-//				this.texture = TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/block_red01.png"));
-//				break;
-//			case ABILITY_TELEPORT:
-//				this.texture = TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/ability_teleport01.png"));
-//				break;
-//			case ABILITY_DIGGING:
-//				this.texture = TextureLoader.getTexture("PNG", new FileInputStream("../Darklords/img/ability_digging01.png"));
-//				break;
-//			default:
-//				texture = null;
-//				break;
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			System.exit(0);
-//		}
+		try{
+			switch (type){
+			case NONE:		// background
+				((Sprite)appearance).setTextureRegion(0*128, 0*128, 128, 128);
+				break;
+			case BLOCK_ROCK:		// rock
+				((Sprite)appearance).setTextureRegion(1*128, 0*128, 128, 128);
+				break;
+			case BLOCK_BROWN:		// dirt
+				((Sprite)appearance).setTextureRegion(2*128, 0*128, 128, 128);
+				break;
+			case BLOCK_RED:		// red
+				((Sprite)appearance).setTextureRegion(3*128, 0*128, 128, 128);
+				break;
+			case BLOCK_BLUE:		// blue
+				((Sprite)appearance).setTextureRegion(4*128, 0*128, 128, 128);
+				break;
+			case BLOCK_GREEN:		// green
+				((Sprite)appearance).setTextureRegion(5*128, 0*128, 128, 128);
+				break;
+			default:
+				((Sprite)appearance).setTextureRegion(0*128, 10*128, 128, 128);
+				break;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
 	}
 	
 
 	
 	public void draw()
 	{
-//		if (texture != null)
-		{
-			GL11.glEnable(GL11.GL_TEXTURE_2D);  
-			Color.white.bind();
-			
-			Darklords.textures.block.get(type.id).bind();
-//			texture.bind();
-			GL11.glBegin(GL11.GL_QUADS);
-//			float size = 0.5f;//Level.scale;
-			GL11.glTexCoord2f(0.f, 1.f);
-			GL11.glVertex2f(0.f, getSizeY());
-			GL11.glTexCoord2f(1.f, 1.f);
-			GL11.glVertex2f(getSizeX(), getSizeY());
-			GL11.glTexCoord2f(1.f, 0.f);
-			GL11.glVertex2f(getSizeX(), 0.f);
-			GL11.glTexCoord2f(0f, 0f);
-			GL11.glVertex2f(0.f, 0.f);
-			GL11.glEnd();
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-		}
+		Darklords.sprites01.begin();
+		appearance.draw(0, 0, 0.5f, 0.5f);
+		Darklords.sprites01.end();
+		
+////		if (texture != null)
+//		{
+//			GL11.glEnable(GL11.GL_TEXTURE_2D);  
+//			Color.white.bind();
+//			
+//			Darklords.textures.block.get(type.id).bind();
+////			texture.bind();
+//			GL11.glBegin(GL11.GL_QUADS);
+////			float size = 0.5f;//Level.scale;
+//			GL11.glTexCoord2f(0.f, 1.f);
+//			GL11.glVertex2f(0.f, getSizeY());
+//			GL11.glTexCoord2f(1.f, 1.f);
+//			GL11.glVertex2f(getSizeX(), getSizeY());
+//			GL11.glTexCoord2f(1.f, 0.f);
+//			GL11.glVertex2f(getSizeX(), 0.f);
+//			GL11.glTexCoord2f(0f, 0f);
+//			GL11.glVertex2f(0.f, 0.f);
+//			GL11.glEnd();
+//			GL11.glDisable(GL11.GL_TEXTURE_2D);
+//		}
 	}
 
 //	public float getSize() {

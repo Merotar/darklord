@@ -44,8 +44,8 @@ public class Player extends Collidable
 	private boolean teleportUp, teleportDown, teleportLeft, teleportRight;
 	private Timer attackBlockTimer;
 	private static float blockAttackSpeed = 200.f;
-	private Timer animationTimer, invulnerableOnContactTimer;
-	private static float animationInterval = 500.f;
+	private Timer invulnerableOnContactTimer;
+//	private static float animationInterval = 500.f;
 	private static float invulnerableOnContact = 500.f;
 	private int[] abilities;
 	private PlayerAbility activeAbility;
@@ -55,6 +55,7 @@ public class Player extends Collidable
 	private int activeProjectile; // 0: red, 1: blue, 2: green
 	private static int maxProjectile = 2;
 	private Drawable appearance;
+	private Vector<Drawable> glow;
 	
 	public int getActiveProjectile() {
 		return activeProjectile;
@@ -77,7 +78,15 @@ public class Player extends Collidable
 		((Animation)appearance).addTextureRegion(new TextureRegion(1, 7, 128));
 		((Animation)appearance).addTextureRegion(new TextureRegion(2, 7, 128));
 		((Animation)appearance).setSize(getSizeX(), getSizeY());
+		((Animation)appearance).setAnimationInterval(500.f);
 		
+		glow = new Vector<Drawable>();
+		glow.add(new Sprite());
+		glow.add(new Sprite());
+		glow.add(new Sprite());
+		((Sprite)glow.get(0)).setTextureRegion(new TextureRegion(4, 2, 128));
+		((Sprite)glow.get(1)).setTextureRegion(new TextureRegion(5, 2, 128));
+		((Sprite)glow.get(2)).setTextureRegion(new TextureRegion(6, 2, 128));
 		
 		blocksRed = blocksBlue = blocksGreen = 0;
 		moveUp = moveDown = moveLeft = moveRight = false;
@@ -86,21 +95,19 @@ public class Player extends Collidable
 		attackBlockTimer = new Timer();
 		invulnerableOnContactTimer = new Timer();
 		texture = new Vector<Texture>();
-		animationTimer = new Timer();
-		animationTimer.start();
 		setActiveProjectile(0);
 //		animationInterval = 500.f;
 //		blockAttackSpeed = 200.f;
-		try
-		{
-			texture.add(Darklords.textures.player.get(0));
-			texture.add(Darklords.textures.player.get(1));
-			texture.add(Darklords.textures.player.get(2));
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-			System.exit(0);
-		}
+//		try
+//		{
+//			texture.add(Darklords.textures.player.get(0));
+//			texture.add(Darklords.textures.player.get(1));
+//			texture.add(Darklords.textures.player.get(2));
+//		} catch (Exception e)
+//		{
+//			e.printStackTrace();
+//			System.exit(0);
+//		}
 		
 		// set start abilities
 		maxAbilities = 6;
@@ -147,7 +154,7 @@ public class Player extends Collidable
 		teleportUp = teleportDown = teleportLeft = teleportRight = false;
 		attackBlockTimer = new Timer();
 		texture = new Vector<Texture>();
-		animationTimer = new Timer();
+//		animationTimer = new Timer();
 //		try
 //		{
 //			texture.add(Darklords.textures.player.get(0));
@@ -159,16 +166,16 @@ public class Player extends Collidable
 //			System.exit(0);
 //		}
 		
-		try
-		{
-			texture.add(Darklords.textures.player.get(0));
-			texture.add(Darklords.textures.player.get(1));
-			texture.add(Darklords.textures.player.get(2));
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-			System.exit(0);
-		}
+//		try
+//		{
+//			texture.add(Darklords.textures.player.get(0));
+//			texture.add(Darklords.textures.player.get(1));
+//			texture.add(Darklords.textures.player.get(2));
+//		} catch (Exception e)
+//		{
+//			e.printStackTrace();
+//			System.exit(0);
+//		}
 	}
 	
 	public PlayerAbility getActiveAbility()
@@ -424,7 +431,8 @@ public class Player extends Collidable
 	public void draw()
 	{
 		Darklords.sprites01.begin();
-		appearance.draw();
+		glow.get(getActiveProjectile()).draw(0.f, 0.f, getSizeX(), getSizeY());
+		appearance.draw(0.f, 0.f, getSizeX(), getSizeY());
 		Darklords.sprites01.end();
 		
 //		int textureNum = (int)Math.floor(animationTimer.getTimeDelta() / animationInterval);

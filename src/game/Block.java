@@ -18,6 +18,7 @@ public class Block
 	private boolean destroyable;
 //	private TextureRegion textureRegion;
 	private Drawable appearance;
+	private static Drawable crack = new Sprite();
 	
 	
 	public Block()
@@ -29,6 +30,7 @@ public class Block
 	{
 //		textureRegion = new TextureRegion();
 		appearance = new Sprite();
+		((Sprite)crack).setTextureRegion(new TextureRegion(5, 1, 128));
 		setType(t);
 	}
 
@@ -174,6 +176,12 @@ public class Block
 				((Sprite)appearance).setTextureRegion(7*128, 0*128, 128, 128);
 				setMaxHp(1);
 				break;
+			case 8:		// goal
+				solid = false;
+				destroyable = false;
+				((Sprite)appearance).setTextureRegion(6*128, 1*128, 128, 128);
+				setMaxHp(1);
+				break;
 			default:
 //				texture = null;
 				solid = true;
@@ -190,6 +198,11 @@ public class Block
 	public void draw()
 	{
 		appearance.draw();
+		if (this.hp < this.maxHp)
+		{
+			crack.draw();
+		}
+		
 //		Darklords.sprites01.draw(getTextureRegion());
 ////		if (texture != null)
 //		{
