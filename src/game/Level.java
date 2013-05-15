@@ -31,6 +31,7 @@ public class Level
 	public Vector<Projectile> projectiles;
 	public Vector<Projectile> hostileProjectiles;
 	public static final int drawSize = 15;
+	String name;
 
 	public Level()
 	{
@@ -44,6 +45,7 @@ public class Level
 		mainSelectBox = new SelectBox();
 		projectiles = new Vector<Projectile>();
 		hostileProjectiles = new Vector<Projectile>();
+		name = "defaultMap.map";
 		
 //		initTest();
 	}
@@ -54,12 +56,13 @@ public class Level
 //		this.dimY = sizeY;
 		posX = 1.f;
 		posY = 1.f;
+		name = "defaultMap.map";
 		
-        File f = new File("defaultMap.map");
+        File f = new File(getName());
         if (f.exists())
         {
         	map = new Map();
-        	map.readFile("defaultMap.map");
+        	map.readFile(getName());
         } else
         {
         	map = new Map(sizeX, sizeY);
@@ -68,13 +71,36 @@ public class Level
 //		grid = new Block[dimX][dimY];
 //		collectableObjects = new Vector<Collectable>();
 		mainPlayer = new Player(map.start.getX(), map.start.getY());
-		Print.out("created Player at "); map.start.print();
+//		Print.out("created Player at "); map.start.print();
 		map.getBlockAt((int) mainPlayer.getPosX(), (int) mainPlayer.getPosY()).setType(0);
 		mainSelectBox = new SelectBox();
 		projectiles = new Vector<Projectile>();
 		hostileProjectiles = new Vector<Projectile>();
 		
 //		initTest();
+	}
+	
+	public Level(String filename)
+	{
+		posX = 1.f;
+		posY = 1.f;
+		setName(filename);
+		
+        File f = new File(filename);
+        if (f.exists())
+        {
+        	map = new Map();
+        	map.readFile(filename);
+        } else
+        {
+        	map = new Map(10, 10);
+        }
+		
+		mainPlayer = new Player(map.start.getX(), map.start.getY());
+		map.getBlockAt((int) mainPlayer.getPosX(), (int) mainPlayer.getPosY()).setType(0);
+		mainSelectBox = new SelectBox();
+		projectiles = new Vector<Projectile>();
+		hostileProjectiles = new Vector<Projectile>();
 	}
 	
 	// copy constructor
@@ -841,6 +867,14 @@ public class Level
 //			System.out.println("test");
 			e.startMotion(dir);
 		}
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 //	public Level createCopy()

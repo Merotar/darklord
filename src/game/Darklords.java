@@ -321,6 +321,15 @@ public class Darklords {
 //				world.mainPlayer.setPos(posOld);
 //			}
 			
+			// check if level is finished
+			float tmpX = (float)Math.floor(world.mainPlayer.getPosX());
+			float tmpY = (float)Math.floor(world.mainPlayer.getPosY());
+			if (world.map.getBlockAt((int)tmpX, (int) tmpY).getType() == 8)
+			{
+				Print.outln("level finished!");
+				world = new Level("defaultMap.map");
+			}
+			
 			draw();
 			long waitingTime = (int)Math.round((1000000.f/maxFPS - fpsTimer.getTimeDelta())/1000.);
 			if (waitingTime > 0)
@@ -679,7 +688,8 @@ public class Darklords {
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_PERIOD) && devMode)
 				{
-					world.map.writeToFile(world.mainPlayer.getPos());
+					world.map.writeToFile(world.getName(), world.mainPlayer.getPos());
+					Print.outln("level saved as "+world.getName());
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_COMMA) && devMode)
