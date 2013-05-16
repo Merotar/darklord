@@ -91,7 +91,7 @@ public class Player extends Collidable
 		blocksRed = blocksBlue = blocksGreen = 0;
 		moveUp = moveDown = moveLeft = moveRight = false;
 		teleportUp = teleportDown = teleportLeft = teleportRight = false;
-		hp = maxHp = 10.f;
+		hp = maxHp = 1.f;
 		attackBlockTimer = new Timer();
 		invulnerableOnContactTimer = new Timer();
 		texture = new Vector<Texture>();

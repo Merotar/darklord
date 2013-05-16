@@ -14,6 +14,8 @@ public class DevModeSettings
 	static int maxActiveBlock = 8;
 //		static int maxActiveCollectable = 2;
 	static int activeBlock = 1;
+	static int maxActiveEnemy = 1;
+	static int activeEnemy = 0;
 	static CollectableType activeCollectable = CollectableType.ABILITY_DIGGING;
 	
 	static void increaseActiveBlock()
@@ -54,5 +56,19 @@ public class DevModeSettings
 	static CollectableType getActiveCollectable()
 	{
 		return activeCollectable;
+	}
+
+	public static int getActiveEnemy() {
+		return activeEnemy;
+	}
+
+	public static void increaseActiveEnemy()
+	{
+		activeEnemy++;
+		if (activeEnemy > maxActiveEnemy) activeEnemy = 0;
+	}
+	
+	public static void setActiveEnemy(int activeEnemy) {
+		DevModeSettings.activeEnemy = activeEnemy;
 	}
 }

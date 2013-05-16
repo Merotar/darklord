@@ -95,6 +95,7 @@ public class Block
 	 */
 	public void update()
 	{
+		
 		if (this.getHp() <= 0)
 		{
 			this.setType(0);
@@ -164,10 +165,10 @@ public class Block
 				((Sprite)appearance).setTextureRegion(5*128, 0*128, 128, 128);
 				setMaxHp(1);
 				break;
-			case 6:		// ice
-				solid = true;
+			case 6:		// free
+				solid = false;
 				destroyable = false;
-				((Sprite)appearance).setTextureRegion(6*128, 0*128, 128, 128);
+				((Sprite)appearance).setTextureRegion(4*128, 1*128, 128, 128);
 				setMaxHp(1);
 				break;
 			case 7:		// plants

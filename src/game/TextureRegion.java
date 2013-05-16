@@ -36,7 +36,7 @@ public class TextureRegion
 		setX(theX);
 		setY(theY);
 		setWidth(theWidth);
-		setHeight(theWidth);
+		setHeight(theHeight);
 	}
 	
 	public void set(float theX, float theY, float theWidth, float theHeight)

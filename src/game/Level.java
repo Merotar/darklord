@@ -77,20 +77,30 @@ public class Level
 		projectiles = new Vector<Projectile>();
 		hostileProjectiles = new Vector<Projectile>();
 		
+//		map.readTextFile("test.txt");
+//		mainPlayer.setPos(map.getStart());
+		
 //		initTest();
-	}
+}
 	
 	public Level(String filename)
 	{
 		posX = 1.f;
 		posY = 1.f;
 		setName(filename);
+		String fileExtension = filename.substring(filename.length()-3, filename.length());
 		
         File f = new File(filename);
         if (f.exists())
         {
         	map = new Map();
-        	map.readFile(filename);
+        	if (fileExtension.equals("txt"))
+        	{
+        		map.readTextFile(filename);
+        	} else
+        	{
+            	map.readFile(filename);
+        	}
         } else
         {
         	map = new Map(10, 10);
@@ -344,7 +354,19 @@ public class Level
 		mainPlayer.draw();
 		GL11.glPopMatrix();
 		
+		// draw projectiles
 		for (Iterator<Projectile> object = projectiles.iterator(); object.hasNext();)
+		{
+			Projectile tmp = object.next();
+			
+			GL11.glPushMatrix();
+			GL11.glTranslated(tmp.getPosX(), tmp.getPosY(), 0.);
+			tmp.draw();
+			GL11.glPopMatrix();
+		}
+		
+		// draw hostile projectiles
+		for (Iterator<Projectile> object = hostileProjectiles.iterator(); object.hasNext();)
 		{
 			Projectile tmp = object.next();
 			
@@ -511,7 +533,18 @@ public class Level
 		if (button == 1)
 		{
 			map.setBlock(x_int, y_int, 0);
-			map.getEnemies().add(new EnemyRandomMove(x_int, y_int));
+			switch (DevModeSettings.getActiveEnemy())
+			{
+			case 0:
+				map.getEnemies().add(new EnemyRandomMove(x_int, y_int));
+				break;
+			case 1:
+				map.getEnemies().add(new StaticEnemyCrystal(x_int, y_int));
+				break;
+			default:
+				map.getEnemies().add(new EnemyRandomMove(x_int, y_int));
+				break;
+			}
 //			System.out.println("add collectable "+DevModeSettings.activeCollectable+ "at x: "+(x_int+0.25f)+", y: "+(y_int+0.25f));
 //			this.map.collectableObjects.add(new Collectable(DevModeSettings.activeCollectable, x_int+0.25f, y_int+0.25f));
 		
@@ -718,12 +751,22 @@ public class Level
 					Enemy e = obj2.next();
 					if (e.collide(tmp))
 					{
-						if (tmp.getType() == 0)	// red projectile
+						// red projectiles
+						if (tmp.getType() == 0 && e instanceof EnemyRandomMove)	// red projectile
 						{
 							System.out.println("Enemy damaged by projectile");
 							mainPlayer.decreaseBlocksRed();
-							if (e.decreaseHp(1)) obj2.remove();	
+							if (e.decreaseHp(tmp.getDamage())) obj2.remove();	
 						}
+						
+						// blue projectiles
+						if (tmp.getType() == 1 && e instanceof StaticEnemyCrystal)	// red projectile
+						{
+							System.out.println("crystal damaged by projectile");
+							mainPlayer.decreaseBlocksBlue();
+							if (e.decreaseHp(tmp.getDamage())) obj2.remove();	
+						}
+						
 						object.remove();
 						break;
 					}
@@ -752,6 +795,14 @@ public class Level
 				object.remove();
 				destroyed = true;
 				continue;
+			}
+			
+			if (tmp.collide(mainPlayer))
+			{
+				mainPlayer.decreaseHp(tmp.getDamage());
+				Print.outln("player lost "+tmp.getDamage()+" HP (hit by projectile)");
+				object.remove();
+				destroyed = true;
 			}
 			
 			// check block top right
@@ -812,6 +863,9 @@ public class Level
 			}
 			
 			e.update();
+			
+			// special update for StaticEnemyCrystal to be able to spawn projectiles
+			if (e instanceof StaticEnemyCrystal) ((StaticEnemyCrystal) e).update(this);
 		}
 		
 		// update blocks
@@ -822,12 +876,12 @@ public class Level
 			{
 				map.getBlockAt(i, j).update();
 				// workaround
-				if (map.getBlockAt(i, j).getType() == 6)	// ice block
-				{
-					Vector2f pos = new Vector2f(i, j);
-					Vector2f dir = new Vector2f(1.f, 0.f);
-					hostileProjectiles.add(new Projectile(pos, dir, 3));
-				}
+//				if (map.getBlockAt(i, j).getType() == 6)	// ice block
+//				{
+//					Vector2f pos = new Vector2f(i, j);
+//					Vector2f dir = new Vector2f(1.f, 0.f);
+//					hostileProjectiles.add(new Projectile(pos, dir, 3));
+//				}
 			}
 		}
 	}

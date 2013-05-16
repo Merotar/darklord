@@ -45,6 +45,12 @@ abstract class Collidable
 		return sizeX;
 	}
 
+	public void setSize(float s)
+	{
+		setSizeX(s);
+		setSizeY(s);
+	}
+	
 	public void setSizeX(float sizeX) {
 		this.sizeX = sizeX;
 	}

@@ -3,7 +3,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.Iterator;
+import java.util.Scanner;
 import java.util.Vector;
+
+import javax.swing.text.Position;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -30,8 +34,9 @@ public class Darklords {
 	static int maxFPS;
 	static float ratio;
 	Level world;
+	Vector<String> levelList;
 	Vector<Level> worldLife;
-	boolean isLeftMouseDown, isRightMouseDown;
+	boolean isLeftMouseDown, isRightMouseDown, isLeftMouseReleased;
 	Vector2f posMouseDown, posRightMouseDown;
 	Vector2f mousePos;
 	Timer worldTimer, rightMouseDelayTimer;
@@ -46,6 +51,8 @@ public class Darklords {
 	Vector2f gameScreenPos;
 	float gameScreenScale;
 	static SpriteSheet sprites01;
+	GameStatus gameStatus;
+	Menu mainMenu;
 	
 	/**
 	 * initializes global variables
@@ -63,12 +70,43 @@ public class Darklords {
 		devMode = false;
 		isLeftMouseDown = false;
 		isRightMouseDown = false;
+		isLeftMouseReleased = false;
 		posMouseDown = new Vector2f(0.f, 0.f);
 		posRightMouseDown = new Vector2f(0.f, 0.f);
 		mousePos = new Vector2f(0.f, 0.f);
 		worldLife = new Vector<Level>();
 		ratio = 1f*resX/resY;
 		myKeyboard = new KeyboardSettings();
+		gameStatus = GameStatus.MAIN_MENU;
+		
+		// add levels 
+		levelList = new Vector<String>();
+		levelList.add(new String("defaultMap.map"));
+		levelList.add(new String("defaultMap.map"));
+//		levelList.add(new String("test.txt"));
+		
+	}
+	
+	public void initMainMenu()
+	{
+        mainMenu = new Menu("./img/main_menu.png");
+        mainMenu.setBackground(new TextureRegion(0.f, 0.f, 800, 600));
+        mainMenu.setPosition(new Vector2f(-1.f, -1.f));
+        mainMenu.setSize(new Vector2f(2.f, 2.f));
+        
+        // add start button
+        Button startButton = new Button(new TextureRegion(0, 640, 384, 128),
+        		new TextureRegion(384, 640, 384, 128),"start");
+        startButton.setSize(new Vector2f(3.0f*0.1f, 0.1f));
+        startButton.setPosition(new Vector2f(0.5f, 0.4f).sub(startButton.getSize().mul(0.5f)));
+        mainMenu.addButton(startButton);
+        
+        // add quit button
+        Button quitButton = new Button(new TextureRegion(0, 768, 384, 128), 
+        		new TextureRegion(384, 768, 384, 128), "quit");
+        quitButton.setSize(new Vector2f(3.0f*0.1f, 0.1f));
+        quitButton.setPosition(new Vector2f(0.5f, 0.7f).sub(quitButton.getSize().mul(0.5f)));
+        mainMenu.addButton(quitButton);
 	}
 
 	/**
@@ -161,8 +199,12 @@ public class Darklords {
         
         // init other stuff
         
-        world = new Level(15,15);
+        world = new Level(levelList.firstElement());
+        
+//      world = new Level(15,15);
         sprites01 = new SpriteSheet("./img/textures.png");
+        
+        initMainMenu();
         
 		worldTimer = new Timer();
 		rightMouseDelayTimer = new Timer();
@@ -175,162 +217,20 @@ public class Darklords {
 			int glErr = GL11.glGetError();
 			if (glErr != 0) Print.err("OpenglGL error: "+glErr);
 			
+			switch (gameStatus)
+			{
+			case MAIN_MENU:
+				mainMenu();
+				break;
+			case INGAME:
+				ingame();
+				break;
+			default:
+				Print.err("wrong game status");
+				break;
+			}
 			// main loop repeated while the window is not closed
 			
-			//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);  
-			//GL11.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-
-			//world.attack.update();
-			if (!devMode)
-			{
-				checkMouse();
-				checkKeyboard();
-			} else
-			{
-				checkMouseDev();
-				checkKeyboardDev();
-			}
-
-			
-//			Vector2f posOld = world.mainPlayer.getPos();
-			
-			if (!devMode)
-			{
-				posMouseDown.set(Mouse.getX(), Mouse.getY());
-//				if (isLeftMouseDown) System.out.println("left mouse down");
-				if (isLeftMouseDown) world.mouseDownReaction(posMouseDown, 0);
-				if (isRightMouseDown)
-				{
-					if (rightMouseDelayTimer.getTimeDelta() == 0)
-					{
-						rightMouseDelayTimer.reset();
-						rightMouseDelayTimer.start();
-						world.mouseDownReaction(posMouseDown, 1);
-					}
-				}
-			} else
-			{
-				if (isLeftMouseDown) world.mouseDownReactionDev(posMouseDown, 0);
-				if (isRightMouseDown)
-				{
-					world.mouseDownReactionDev(posRightMouseDown, 1);
-					isRightMouseDown = false;
-				}
-			}
-
-			world.mousePositionReaction(mousePos);
-			float playerPosOld_x = world.mainPlayer.getPosX();
-			float playerPosOld_y = world.mainPlayer.getPosY();
-			if (!devMode) world.update();
-			
-			// normal motion
-			
-			if (world.mainPlayer.moveRight())
-			{
-				boolean collide = false;
-				collide = world.collideWithBlock((float)Math.ceil(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-				collide = collide || world.collideWithBlock((float)Math.ceil(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
-				if (collide) world.mainPlayer.setPosX((float)Math.ceil(playerPosOld_x)-world.mainPlayer.getSizeX());
-//				if (Math.abs(world.mainPlayer.getPosX()+1-playerPosOld_x) < world.mainPlayer.getSpeed())
-//				{
-//					world.mainPlayer.setPosX(((float)Math.ceil(world.mainPlayer.getPosX())));
-//				}
-			}
-			
-			if (world.mainPlayer.moveLeft())
-			{
-				boolean collide = false;
-				collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-				collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
-				if (collide) world.mainPlayer.setPosX((float)Math.floor(playerPosOld_x));
-//				if (Math.abs(world.mainPlayer.getPosX()-playerPosOld_x) < world.mainPlayer.getSpeed())
-//				{
-//					world.mainPlayer.setPosX(((float)Math.floor(world.mainPlayer.getPosX())));
-//				}
-			}
-			
-			if (world.mainPlayer.moveUp())
-			{
-				boolean collide = false;
-				collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
-				collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
-				if (collide) world.mainPlayer.setPosY((float)Math.floor(playerPosOld_y));	
-			}
-			
-			if (world.mainPlayer.moveDown())
-			{
-				boolean collide = false;
-				collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-				collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-				if (collide) world.mainPlayer.setPosY((float)Math.ceil(playerPosOld_y)-world.mainPlayer.getSizeY());
-			}
-			
-			// teleport
-			
-			if (world.mainPlayer.isTeleportUp())
-			{
-				boolean collide = false;
-				world.mainPlayer.setPosY(world.mainPlayer.getPosY()-world.mainPlayer.getTeleportStep());
-				collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
-				collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
-				collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-				collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-				if (collide) world.mainPlayer.setPosY(playerPosOld_y);
-				world.mainPlayer.setTeleportUp(false);
-			}
-			
-			if (world.mainPlayer.isTeleportDown())
-			{
-				boolean collide = false;
-				world.mainPlayer.setPosY(world.mainPlayer.getPosY()+world.mainPlayer.getTeleportStep());
-				collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
-				collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
-				collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-				collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-				if (collide) world.mainPlayer.setPosY(playerPosOld_y);
-				world.mainPlayer.setTeleportDown(false);
-			}
-			
-			if (world.mainPlayer.isTeleportLeft())
-			{
-				boolean collide = false;
-				world.mainPlayer.setPosX(world.mainPlayer.getPosX()-world.mainPlayer.getTeleportStep());
-				collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
-				collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
-				collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-				collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-				if (collide) world.mainPlayer.setPosX(playerPosOld_x);
-				world.mainPlayer.setTeleportLeft(false);
-			}
-			
-			if (world.mainPlayer.isTeleportRight())
-			{
-				boolean collide = false;
-				world.mainPlayer.setPosX(world.mainPlayer.getPosX()+world.mainPlayer.getTeleportStep());
-				collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
-				collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
-				collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-				collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-				if (collide) world.mainPlayer.setPosX(playerPosOld_x);
-				world.mainPlayer.setTeleportRight(false);
-			}
-			
-//			if (world.checkSolid())
-//			{
-//				posOld.round();
-//				world.mainPlayer.setPos(posOld);
-//			}
-			
-			// check if level is finished
-			float tmpX = (float)Math.floor(world.mainPlayer.getPosX());
-			float tmpY = (float)Math.floor(world.mainPlayer.getPosY());
-			if (world.map.getBlockAt((int)tmpX, (int) tmpY).getType() == 8)
-			{
-				Print.outln("level finished!");
-				world = new Level("defaultMap.map");
-			}
-			
-			draw();
 			long waitingTime = (int)Math.round((1000000.f/maxFPS - fpsTimer.getTimeDelta())/1000.);
 			if (waitingTime > 0)
 			{
@@ -347,16 +247,233 @@ public class Darklords {
 			Display.update();
 //			Display.sync(30);
 			fpsTimer.reset();
-			
-			if (rightMouseDelayTimer.getTimeDelta() > rightMouseDelay)
-			{
-				rightMouseDelayTimer.stop();
-				rightMouseDelayTimer.reset();
-			}
 		}
 
 		Display.destroy();
 		
+	}
+	
+	public void mainMenu()
+	{
+		checkMouseMainMenu();
+		
+		// update main menu
+
+		if(isLeftMouseReleased)
+		{
+			for (Iterator<Button> buttonObj = mainMenu.getButtons().iterator();buttonObj.hasNext();)
+			{
+				Button tmpButton = buttonObj.next();
+
+				if (tmpButton.isInside(mousePos))
+				{
+					if (tmpButton.isDown())
+					{
+						if (tmpButton.getName().equals("start"))
+						{
+							gameStatus = GameStatus.INGAME;
+							isLeftMouseReleased = false;
+						}
+						
+						if (tmpButton.getName().equals("quit"))
+						{
+							isLeftMouseReleased = false;
+							System.exit(0);
+						}
+					}
+				}
+				tmpButton.setDown(false);
+				isLeftMouseReleased = false;
+			}
+		}
+		
+		GL11.glPushMatrix();
+		GL11.glLoadIdentity();
+//		GL11.glOrtho(0, resX, 0, resY, 1, -1);
+		GL11.glScalef(1.f, -1.f, 1.f);
+//		GL11.glTranslatef(0.f, -resY, 0.f);
+		mainMenu.draw();
+		GL11.glPopMatrix();
+	}
+	
+	public void ingame()
+	{
+		//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);  
+		//GL11.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+
+		//world.attack.update();
+		if (!devMode)
+		{
+			checkMouse();
+			checkKeyboard();
+		} else
+		{
+			checkMouseDev();
+			checkKeyboardDev();
+		}
+
+		
+//		Vector2f posOld = world.mainPlayer.getPos();
+		
+		if (!devMode)
+		{
+			posMouseDown.set(Mouse.getX(), Mouse.getY());
+//			if (isLeftMouseDown) System.out.println("left mouse down");
+			if (isLeftMouseDown) world.mouseDownReaction(posMouseDown, 0);
+			if (isRightMouseDown)
+			{
+				if (rightMouseDelayTimer.getTimeDelta() == 0)
+				{
+					rightMouseDelayTimer.reset();
+					rightMouseDelayTimer.start();
+					world.mouseDownReaction(posMouseDown, 1);
+				}
+			}
+		} else
+		{
+			if (isLeftMouseDown) world.mouseDownReactionDev(posMouseDown, 0);
+			if (isRightMouseDown)
+			{
+				world.mouseDownReactionDev(posRightMouseDown, 1);
+				isRightMouseDown = false;
+			}
+		}
+
+		world.mousePositionReaction(mousePos);
+		float playerPosOld_x = world.mainPlayer.getPosX();
+		float playerPosOld_y = world.mainPlayer.getPosY();
+		if (!devMode) world.update();
+		
+		// normal motion
+		
+		if (world.mainPlayer.moveRight())
+		{
+			boolean collide = false;
+			collide = world.collideWithBlock((float)Math.ceil(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			collide = collide || world.collideWithBlock((float)Math.ceil(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
+			if (collide) world.mainPlayer.setPosX((float)Math.ceil(playerPosOld_x)-world.mainPlayer.getSizeX());
+//			if (Math.abs(world.mainPlayer.getPosX()+1-playerPosOld_x) < world.mainPlayer.getSpeed())
+//			{
+//				world.mainPlayer.setPosX(((float)Math.ceil(world.mainPlayer.getPosX())));
+//			}
+		}
+		
+		if (world.mainPlayer.moveLeft())
+		{
+			boolean collide = false;
+			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
+			if (collide) world.mainPlayer.setPosX((float)Math.floor(playerPosOld_x));
+//			if (Math.abs(world.mainPlayer.getPosX()-playerPosOld_x) < world.mainPlayer.getSpeed())
+//			{
+//				world.mainPlayer.setPosX(((float)Math.floor(world.mainPlayer.getPosX())));
+//			}
+		}
+		
+		if (world.mainPlayer.moveUp())
+		{
+			boolean collide = false;
+			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
+			if (collide) world.mainPlayer.setPosY((float)Math.floor(playerPosOld_y));	
+		}
+		
+		if (world.mainPlayer.moveDown())
+		{
+			boolean collide = false;
+			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			if (collide) world.mainPlayer.setPosY((float)Math.ceil(playerPosOld_y)-world.mainPlayer.getSizeY());
+		}
+		
+		// teleport
+		
+		if (world.mainPlayer.isTeleportUp())
+		{
+			boolean collide = false;
+			world.mainPlayer.setPosY(world.mainPlayer.getPosY()-world.mainPlayer.getTeleportStep());
+			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			if (collide) world.mainPlayer.setPosY(playerPosOld_y);
+			world.mainPlayer.setTeleportUp(false);
+		}
+		
+		if (world.mainPlayer.isTeleportDown())
+		{
+			boolean collide = false;
+			world.mainPlayer.setPosY(world.mainPlayer.getPosY()+world.mainPlayer.getTeleportStep());
+			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			if (collide) world.mainPlayer.setPosY(playerPosOld_y);
+			world.mainPlayer.setTeleportDown(false);
+		}
+		
+		if (world.mainPlayer.isTeleportLeft())
+		{
+			boolean collide = false;
+			world.mainPlayer.setPosX(world.mainPlayer.getPosX()-world.mainPlayer.getTeleportStep());
+			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			if (collide) world.mainPlayer.setPosX(playerPosOld_x);
+			world.mainPlayer.setTeleportLeft(false);
+		}
+		
+		if (world.mainPlayer.isTeleportRight())
+		{
+			boolean collide = false;
+			world.mainPlayer.setPosX(world.mainPlayer.getPosX()+world.mainPlayer.getTeleportStep());
+			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			if (collide) world.mainPlayer.setPosX(playerPosOld_x);
+			world.mainPlayer.setTeleportRight(false);
+		}
+		
+//		if (world.checkSolid())
+//		{
+//			posOld.round();
+//			world.mainPlayer.setPos(posOld);
+//		}
+		
+		// check if level is finished
+		float tmpX = (float)Math.floor(world.mainPlayer.getPosX());
+		float tmpY = (float)Math.floor(world.mainPlayer.getPosY());
+		
+		// player dies
+		if (world.mainPlayer.getHp()<=0)
+		{
+			Print.outln("You died, try again!");
+			world = new Level(levelList.firstElement());
+		}
+		
+		if (world.map.getBlockAt((int)tmpX, (int) tmpY).getType() == 8)
+		{
+			Print.outln("level finished!");
+			if (levelList.size() > 1)
+			{
+				world = new Level(levelList.get(1));
+				levelList.removeElementAt(0);
+			} else
+			{
+				Print.outln("game finished!");
+				System.exit(0);
+			}
+		}
+		
+		drawIngame();
+		
+		if (rightMouseDelayTimer.getTimeDelta() > rightMouseDelay)
+		{
+			rightMouseDelayTimer.stop();
+			rightMouseDelayTimer.reset();
+		}
 	}
 	
     /**
@@ -517,6 +634,44 @@ public class Darklords {
 		}
 	}
 	
+	public void checkMouseMainMenu()
+	{		
+		while (Mouse.next())
+		{
+//			mousePos = globalToGamescreen(new Vector2f(Mouse.getX(),Mouse.getY()));
+			
+			mousePos = globalToGamescreen(new Vector2f(1.f*Mouse.getX()/resX,1.f-1.f*Mouse.getY()/resY));
+			
+			if (Mouse.getEventButtonState())
+			{
+//				Print.outln("down?");
+				if (Mouse.isButtonDown(0))
+				{
+					// calculate mouse position (left top=(0,0), right bottom=(1,1))
+					mousePos.print();
+					isLeftMouseDown = true;
+					
+					for (Iterator<Button> buttonObj = mainMenu.getButtons().iterator();buttonObj.hasNext();)
+					{
+						Button tmpButton = buttonObj.next();
+						if (tmpButton.isInside(mousePos))
+						{
+							tmpButton.setDown(true);
+						}
+					}
+				}
+			} else
+			{
+				// check if mouse is released
+				if (isLeftMouseDown && !Mouse.isButtonDown(0))
+				{
+//					Print.outln("up?");
+					isLeftMouseReleased = true;
+				}
+			}
+		}
+	}
+	
 	/**
 	 * checks keybaord input
 	 */
@@ -529,7 +684,8 @@ public class Darklords {
 			{
 				if (Keyboard.isKeyDown(myKeyboard.KEY_ESCAPE))
 				{
-					System.exit(0);
+					gameStatus = GameStatus.MAIN_MENU;
+//					System.exit(0);
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_F1))
@@ -686,6 +842,21 @@ public class Darklords {
 					}
 				}
 				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_LCONTROL) && Keyboard.isKeyDown(myKeyboard.KEY_S))
+				{
+					Scanner s = new Scanner(System.in);
+					Print.outln("save level as: ");
+					String fileName = s.nextLine();
+					if (fileName.length() > 0)
+					{
+						world.map.writeToFile(fileName, world.mainPlayer.getPos());
+						Print.outln("level saved as "+ fileName+"!");
+					} else 
+					{
+						Print.outln("level could not be saved!");
+					}
+				}
+				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_PERIOD) && devMode)
 				{
 					world.map.writeToFile(world.getName(), world.mainPlayer.getPos());
@@ -721,8 +892,10 @@ public class Darklords {
 				}
 				if (Keyboard.isKeyDown(myKeyboard.KEY_E))
 				{
-					DevModeSettings.increaseActiveCollectable();
-					System.out.println("active collectable: "+DevModeSettings.getActiveCollectable());
+//					DevModeSettings.increaseActiveCollectable();
+//					System.out.println("active collectable: "+DevModeSettings.getActiveCollectable());
+					DevModeSettings.increaseActiveEnemy();
+					System.out.println("active enemy: "+DevModeSettings.getActiveEnemy());
 				}
 			}
 		}
@@ -731,7 +904,7 @@ public class Darklords {
 	/**
 	 * draws the whole scene
 	 */
-	public void draw()
+	public void drawIngame()
 	{
 //		if (useShader)
 //		{

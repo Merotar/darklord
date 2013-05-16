@@ -106,4 +106,12 @@ public class Enemy extends Collidable
 	{
 		this.type = type;
 	}
+
+	public float getHp() {
+		return hp;
+	}
+
+	public void setHp(float hp) {
+		this.hp = hp;
+	}
 }

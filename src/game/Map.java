@@ -1,11 +1,13 @@
 package game;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Scanner;
 import java.util.Vector;
 
 /**
@@ -207,6 +209,84 @@ public class Map implements Serializable
 		}
 	}
 	
+	public void readTextFile(String fileName)
+	{
+		File file = new File(fileName);
+		try
+		{
+			Scanner scanner = new Scanner(file);
+			int lineCtr = 0;
+			String line;
+			int tmpX = 0;
+			while (scanner.hasNextLine())
+			{
+                tmpX = scanner.nextLine().length();
+                lineCtr++;
+            }
+//			Print.outln("size: "+tmpX+", "+lineCtr);
+			worldGrid = new Grid(tmpX, lineCtr);
+			
+			scanner.close();
+			scanner = new Scanner(file);
+			
+			lineCtr = 0;
+			while (scanner.hasNextLine())
+			{
+                line = scanner.nextLine();
+                for (int i=0;i<line.length();i++)
+                {
+                	char type = line.charAt(i);
+                	
+    				Print.outln("pos: "+i+", "+lineCtr);
+                	switch (type)
+                	{
+                	case 'S':
+                		setStart(new Vector2f(i, lineCtr));
+                		break;
+                	case '#':
+                		worldGrid.setTypeAt(i, lineCtr, 1);
+                		break;
+                	case 'D':
+                		worldGrid.setTypeAt(i, lineCtr, 2);
+                		break;
+                	case 'R':
+                		worldGrid.setTypeAt(i, lineCtr, 3);
+                		break;
+                	case 'B':
+                		worldGrid.setTypeAt(i, lineCtr, 4);
+                		break;
+                	case 'G':
+                		worldGrid.setTypeAt(i, lineCtr, 5);
+                		break;
+                	case 'C':
+                		worldGrid.getEnemies().add(new StaticEnemyCrystal(i, lineCtr));
+                		break;
+                	case 'P':
+                		worldGrid.setTypeAt(i, lineCtr, 7);
+                		break;
+                	case '*':
+                		worldGrid.setTypeAt(i, lineCtr, 8);
+                		break;
+                	case '1':
+                		worldGrid.getEnemies().add(new EnemyRandomMove(i, lineCtr, 0));
+                		break;
+                	default:
+                		worldGrid.setTypeAt(i, lineCtr, 0);
+                		break;
+                	}
+                }
+                lineCtr++;
+            }
+			
+			
+			scanner.close();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		  
+	}
+	
 	public void readFile(String fileName)
 	{
 		ObjectInputStream ois = null;
@@ -244,7 +324,21 @@ public class Map implements Serializable
 		  {
 			  int t = ois.readInt();
 			  Vector2f tmpPos = (Vector2f)ois.readObject();
-			  getEnemies().add(new EnemyRandomMove(tmpPos.getX(), tmpPos.getY(), t));
+			  switch (t)
+			  {
+			  case 0:
+				  getEnemies().add(new StaticEnemy(tmpPos.getX(), tmpPos.getY()));
+				  break;
+			  case 1:
+				  getEnemies().add(new EnemyRandomMove(tmpPos.getX(), tmpPos.getY(), t));
+				  break;
+			  case 2:
+				  getEnemies().add(new StaticEnemyCrystal(tmpPos.getX(), tmpPos.getY()));
+				  break;
+			  default:
+				  getEnemies().add(new EnemyRandomMove(tmpPos.getX(), tmpPos.getY(), t));
+				  break;
+			  }
 		  }
 
 		}
@@ -273,5 +367,21 @@ public class Map implements Serializable
 		{
 			worldGrid.setTypeAt(x_int, y_int, t);
 		}
+	}
+
+	public Vector2f getStart() {
+		return start;
+	}
+
+	public void setStart(Vector2f start) {
+		this.start = start;
+	}
+
+	public Vector2f getExit() {
+		return exit;
+	}
+
+	public void setExit(Vector2f exit) {
+		this.exit = exit;
 	}
 }

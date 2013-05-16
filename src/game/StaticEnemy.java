@@ -22,6 +22,8 @@ public class StaticEnemy extends Enemy
 	public StaticEnemy(float x, float y)
 	{
 		super(x, y, 0);
+		appearance = new Sprite();
+		((Sprite)appearance).setTextureRegion(0*128, 6*128, 128, 128);
 	}
 	
 	public void draw()

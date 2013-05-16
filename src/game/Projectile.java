@@ -22,6 +22,7 @@ public class Projectile extends Collidable
 	private float timePassed;
 	private float size;
 	private int type;
+	private int damage;
 	private Drawable appearance;
 	
 	public int getType() {
@@ -62,6 +63,8 @@ public class Projectile extends Collidable
 
 	public void setSize(float size) {
 		this.size = size;
+		this.setSizeX(size);
+		this.setSizeY(size);
 	}
 
 	public Projectile()
@@ -74,7 +77,8 @@ public class Projectile extends Collidable
 		active = true;
 		speed = 2.f;
 		timePassed = 0.f;
-		size = 0.3f;
+		setSize(0.3f);
+		setDamage(1);
 		appearance = new Sprite();
 		setType(0);
 	}
@@ -109,6 +113,11 @@ public class Projectile extends Collidable
 //	{
 //		position.setY(posY);
 //	}
+	
+	public void setDirection(Vector2f theDirection)
+	{
+		this.direction = theDirection;
+	}
 	
 	public void setDirectionX(float dirX)
 	{
@@ -187,5 +196,13 @@ public class Projectile extends Collidable
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public int getDamage() {
+		return damage;
+	}
+
+	public void setDamage(int damage) {
+		this.damage = damage;
 	}
 }

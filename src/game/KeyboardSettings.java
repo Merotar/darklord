@@ -12,7 +12,7 @@ import org.lwjgl.input.Keyboard;
 public class KeyboardSettings
 {
 	int KEY_1, KEY_2, KEY_3, KEY_4, KEY_W, KEY_A, KEY_S, KEY_D, KEY_ESCAPE, KEY_PERIOD,
-	KEY_COMMA, KEY_F1, KEY_Q, KEY_E, KEY_LSHIFT, KEY_C;
+	KEY_COMMA, KEY_F1, KEY_Q, KEY_E, KEY_LSHIFT, KEY_C, KEY_LCONTROL;
 	
 	public KeyboardSettings()
 	{
@@ -32,6 +32,7 @@ public class KeyboardSettings
 		KEY_E = Keyboard.KEY_E;
 		KEY_LSHIFT = Keyboard.KEY_LSHIFT;
 		KEY_C = Keyboard.KEY_C;
+		KEY_LCONTROL = Keyboard.KEY_LCONTROL;
 	}
 	
 }
