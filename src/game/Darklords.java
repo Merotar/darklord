@@ -95,16 +95,16 @@ public class Darklords {
         mainMenu.setSize(new Vector2f(2.f, 2.f));
         
         // add start button
-        Button startButton = new Button(new TextureRegion(0, 640, 384, 128),
-        		new TextureRegion(384, 640, 384, 128),"start");
-        startButton.setSize(new Vector2f(3.0f*0.1f, 0.1f));
+        Button startButton = new Button(new TextureRegion(0*64, 10*64, 3*64, 64),
+        		new TextureRegion(3*64, 10*64, 3*64, 64),"start");
+        startButton.setSize(new Vector2f(3.0f*0.1f, 0.1f*ratio));
         startButton.setPosition(new Vector2f(0.5f, 0.4f).sub(startButton.getSize().mul(0.5f)));
         mainMenu.addButton(startButton);
         
         // add quit button
-        Button quitButton = new Button(new TextureRegion(0, 768, 384, 128), 
-        		new TextureRegion(384, 768, 384, 128), "quit");
-        quitButton.setSize(new Vector2f(3.0f*0.1f, 0.1f));
+        Button quitButton = new Button(new TextureRegion(0*64, 11*64, 3*64, 64), 
+        		new TextureRegion(3*64, 11*64, 3*64, 64), "quit");
+        quitButton.setSize(new Vector2f(3.0f*0.1f, 0.1f*ratio));
         quitButton.setPosition(new Vector2f(0.5f, 0.7f).sub(quitButton.getSize().mul(0.5f)));
         mainMenu.addButton(quitButton);
 	}

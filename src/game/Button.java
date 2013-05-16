@@ -46,7 +46,7 @@ public class Button
 		if (thePosition.getX()<getPosition().getX()) inside = false;
 		if (thePosition.getY()>getPosition().getY()+getSize().getY()) inside = false;
 		if (thePosition.getY()<getPosition().getY()) inside = false;
-		if (inside) Print.outln("inside of button "+getName());
+//		if (inside) Print.outln("inside of button "+getName());
 		
 		return inside;
 	}

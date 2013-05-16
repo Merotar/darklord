@@ -6,6 +6,7 @@ CONTROLS:
 - W/S/A/D: move
 - LEFT MOUSE BUTTON: attack near block
 - RIGHT MOUSE BUTTON: shoot
+- E: switch shot color
 - ESC: quit
 - LEFT SHIFT + W/S/A/D: teleport
 
