@@ -115,4 +115,9 @@ public class Vector2f implements Serializable
 		y /= length;
 	}
 	
+	public float length()
+	{
+		return (float)Math.sqrt(x*x+y*y);
+	}
+	
 }

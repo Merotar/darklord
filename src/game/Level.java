@@ -30,6 +30,7 @@ public class Level
 	public Map map;
 	public Vector<Projectile> projectiles;
 	public Vector<Projectile> hostileProjectiles;
+	public Vector<MovingSprite> bubbles;
 	public static final int drawSize = 15;
 	String name;
 
@@ -45,6 +46,7 @@ public class Level
 		mainSelectBox = new SelectBox();
 		projectiles = new Vector<Projectile>();
 		hostileProjectiles = new Vector<Projectile>();
+		bubbles = new Vector<MovingSprite>();
 		name = "defaultMap.map";
 		
 //		initTest();
@@ -76,6 +78,7 @@ public class Level
 		mainSelectBox = new SelectBox();
 		projectiles = new Vector<Projectile>();
 		hostileProjectiles = new Vector<Projectile>();
+		bubbles = new Vector<MovingSprite>();
 		
 //		map.readTextFile("test.txt");
 //		mainPlayer.setPos(map.getStart());
@@ -111,6 +114,7 @@ public class Level
 		mainSelectBox = new SelectBox();
 		projectiles = new Vector<Projectile>();
 		hostileProjectiles = new Vector<Projectile>();
+		bubbles = new Vector<MovingSprite>();
 	}
 	
 	// copy constructor
@@ -287,6 +291,7 @@ public class Level
 		
 		Darklords.sprites01.begin();
 		
+		// draw blocks
 		for (int i=minX;i<maxX;i++)
 		{
 			for (int j=minY;j<maxY;j++)
@@ -373,6 +378,40 @@ public class Level
 			GL11.glPushMatrix();
 			GL11.glTranslated(tmp.getPosX(), tmp.getPosY(), 0.);
 			tmp.draw();
+			GL11.glPopMatrix();
+		}
+		
+		// draw fog
+		if (!Darklords.devMode)
+		{
+			minX *= map.getFogDensity();
+			maxX *= map.getFogDensity();
+			if (maxX >= map.getMapSizeX()*map.getFogDensity()) maxX = map.getMapSizeX()*map.getFogDensity()-1;
+			minY *= map.getFogDensity();
+			maxY *= map.getFogDensity();
+			if (maxY >= map.getMapSizeY()*map.getFogDensity()) maxY = map.getMapSizeY()*map.getFogDensity()-1;
+			
+			for (int i=minX;i<maxX;i++)
+			{
+				for (int j=minY;j<maxY;j++)
+				{
+					GL11.glPushMatrix();
+					GL11.glTranslated(1.f*i/map.getFogDensity(), 1.f*j/map.getFogDensity(), 0.);
+					GL11.glColor4f(0.f, 0.f, 0.f, map.getFogAt(i, j));
+					map.drawFog();
+					GL11.glPopMatrix();
+				}
+			}
+		}
+		
+		// draw bubbles
+		for (Iterator<MovingSprite> object = bubbles.iterator(); object.hasNext();)
+		{
+			MovingSprite tmp = object.next();
+			
+			GL11.glPushMatrix();
+			tmp.draw();
+//			tmp.draw(tmp.getPosition().getX(), tmp.getPosition().getY(),tmp.getSize().getX(), tmp.getSize().getX());
 			GL11.glPopMatrix();
 		}
 		
@@ -755,6 +794,14 @@ public class Level
 						if (tmp.getType() == 0 && e instanceof EnemyRandomMove)	// red projectile
 						{
 							System.out.println("Enemy damaged by projectile");
+							// generate "BAM" bubble
+							Vector2f direction = RandomGenerator.getRandomVector();
+							Vector2f start = e.getCenter().add(direction.mul(0.5f));
+							Vector2f stop = start.add(direction.mul(3));
+							MovingSprite tmpBubble = new MovingSprite(start, stop);
+							tmpBubble.setTextureRegion(new TextureRegion(6*128, 3*128, 2*128, 1*128));
+							bubbles.add(tmpBubble);
+							
 							mainPlayer.decreaseBlocksRed();
 							if (e.decreaseHp(tmp.getDamage())) obj2.remove();	
 						}
@@ -882,6 +929,51 @@ public class Level
 //					Vector2f dir = new Vector2f(1.f, 0.f);
 //					hostileProjectiles.add(new Projectile(pos, dir, 3));
 //				}
+			}
+		}
+		
+		// update bubbles
+		for (Iterator<MovingSprite> object = bubbles.iterator(); object.hasNext();)
+		{
+			MovingSprite tmp = object.next();
+			tmp.update();
+			if (!tmp.isAlive()) object.remove();
+		}
+		
+		// update fog
+		Vector2f playerPos =mainPlayer.getCenter().mul(map.getFogDensity());
+		float range = mainPlayer.getVisualRangeMax();
+		int xLower = (int)Math.round(playerPos.getX()-range);
+		if (xLower < 0) xLower = 0;
+		int xUpper = (int)Math.round(playerPos.getX()+range);
+		if (xUpper >= map.getMapSizeX()*map.getFogDensity()) xUpper = map.getMapSizeX()*map.getFogDensity()-1;
+		
+		for (int i=xLower;i<xUpper;i++)
+		{
+			// pythagoras
+			double sqrt = Math.sqrt(range*range-(playerPos.getX()-i)*(playerPos.getX()-i));
+			int yLower = (int)Math.round(playerPos.getY() - sqrt);
+			if (yLower < 0) yLower = 0;
+			int yUpper = (int)Math.round(playerPos.getY() + sqrt);
+			if (yUpper >= map.getMapSizeY()*map.getFogDensity()) yUpper = map.getMapSizeY()*map.getFogDensity()-1;
+			
+			for (int j=yLower;j<yUpper;j++)
+			{
+				Vector2f fogTile = new Vector2f(i, j);
+				float relativeRadius = (playerPos.sub(fogTile)).length()/range;
+				float newFogValue;
+				if (relativeRadius < mainPlayer.getVisualRangeRelative())
+				{
+					newFogValue = 0.f;
+				} else
+				{
+					newFogValue= (float)(((playerPos.sub(fogTile)).length()-mainPlayer.getVisualRangeMin())/(mainPlayer.getVisualRangeMax()-mainPlayer.getVisualRangeMin()));
+				}
+				
+				if (newFogValue < this.map.getFogAt(i, j))
+				{
+					this.map.setFogAt(i, j, newFogValue);
+				}
 			}
 		}
 	}

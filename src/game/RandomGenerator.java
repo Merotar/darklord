@@ -19,6 +19,16 @@ public class RandomGenerator
 		
 	}
 	
+	/**
+	 * 
+	 * @return returns random unity vector from {-1,-1} to {1,1}
+	 */
+	public static Vector2f getRandomVector()
+	{
+		float angle = (float)(Math.PI*(rnd.nextInt()*1.f/Integer.MAX_VALUE+1.f));
+		return new Vector2f((float)Math.cos(angle), (float)Math.sin(angle));
+	}
+	
 	public static Vector2f getRandomDirection()
 	{
 		float rndVar = (rnd.nextInt()*1.f/Integer.MAX_VALUE+1.f)/2.f;

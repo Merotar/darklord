@@ -43,7 +43,7 @@ public class Darklords {
 	int rightMouseDelay = 200;
 //	static DTextures textures;
 	KeyboardSettings myKeyboard;
-	boolean devMode;
+	static boolean devMode;
 	int gameMode;
 	private int program=0;
 	boolean useShader;
@@ -81,9 +81,9 @@ public class Darklords {
 		
 		// add levels 
 		levelList = new Vector<String>();
-		levelList.add(new String("defaultMap.map"));
-		levelList.add(new String("defaultMap.map"));
-//		levelList.add(new String("test.txt"));
+//		levelList.add(new String("defaultMap.map"));
+//		levelList.add(new String("defaultMap.map"));
+		levelList.add(new String("test.txt"));
 		
 	}
 	
@@ -273,6 +273,7 @@ public class Darklords {
 						{
 							gameStatus = GameStatus.INGAME;
 							isLeftMouseReleased = false;
+							isLeftMouseDown = false;
 						}
 						
 						if (tmpButton.getName().equals("quit"))
@@ -685,7 +686,6 @@ public class Darklords {
 				if (Keyboard.isKeyDown(myKeyboard.KEY_ESCAPE))
 				{
 					gameStatus = GameStatus.MAIN_MENU;
-//					System.exit(0);
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_F1))

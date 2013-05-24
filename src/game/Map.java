@@ -160,6 +160,25 @@ public class Map implements Serializable
 		return worldGrid.getBlockAt(x, y);
 	}
 	
+	public float getFogAt(int x, int y)
+	{
+		return worldGrid.getFogAt(x, y);
+	}
+	
+	public void setFogAt(int x, int y, float value)
+	{
+		worldGrid.setFogAt(x, y, value);
+	}
+	
+	public void drawFog()
+	{
+		worldGrid.drawFog();
+	}
+	
+	public int getFogDensity()
+	{
+		return worldGrid.getFogDensity();
+	}
 	
 	public void writeToFile(String fileName, Vector2f startPos)
 	{

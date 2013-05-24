@@ -205,4 +205,8 @@ public class Projectile extends Collidable
 	public void setDamage(int damage) {
 		this.damage = damage;
 	}
+
+	public Vector2f getDirection() {
+		return direction;
+	}
 }

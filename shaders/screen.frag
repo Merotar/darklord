@@ -1,5 +1,6 @@
 uniform int resX, resY;
 uniform sampler2D tex;
+uniform vec4 gl_Color;
 	
 	float rand(vec2 n)
 	{
@@ -48,7 +49,7 @@ uniform sampler2D tex;
 		
 		vec4 color;
 		
-		color = getColor();
+		color = getColor();// + gl_Color;
 //		color = texture2D(tex,gl_TexCoord[0].st);
 		
 //		if (color.z >0.6) color *= 1.5*rand(gl_FragCoord.xy);

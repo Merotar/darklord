@@ -15,6 +15,7 @@ public class Sprite implements Drawable
 	
 	public Sprite()
 	{
+		super();
 		textureRegion = new TextureRegion();
 	}
 

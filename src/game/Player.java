@@ -54,6 +54,7 @@ public class Player extends Collidable
 	private int blocksRed, blocksBlue, blocksGreen;
 	private int activeProjectile; // 0: red, 1: blue, 2: green
 	private static int maxProjectile = 2;
+	private float visualRangeMax, visualRangeMin;
 	private Drawable appearance;
 	private Vector<Drawable> glow;
 	
@@ -71,14 +72,16 @@ public class Player extends Collidable
 		setPosX(4.f);
 		setSizeX(0.75f);
 		setSizeY(0.75f);
-		speed = 0.18f;
+		setSpeed(0.18f);
+		setVisualRangeMin(7.f);
+		setVisualRangeMax(20.f);
 		
 		appearance = new Animation();
 		((Animation)appearance).addTextureRegion(new TextureRegion(0, 7, 128));
 		((Animation)appearance).addTextureRegion(new TextureRegion(1, 7, 128));
 		((Animation)appearance).addTextureRegion(new TextureRegion(2, 7, 128));
 		((Animation)appearance).setSize(getSizeX(), getSizeY());
-		((Animation)appearance).setAnimationInterval(500.f);
+		((Animation)appearance).setAnimationInterval(200.f);
 		
 		glow = new Vector<Drawable>();
 		glow.add(new Sprite());
@@ -647,5 +650,25 @@ public class Player extends Collidable
 
 	public void setBlocksGreen(int blocksGreen) {
 		this.blocksGreen = blocksGreen;
+	}
+
+	public float getVisualRangeMax() {
+		return visualRangeMax;
+	}
+
+	public void setVisualRangeMax(float visualRange) {
+		this.visualRangeMax = visualRange;
+	}
+
+	public float getVisualRangeMin() {
+		return visualRangeMin;
+	}
+	
+	public float getVisualRangeRelative() {
+		return visualRangeMin/visualRangeMax;
+	}
+
+	public void setVisualRangeMin(float visualRangeMin) {
+		this.visualRangeMin = visualRangeMin;
 	}
 }

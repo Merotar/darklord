@@ -3,6 +3,8 @@ package game;
 import java.util.Random;
 import java.util.Vector;
 
+import org.lwjgl.opengl.GL11;
+
 /**
  * describes the architecture of an level with blocks and enemies
  * 
@@ -16,15 +18,12 @@ public class Grid
 	private Block[][] theGrid;
 	private Vector<Enemy> enemies;
 	public int gridSizeX, gridSizeY;
+	private float[][] fogMap;
+	private int fogDensity;
 	
 	public Grid()
 	{
-		gridSizeX = 10;
-		gridSizeY = 10;
-		theGrid = new Block[gridSizeX][gridSizeY];
-		enemies = new Vector<Enemy>();
-		initDefault();
-//		initTest();
+		this(10, 10);
 	}
 	
 	public Grid(int x, int y)
@@ -32,6 +31,17 @@ public class Grid
 		gridSizeX = x;
 		gridSizeY = y;
 		theGrid = new Block[gridSizeX][gridSizeY];
+		
+		this.setFogDensity(5);
+		fogMap = new float[getGridSizeX()*getFogDensity()][getGridSizeY()*getFogDensity()];
+		for (int i=0;i<getGridSizeX()*getFogDensity();i++)
+		{
+			for (int j=0;j<getGridSizeY()*getFogDensity();j++)
+			{
+				fogMap[i][j] = 127;
+			}
+		}
+		
 		enemies = new Vector<Enemy>();
 		initDefault();
 //		initTest();
@@ -139,6 +149,43 @@ public class Grid
 
 	public void setGridSizeY(int gridSizeY) {
 		this.gridSizeY = gridSizeY;
+	}
+
+	public int getFogDensity() {
+		return fogDensity;
+	}
+
+	public void setFogDensity(int fogDensity)
+	{
+		this.fogDensity = fogDensity;
+	}
+
+	public float getFogAt(int x, int y)
+	{
+		return fogMap[x][y];
+	}
+
+	public void setFogAt(int x, int y, float value)
+	{
+		if (value >= 1.f) value = 1.f;
+		if (value < 0.f) value = 0.f;
+		this.fogMap[x][y] = value;
+	}
+	
+	public void drawFog()
+	{
+		GL11.glBegin(GL11.GL_QUADS);
+		
+		float posX = 0.f;
+		float posY = 0.f;
+		float sizeX = 1.f/getFogDensity();
+		float sizeY = 1.f/getFogDensity();
+				
+		GL11.glVertex2f(posX, posY+sizeY);
+		GL11.glVertex2f(posX+sizeX, posY+sizeY);
+		GL11.glVertex2f(posX+sizeX, posY);
+		GL11.glVertex2f(posX, posY);
+		GL11.glEnd();
 	}
 	
 }
