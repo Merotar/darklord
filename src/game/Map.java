@@ -2,10 +2,12 @@ package game;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.Scanner;
 import java.util.Vector;
@@ -157,7 +159,11 @@ public class Map implements Serializable
 	
 	public Block getBlockAt(int x, int y)
 	{
-		return worldGrid.getBlockAt(x, y);
+		if (x >= 0 && y >= 0 && x < worldGrid.getGridSizeX() && y < worldGrid.getGridSizeY())
+		{
+			return worldGrid.getBlockAt(x, y);
+		}
+		return null;
 	}
 	
 	public float getFogAt(int x, int y)
@@ -304,6 +310,103 @@ public class Map implements Serializable
 			e.printStackTrace();
 		}
 		  
+	}
+
+	public void writeToTextFile(String fileName, Vector2f startPos)
+	{
+		PrintStream stream = null;
+		int type;
+		char symbol;
+		
+	  try {
+		  stream = new PrintStream(fileName);
+		  
+		  for (int y=0;y<getMapSizeY();y++)
+		  {
+			  for (int x=0;x<getMapSizeX();x++)
+			  {
+				type = worldGrid.getBlockAt(x, y).getType();
+				  
+				switch (type)
+              	{
+              	case 0:
+              		symbol = '_';
+              		break;
+              	case 1:
+              		symbol = '#';
+              		break;
+              	case 2:
+              		symbol = 'D';
+              		break;
+              	case 3:
+              		symbol = 'R';
+              		break;
+              	case 4:
+              		symbol = 'B';
+              		break;
+              	case 5:
+              		symbol = 'G';
+              		break;
+              	case 7:
+              		symbol = 'P';
+              		break;
+              	case 8:
+              		symbol = '*';
+              		break;
+              	default:
+              		symbol = '_';
+              		break;
+              	}
+				
+				if(x == (int)Math.round(startPos.getX()) && y == (int)Math.round(startPos.getY()))
+				{
+					symbol = 'S';
+				}
+				
+				  for (int i=0;i<collectableObjects.size();i++)
+				  {
+					  Vector2f pos = collectableObjects.get(i).getPos();
+					  if (x == (int)Math.round(pos.getX()) && y == (int)Math.round(pos.getY()))
+					  {
+						  switch (collectableObjects.get(i).getType())
+						  {
+						  // TODO: implement
+						  }
+					  }
+				  }
+				  
+				  for (int i=0;i<getEnemies().size();i++)
+				  {
+					  Vector2f pos = getEnemies().get(i).getPos();
+					  if (x == (int)Math.round(pos.getX()) && y == (int)Math.round(pos.getY()))
+					  {
+						  if (getEnemies().get(i) instanceof EnemyRandomMove)
+						  {
+							  symbol = '1';
+						  } else
+						  {
+							  if (getEnemies().get(i) instanceof StaticEnemyCrystal)
+							  {
+								  symbol = 'C';
+							  }
+						  }
+					  }
+				  }
+
+				
+				stream.write(symbol);
+			  }
+			  stream.println();
+		  }
+		  
+		  stream.close();
+		  
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+
+			
 	}
 	
 	public void readFile(String fileName)

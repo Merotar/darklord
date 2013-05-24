@@ -391,9 +391,9 @@ public class Level
 			maxY *= map.getFogDensity();
 			if (maxY >= map.getMapSizeY()*map.getFogDensity()) maxY = map.getMapSizeY()*map.getFogDensity()-1;
 			
-			for (int i=minX;i<maxX;i++)
+			for (int i=minX;i<=maxX;i++)
 			{
-				for (int j=minY;j<maxY;j++)
+				for (int j=minY;j<=maxY;j++)
 				{
 					GL11.glPushMatrix();
 					GL11.glTranslated(1.f*i/map.getFogDensity(), 1.f*j/map.getFogDensity(), 0.);
@@ -948,7 +948,7 @@ public class Level
 		int xUpper = (int)Math.round(playerPos.getX()+range);
 		if (xUpper >= map.getMapSizeX()*map.getFogDensity()) xUpper = map.getMapSizeX()*map.getFogDensity()-1;
 		
-		for (int i=xLower;i<xUpper;i++)
+		for (int i=xLower;i<=xUpper;i++)
 		{
 			// pythagoras
 			double sqrt = Math.sqrt(range*range-(playerPos.getX()-i)*(playerPos.getX()-i));
@@ -957,7 +957,7 @@ public class Level
 			int yUpper = (int)Math.round(playerPos.getY() + sqrt);
 			if (yUpper >= map.getMapSizeY()*map.getFogDensity()) yUpper = map.getMapSizeY()*map.getFogDensity()-1;
 			
-			for (int j=yLower;j<yUpper;j++)
+			for (int j=yLower;j<=yUpper;j++)
 			{
 				Vector2f fogTile = new Vector2f(i, j);
 				float relativeRadius = (playerPos.sub(fogTile)).length()/range;

@@ -83,7 +83,8 @@ public class Darklords {
 		levelList = new Vector<String>();
 //		levelList.add(new String("defaultMap.map"));
 //		levelList.add(new String("defaultMap.map"));
-		levelList.add(new String("test.txt"));
+//		levelList.add(new String("test.txt"));
+		levelList.add(new String("level01.txt"));
 		
 	}
 	
@@ -393,7 +394,8 @@ public class Darklords {
 		{
 			boolean collide = false;
 			world.mainPlayer.setPosY(world.mainPlayer.getPosY()-world.mainPlayer.getTeleportStep());
-			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
+			if (world.mainPlayer.getPosY() < 0.f) collide = true;
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
 			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
 			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
 			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
@@ -405,7 +407,8 @@ public class Darklords {
 		{
 			boolean collide = false;
 			world.mainPlayer.setPosY(world.mainPlayer.getPosY()+world.mainPlayer.getTeleportStep());
-			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
+			if (world.mainPlayer.getPosY() > world.getDimY()) collide = true;
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
 			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
 			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
 			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
@@ -417,7 +420,8 @@ public class Darklords {
 		{
 			boolean collide = false;
 			world.mainPlayer.setPosX(world.mainPlayer.getPosX()-world.mainPlayer.getTeleportStep());
-			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
+			if (world.mainPlayer.getPosX() < 0.f) collide = true;
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
 			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
 			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
 			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
@@ -429,7 +433,8 @@ public class Darklords {
 		{
 			boolean collide = false;
 			world.mainPlayer.setPosX(world.mainPlayer.getPosX()+world.mainPlayer.getTeleportStep());
-			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
+			if (world.mainPlayer.getPosX() > world.getDimX()) collide = true;
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
 			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
 			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
 			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
@@ -454,7 +459,8 @@ public class Darklords {
 			world = new Level(levelList.firstElement());
 		}
 		
-		if (world.map.getBlockAt((int)tmpX, (int) tmpY).getType() == 8)
+		Block tmpBlock = world.map.getBlockAt((int)tmpX, (int) tmpY);
+		if ( tmpBlock!= null && tmpBlock.getType() == 8)
 		{
 			Print.outln("level finished!");
 			if (levelList.size() > 1)
@@ -849,7 +855,8 @@ public class Darklords {
 					String fileName = s.nextLine();
 					if (fileName.length() > 0)
 					{
-						world.map.writeToFile(fileName, world.mainPlayer.getPos());
+//						world.map.writeToFile(fileName, world.mainPlayer.getPos());
+						world.map.writeToTextFile(fileName, world.mainPlayer.getPos());
 						Print.outln("level saved as "+ fileName+"!");
 					} else 
 					{
