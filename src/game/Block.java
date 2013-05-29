@@ -151,19 +151,19 @@ public class Block
 				solid = true;
 				destroyable = true;
 				((Sprite)appearance).setTextureRegion(3*128, 0*128, 128, 128);
-				setMaxHp(1);
+				setMaxHp(2);
 				break;
 			case 4:		// blue
 				solid = true;
 				destroyable = true;
 				((Sprite)appearance).setTextureRegion(4*128, 0*128, 128, 128);
-				setMaxHp(1);
+				setMaxHp(2);
 				break;
 			case 5:		// green
 				solid = true;
 				destroyable = true;
 				((Sprite)appearance).setTextureRegion(5*128, 0*128, 128, 128);
-				setMaxHp(1);
+				setMaxHp(2);
 				break;
 			case 6:		// free
 				solid = false;

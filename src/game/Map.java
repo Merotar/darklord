@@ -15,7 +15,7 @@ import java.util.Vector;
 /**
  * describes the grid and collectable objects of the map
  * 
- * TODO: reorganize, merge with Level/Grid
+ * TODO: reorganize, merge with Grid
  * 
  * @author Sebastian Artz
  * @version 0.1
@@ -54,12 +54,107 @@ public class Map implements Serializable
 		exit = new Vector2f();
 //		dimX = x;
 //		dimY = y;
-		worldGrid = new Grid(x, y);
+		worldGrid = new Grid(x, y, 2);
+		initDungeon();
+		worldGrid.setTypeAt((int)start.getX(), (int)start.getY(), 0);
+		
 		collectableObjects = new Vector<Collectable>();
 //		enemies = new Vector<Enemy>();
 		
 //		initTest();
 	}
+	
+	private void initDungeon()
+	{
+		float corridorPropability = 0.03f;
+		int maxCorridorLength = 20;
+		float veinProbabilityRed = 0.03f;
+		float veinProbabilityBlue = 0.02f;
+		float veinProbabilityGreen = 0.01f;
+		float enemyRandomMovePropability = 0.1f;
+		
+		for (int x=1;x<worldGrid.getGridSizeX()-1;x++)
+		{
+			for (int y=1;y<worldGrid.getGridSizeY()-1;y++)
+			{
+				float rnd = RandomGenerator.getRandomZeroToOne();
+				
+				// generate corridors
+				if (rnd < corridorPropability)
+				{
+//					worldGrid.setTypeAt(x, y, 2);
+					generateCorridor(new Vector2f(x, y), maxCorridorLength);
+				}
+				
+				//generate red veins
+				rnd = RandomGenerator.getRandomZeroToOne();
+				if (rnd < veinProbabilityRed)
+				{
+					generateVein(new Vector2f(x, y), 7, 3);
+				}
+				
+				//generate blue veins
+				rnd = RandomGenerator.getRandomZeroToOne();
+				if (rnd < veinProbabilityBlue)
+				{
+					generateVein(new Vector2f(x, y), 5, 4);
+				}
+				
+				//generate green veins
+				rnd = RandomGenerator.getRandomZeroToOne();
+				if (rnd < veinProbabilityGreen)
+				{
+					generateVein(new Vector2f(x, y), 3, 5);
+				}
+				
+				//generate random move enemies
+				rnd = RandomGenerator.getRandomZeroToOne();
+				if (rnd < enemyRandomMovePropability)
+				{
+					if (worldGrid.getBlockAt(x, y).getType() == 0)
+					{
+						worldGrid.getEnemies().add(new EnemyRandomMove(x, y));
+					}
+				}
+			}
+		}
+	}
+	
+	void generateCorridor(Vector2f position, int maxLength)
+	{
+		int length = (int)Math.round(RandomGenerator.getRandomZeroToOne()*maxLength);
+		Vector2f direction = null;
+		
+		worldGrid.setTypeAt((int)position.getX(), (int)position.getY(), 0);
+		
+		for (int step=0;step<length;step++)
+		{
+			direction = RandomGenerator.getRandomDirection(direction);
+			position = position.add(direction);
+			position.round();
+//			path.print();
+			worldGrid.setTypeAt((int)position.getX(), (int)position.getY(), 0);
+		}
+
+	}
+	
+	void generateVein(Vector2f position, int maxLength, int type)
+	{
+		int length = (int)Math.round(RandomGenerator.getRandomZeroToOne()*maxLength);
+		Vector2f direction = null;
+		
+		worldGrid.setTypeAt((int)position.getX(), (int)position.getY(), 0);
+		
+		for (int step=0;step<length;step++)
+		{
+			direction = RandomGenerator.getRandomDirection(direction);
+			position = position.add(direction);
+			position.round();
+//			path.print();
+			worldGrid.setTypeAt((int)position.getX(), (int)position.getY(), type);
+		}
+	}
+	
 	
 	public Vector<Enemy> getEnemies()
 	{
@@ -262,7 +357,7 @@ public class Map implements Serializable
                 {
                 	char type = line.charAt(i);
                 	
-    				Print.outln("pos: "+i+", "+lineCtr);
+//    				Print.outln("pos: "+i+", "+lineCtr);
                 	switch (type)
                 	{
                 	case 'S':
@@ -294,6 +389,13 @@ public class Map implements Serializable
                 		break;
                 	case '1':
                 		worldGrid.getEnemies().add(new EnemyRandomMove(i, lineCtr, 0));
+                		break;
+                	case '+':
+                		Collectable tmpCollectable = new Collectable(CollectableType.DIAMOND);
+                		tmpCollectable.setSize(0.8f);
+                		float addPos = (1-tmpCollectable.getSizeX())/2.f;
+                		tmpCollectable.setPos(new Vector2f(i+addPos, lineCtr+addPos));
+                		collectableObjects.add(tmpCollectable);
                 		break;
                 	default:
                 		worldGrid.setTypeAt(i, lineCtr, 0);
@@ -370,7 +472,12 @@ public class Map implements Serializable
 					  {
 						  switch (collectableObjects.get(i).getType())
 						  {
-						  // TODO: implement
+						  	case DIAMOND:
+						  		symbol = '+';
+							  break;
+							default:
+								symbol = '+';
+							break;
 						  }
 					  }
 				  }

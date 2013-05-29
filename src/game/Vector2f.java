@@ -58,6 +58,14 @@ public class Vector2f implements Serializable
 //		this.y += v.getY();
 //	}
 	
+	public void rotate(float angle)
+	{
+		float xOld = getX();
+		float yOld = getY();
+		setX((float)(Math.cos(angle)*xOld - Math.sin(angle)*yOld));
+		setY((float)(Math.sin(angle)*xOld + Math.cos(angle)*yOld));
+	}
+	
 	public void addX(float x){
 		this.x += x;
 	}
@@ -79,6 +87,11 @@ public class Vector2f implements Serializable
 	public Vector2f mul(float v)
 	{
 		return new Vector2f(this.getX()*v, this.getY()*v);
+	}
+	
+	public Vector2f orthogonalVector()
+	{
+		return new Vector2f(y, -x);
 	}
 	
 	public void round()

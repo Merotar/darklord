@@ -58,17 +58,9 @@ public class Level
 //		this.dimY = sizeY;
 		posX = 1.f;
 		posY = 1.f;
-		name = "defaultMap.map";
+		name = "defaultMap.txt";
 		
-        File f = new File(getName());
-        if (f.exists())
-        {
-        	map = new Map();
-        	map.readFile(getName());
-        } else
-        {
-        	map = new Map(sizeX, sizeY);
-        }
+        map = new Map(sizeX, sizeY);
 		
 //		grid = new Block[dimX][dimY];
 //		collectableObjects = new Vector<Collectable>();
@@ -90,24 +82,32 @@ public class Level
 	{
 		posX = 1.f;
 		posY = 1.f;
-		setName(filename);
-		String fileExtension = filename.substring(filename.length()-3, filename.length());
+		if (!filename.equals(""))
+		{
+			setName(filename);
+			String fileExtension = filename.substring(filename.length()-3, filename.length());
+			
+	        File f = new File(filename);
+	        if (f.exists())
+	        {
+	        	map = new Map();
+	        	name = filename;
+	        	if (fileExtension.equals("txt"))
+	        	{
+	        		map.readTextFile(filename);
+	        	} else
+	        	{
+	            	map.readFile(filename);
+	        	}
+	        } else
+	        {
+	        	map = new Map(10, 10);
+	        }
+		} else
+		{
+			map = new Map(50, 50);
+		}
 		
-        File f = new File(filename);
-        if (f.exists())
-        {
-        	map = new Map();
-        	if (fileExtension.equals("txt"))
-        	{
-        		map.readTextFile(filename);
-        	} else
-        	{
-            	map.readFile(filename);
-        	}
-        } else
-        {
-        	map = new Map(10, 10);
-        }
 		
 		mainPlayer = new Player(map.start.getX(), map.start.getY());
 		map.getBlockAt((int) mainPlayer.getPosX(), (int) mainPlayer.getPosY()).setType(0);
@@ -235,12 +235,12 @@ public class Level
 			if (map.getBlockAt(x, y).isDestroyable() && map.getBlockAt(x, y).attack())
 			{
 				//destroyed
-				System.out.println("Block destroyed!");
+//				System.out.println("Block destroyed!");
 				if (type == 1) mainPlayer.decreaseDiggingCount();
 				Random rnd = new Random();
 				float rndX = 0.20f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
 				float rndY = 0.20f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
-				System.out.println(rndX);
+//				System.out.println(rndX);
 				map.collectableObjects.add(new Collectable(CollectableType.values()[type], x+0.25f+rndX, y+0.25f+rndY));
 			}
 			mainPlayer.startAttackBlockTimer();
@@ -541,7 +541,7 @@ public class Level
 			position = position.add(dir.mul(0.5f));
 			
 			projectiles.add(new Projectile(position, dir, mainPlayer.getActiveProjectile()));
-			System.out.println("Create Projectile at ("+pos.getX()+", "+pos.getY()+")");;
+//			System.out.println("Create Projectile at ("+pos.getX()+", "+pos.getY()+")");;
 //			mainPlayer.switchActiveAbility();	
 		}
 	}
@@ -656,7 +656,7 @@ public class Level
 //					tmp.getX(), tmp.getX()+tmp.getSize(), tmp.getY(), tmp.getY()+tmp.getSize()))
 			if (mainPlayer.collide(tmp))
 			{
-				System.out.println("collide with collectable");
+//				System.out.println("collide with collectable");
 				mainPlayer.addItem(tmp.getType());
 				object.remove();
 			}
@@ -687,14 +687,14 @@ public class Level
 				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 6)	// blue projectile
 				{
 					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
-					System.out.println("ice crystal destroyed");
+//					System.out.println("ice crystal destroyed");
 					mainPlayer.decreaseBlocksBlue();
 				}
 				
 				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 7)	// green projectile
 				{
 					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
-					System.out.println("plants destroyed");
+//					System.out.println("plants destroyed");
 					mainPlayer.decreaseBlocksGreen();
 				}
 				continue;
@@ -712,7 +712,7 @@ public class Level
 				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 6)	// blue projectile
 				{
 					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
-					System.out.println("ice crystal destroyed");
+//					System.out.println("ice crystal destroyed");
 					mainPlayer.decreaseBlocksBlue();
 				}
 				
@@ -737,14 +737,14 @@ public class Level
 				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 6)	// blue projectile
 				{
 					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
-					System.out.println("ice crystal destroyed");
+//					System.out.println("ice crystal destroyed");
 					mainPlayer.decreaseBlocksBlue();
 				}
 				
 				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 7)	// green projectile
 				{
 					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
-					System.out.println("plants destroyed");
+//					System.out.println("plants destroyed");
 					mainPlayer.decreaseBlocksGreen();
 				}
 				continue;
@@ -762,14 +762,14 @@ public class Level
 				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 6)	// blue projectile
 				{
 					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
-					System.out.println("ice crystal destroyed");
+//					System.out.println("ice crystal destroyed");
 					mainPlayer.decreaseBlocksBlue();
 				}
 				
 				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 7)	// green projectile
 				{
 					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
-					System.out.println("plants destroyed");
+//					System.out.println("plants destroyed");
 					mainPlayer.decreaseBlocksGreen();
 				}
 				continue;
@@ -793,9 +793,10 @@ public class Level
 						// red projectiles
 						if (tmp.getType() == 0 && e instanceof EnemyRandomMove)	// red projectile
 						{
-							System.out.println("Enemy damaged by projectile");
+//							System.out.println("Enemy damaged by projectile");
 							// generate "BAM" bubble
 							Vector2f direction = RandomGenerator.getRandomVector();
+							direction.normalize();
 							Vector2f start = e.getCenter().add(direction.mul(0.5f));
 							Vector2f stop = start.add(direction.mul(3));
 							MovingSprite tmpBubble = new MovingSprite(start, stop);
@@ -1008,7 +1009,8 @@ public class Level
 		
 //		System.out.print("move to dir: ");dir.print();
 		
-		if (!map.getBlockAt(posX+(int)dir.getX(), posY+(int)dir.getY()).isSolid())
+		Block tmpBlock = map.getBlockAt(posX+(int)dir.getX(), posY+(int)dir.getY());
+		if (tmpBlock != null && !tmpBlock.isSolid())
 		{
 //			System.out.println("test");
 			e.startMotion(dir);

@@ -13,13 +13,14 @@ import org.newdawn.slick.Color;
  */
 public class Enemy extends Collidable
 {
-	int type;
+	int type, xp;
 	float maxHp, hp, dmgOnContact;
 	
 	public Enemy()
 	{
 		type = 0;
 		hp = maxHp = 2.f;
+		xp = 1;
 		dmgOnContact = 1.f;
 		setSizeX(1.f);
 		setSizeY(1.f);
@@ -113,5 +114,13 @@ public class Enemy extends Collidable
 
 	public void setHp(float hp) {
 		this.hp = hp;
+	}
+
+	public int getXp() {
+		return xp;
+	}
+
+	public void setXp(int xp) {
+		this.xp = xp;
 	}
 }

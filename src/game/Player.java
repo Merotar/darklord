@@ -37,6 +37,7 @@ enum PlayerAbility
 public class Player extends Collidable
 {
 //	private float posX, posY, sizeX, sizeY;
+	private int xp;
 	private float hp, maxHp;
 	private Vector<Texture> texture;
 	private float speed;
@@ -57,6 +58,7 @@ public class Player extends Collidable
 	private float visualRangeMax, visualRangeMin;
 	private Drawable appearance;
 	private Vector<Drawable> glow;
+	private int score;
 	
 	public int getActiveProjectile() {
 		return activeProjectile;
@@ -74,7 +76,8 @@ public class Player extends Collidable
 		setSizeY(0.75f);
 		setSpeed(0.18f);
 		setVisualRangeMin(7.f);
-		setVisualRangeMax(20.f);
+		setVisualRangeMax(15.f);
+		setScore(0);
 		
 		appearance = new Animation();
 		((Animation)appearance).addTextureRegion(new TextureRegion(0, 7, 128));
@@ -94,7 +97,7 @@ public class Player extends Collidable
 		blocksRed = blocksBlue = blocksGreen = 0;
 		moveUp = moveDown = moveLeft = moveRight = false;
 		teleportUp = teleportDown = teleportLeft = teleportRight = false;
-		hp = maxHp = 1.f;
+		hp = maxHp = 100.f;
 		attackBlockTimer = new Timer();
 		invulnerableOnContactTimer = new Timer();
 		texture = new Vector<Texture>();
@@ -610,6 +613,10 @@ public class Player extends Collidable
 		case ABILITY_DIGGING:
 			abilities[5]++;
 			break;
+		case DIAMOND:
+			score += 100;
+			System.out.println("score: "+getScore());
+			break;
 		default:
 			break;
 		}
@@ -670,5 +677,21 @@ public class Player extends Collidable
 
 	public void setVisualRangeMin(float visualRangeMin) {
 		this.visualRangeMin = visualRangeMin;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
+
+	public int getXp() {
+		return xp;
+	}
+
+	public void setXp(int xp) {
+		this.xp = xp;
 	}
 }

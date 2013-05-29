@@ -75,7 +75,7 @@ public class Darklords {
 		posRightMouseDown = new Vector2f(0.f, 0.f);
 		mousePos = new Vector2f(0.f, 0.f);
 		worldLife = new Vector<Level>();
-		ratio = 1f*resX/resY;
+		ratio = 1.f*resX/resY;
 		myKeyboard = new KeyboardSettings();
 		gameStatus = GameStatus.MAIN_MENU;
 		
@@ -85,6 +85,7 @@ public class Darklords {
 //		levelList.add(new String("defaultMap.map"));
 //		levelList.add(new String("test.txt"));
 		levelList.add(new String("level01.txt"));
+//		levelList.add(new String(""));
 		
 	}
 	
@@ -831,7 +832,8 @@ public class Darklords {
 			{
 				if (Keyboard.isKeyDown(myKeyboard.KEY_ESCAPE))
 				{
-					System.exit(0);
+					gameStatus = GameStatus.MAIN_MENU;
+//					System.exit(0);
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_F1))
@@ -862,6 +864,30 @@ public class Darklords {
 					{
 						Print.outln("level could not be saved!");
 					}
+				}
+				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_LCONTROL) && Keyboard.isKeyDown(myKeyboard.KEY_N))
+				{
+					System.out.println("Generating new level");
+					
+					Scanner s = new Scanner(System.in);
+					System.out.println("size x:");
+					int sizeX = s.nextInt();
+					System.out.println("size y:");
+					int sizeY = s.nextInt();
+					
+					world = null;
+					world = new Level(sizeX, sizeY);
+				}
+				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_LCONTROL) && Keyboard.isKeyDown(myKeyboard.KEY_O))
+				{
+					System.out.println("file to load: ");
+					Scanner s = new Scanner(System.in);
+					String fileName = s.nextLine();
+					
+					world.map.readTextFile(fileName);
+					world.mainPlayer.setPos(world.map.getStart());
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_PERIOD) && devMode)

@@ -26,7 +26,7 @@ public class Grid
 		this(10, 10);
 	}
 	
-	public Grid(int x, int y)
+	public Grid(int x, int y, int t)
 	{
 		gridSizeX = x;
 		gridSizeY = y;
@@ -43,11 +43,15 @@ public class Grid
 		}
 		
 		enemies = new Vector<Enemy>();
-		initDefault();
-//		initTest();
+		initDefault(t);
 	}
 	
-	private void initDefault()
+	public Grid(int x, int y)
+	{
+		this(x, y, 0);
+	}
+	
+	private void initDefault(int t)
 	{
 		for (int i=0;i<gridSizeX;i++)
 		{
@@ -58,7 +62,7 @@ public class Grid
 					theGrid[i][j] = new Block(1);
 				} else // inner level
 				{
-					theGrid[i][j] = new Block(0);
+					theGrid[i][j] = new Block(t);
 				}
 			}
 		}
@@ -125,9 +129,14 @@ public class Grid
 //		collectableObjects.add(new Collectable(CollectableType.ABILITY_DIGGING, 6.25f, 2.25f));
 	}
 
-	public void setTypeAt(int x_int, int y_int, int t)
+	public boolean setTypeAt(int x_int, int y_int, int t)
 	{
-		theGrid[x_int][y_int].setType(t);
+		if (x_int > 0 && x_int < getGridSizeX() && y_int > 0 && y_int < getGridSizeY())
+		{
+			theGrid[x_int][y_int].setType(t);
+			return true;
+		}
+		return false;
 	}
 
 	public Vector<Enemy> getEnemies()

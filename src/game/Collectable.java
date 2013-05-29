@@ -103,6 +103,9 @@ public class Collectable extends Collidable
 			case BLOCK_GREEN:		// green
 				((Sprite)appearance).setTextureRegion(5*128, 0*128, 128, 128);
 				break;
+			case DIAMOND:		// diamond
+				((Sprite)appearance).setTextureRegion(3*128, 1*128, 128, 128);
+				break;
 			default:
 				((Sprite)appearance).setTextureRegion(0*128, 10*128, 128, 128);
 				break;
@@ -118,7 +121,7 @@ public class Collectable extends Collidable
 	public void draw()
 	{
 		Darklords.sprites01.begin();
-		appearance.draw(0, 0, 0.5f, 0.5f);
+		appearance.draw(0, 0, getSizeX(), getSizeY());
 		Darklords.sprites01.end();
 		
 ////		if (texture != null)
