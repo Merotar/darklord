@@ -54,9 +54,9 @@ public class Map implements Serializable
 		exit = new Vector2f();
 //		dimX = x;
 //		dimY = y;
-		worldGrid = new Grid(x, y, 2);
+		worldGrid = new Grid(x, y, BlockType.BLOCK_DIRT);
 		initDungeon();
-		worldGrid.setTypeAt((int)start.getX(), (int)start.getY(), 0);
+		worldGrid.setTypeAt((int)start.getX(), (int)start.getY(), BlockType.BLOCK_NONE);
 		
 		collectableObjects = new Vector<Collectable>();
 //		enemies = new Vector<Enemy>();
@@ -90,28 +90,28 @@ public class Map implements Serializable
 				rnd = RandomGenerator.getRandomZeroToOne();
 				if (rnd < veinProbabilityRed)
 				{
-					generateVein(new Vector2f(x, y), 7, 3);
+					generateVein(new Vector2f(x, y), 7, BlockType.BLOCK_RED);
 				}
 				
 				//generate blue veins
 				rnd = RandomGenerator.getRandomZeroToOne();
 				if (rnd < veinProbabilityBlue)
 				{
-					generateVein(new Vector2f(x, y), 5, 4);
+					generateVein(new Vector2f(x, y), 5, BlockType.BLOCK_BLUE);
 				}
 				
 				//generate green veins
 				rnd = RandomGenerator.getRandomZeroToOne();
 				if (rnd < veinProbabilityGreen)
 				{
-					generateVein(new Vector2f(x, y), 3, 5);
+					generateVein(new Vector2f(x, y), 3, BlockType.BLOCK_GREEN);
 				}
 				
 				//generate random move enemies
 				rnd = RandomGenerator.getRandomZeroToOne();
 				if (rnd < enemyRandomMovePropability)
 				{
-					if (worldGrid.getBlockAt(x, y).getType() == 0)
+					if (worldGrid.getBlockAt(x, y).getType() == BlockType.BLOCK_NONE)
 					{
 						worldGrid.getEnemies().add(new EnemyRandomMove(x, y));
 					}
@@ -125,7 +125,7 @@ public class Map implements Serializable
 		int length = (int)Math.round(RandomGenerator.getRandomZeroToOne()*maxLength);
 		Vector2f direction = null;
 		
-		worldGrid.setTypeAt((int)position.getX(), (int)position.getY(), 0);
+		worldGrid.setTypeAt((int)position.getX(), (int)position.getY(), BlockType.BLOCK_NONE);
 		
 		for (int step=0;step<length;step++)
 		{
@@ -133,17 +133,17 @@ public class Map implements Serializable
 			position = position.add(direction);
 			position.round();
 //			path.print();
-			worldGrid.setTypeAt((int)position.getX(), (int)position.getY(), 0);
+			worldGrid.setTypeAt((int)position.getX(), (int)position.getY(), BlockType.BLOCK_NONE);
 		}
 
 	}
 	
-	void generateVein(Vector2f position, int maxLength, int type)
+	void generateVein(Vector2f position, int maxLength, BlockType type)
 	{
 		int length = (int)Math.round(RandomGenerator.getRandomZeroToOne()*maxLength);
 		Vector2f direction = null;
 		
-		worldGrid.setTypeAt((int)position.getX(), (int)position.getY(), 0);
+		worldGrid.setTypeAt((int)position.getX(), (int)position.getY(), BlockType.BLOCK_NONE);
 		
 		for (int step=0;step<length;step++)
 		{
@@ -301,7 +301,7 @@ public class Map implements Serializable
 		  {
 			  for (int j=0;j<getMapSizeY();j++)
 			  {
-				  oos.writeInt(worldGrid.getBlockAt(i, j).getType());
+				  oos.writeObject(worldGrid.getBlockAt(i, j).getType());
 			  }
 		  }
 		  
@@ -364,28 +364,31 @@ public class Map implements Serializable
                 		setStart(new Vector2f(i, lineCtr));
                 		break;
                 	case '#':
-                		worldGrid.setTypeAt(i, lineCtr, 1);
+                		worldGrid.setTypeAt(i, lineCtr, BlockType.BLOCK_ROCK);
                 		break;
                 	case 'D':
-                		worldGrid.setTypeAt(i, lineCtr, 2);
+                		worldGrid.setTypeAt(i, lineCtr, BlockType.BLOCK_DIRT);
                 		break;
                 	case 'R':
-                		worldGrid.setTypeAt(i, lineCtr, 3);
+                		worldGrid.setTypeAt(i, lineCtr, BlockType.BLOCK_RED);
                 		break;
                 	case 'B':
-                		worldGrid.setTypeAt(i, lineCtr, 4);
+                		worldGrid.setTypeAt(i, lineCtr, BlockType.BLOCK_BLUE);
                 		break;
                 	case 'G':
-                		worldGrid.setTypeAt(i, lineCtr, 5);
+                		worldGrid.setTypeAt(i, lineCtr, BlockType.BLOCK_GREEN);
+                		break;
+                	case 'Y':
+                		worldGrid.setTypeAt(i, lineCtr, BlockType.BLOCK_YELLOW);
                 		break;
                 	case 'C':
                 		worldGrid.getEnemies().add(new StaticEnemyCrystal(i, lineCtr));
                 		break;
                 	case 'P':
-                		worldGrid.setTypeAt(i, lineCtr, 7);
+                		worldGrid.setTypeAt(i, lineCtr, BlockType.BLOCK_PLANTS);
                 		break;
                 	case '*':
-                		worldGrid.setTypeAt(i, lineCtr, 8);
+                		worldGrid.setTypeAt(i, lineCtr, BlockType.BLOCK_GOAL);
                 		break;
                 	case '1':
                 		worldGrid.getEnemies().add(new EnemyRandomMove(i, lineCtr, 0));
@@ -398,7 +401,7 @@ public class Map implements Serializable
                 		collectableObjects.add(tmpCollectable);
                 		break;
                 	default:
-                		worldGrid.setTypeAt(i, lineCtr, 0);
+                		worldGrid.setTypeAt(i, lineCtr, BlockType.BLOCK_NONE);
                 		break;
                 	}
                 }
@@ -417,7 +420,7 @@ public class Map implements Serializable
 	public void writeToTextFile(String fileName, Vector2f startPos)
 	{
 		PrintStream stream = null;
-		int type;
+		BlockType type;
 		char symbol;
 		
 	  try {
@@ -431,28 +434,31 @@ public class Map implements Serializable
 				  
 				switch (type)
               	{
-              	case 0:
+              	case BLOCK_NONE:
               		symbol = '_';
               		break;
-              	case 1:
+              	case BLOCK_ROCK:
               		symbol = '#';
               		break;
-              	case 2:
+              	case BLOCK_DIRT:
               		symbol = 'D';
               		break;
-              	case 3:
+              	case BLOCK_RED:
               		symbol = 'R';
               		break;
-              	case 4:
+              	case BLOCK_BLUE:
               		symbol = 'B';
               		break;
-              	case 5:
+              	case BLOCK_GREEN:
               		symbol = 'G';
               		break;
-              	case 7:
+              	case BLOCK_YELLOW:
+              		symbol = 'Y';
+              		break;
+              	case BLOCK_PLANTS:
               		symbol = 'P';
               		break;
-              	case 8:
+              	case BLOCK_GOAL:
               		symbol = '*';
               		break;
               	default:
@@ -535,7 +541,7 @@ public class Map implements Serializable
 		  {
 			  for (int j=0;j<dimY;j++)
 			  {
-				  worldGrid.setTypeAt(i, j, ois.readInt());
+				  worldGrid.setTypeAt(i, j, (BlockType)ois.readObject());
 			  }
 		  }
 		  
@@ -590,7 +596,7 @@ public class Map implements Serializable
 		readFile("defaultMap.map");
 	}
 
-	public void setBlock(int x_int, int y_int, int t)
+	public void setBlock(int x_int, int y_int, BlockType t)
 	{
 		if ((x_int > 0) && (x_int < worldGrid.gridSizeX) && (y_int > 0) && (y_int < worldGrid.gridSizeY))
 		{

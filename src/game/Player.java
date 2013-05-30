@@ -37,7 +37,7 @@ enum PlayerAbility
 public class Player extends Collidable
 {
 //	private float posX, posY, sizeX, sizeY;
-	private int xp;
+	private int xp, maxXp;
 	private float hp, maxHp;
 	private Vector<Texture> texture;
 	private float speed;
@@ -52,14 +52,28 @@ public class Player extends Collidable
 	private PlayerAbility activeAbility;
 	private float teleportStep = 2.f;
 	private int maxAbilities;
-	private int blocksRed, blocksBlue, blocksGreen;
+	private int crystalsRed, crystalsBlue, crystalsGreen, crystalsYellow;
+//	private int energyRed, energyBlue, energyGreen, energyYellow;
+//	private int energyRedMax, energyBlueMax, energyGreenMax, energyYellowMax;
+	private EnergyStore energyRed, energyBlue, energyGreen, energyYellow;
 	private int activeProjectile; // 0: red, 1: blue, 2: green
 	private static int maxProjectile = 2;
 	private float visualRangeMax, visualRangeMin;
 	private Drawable appearance;
 	private Vector<Drawable> glow;
 	private int score;
+	private int level;
+	private int maxProjectiles;
+//	private TimeStore redEnergyAdder;
 	
+	public int getMaxProjectiles() {
+		return maxProjectiles;
+	}
+
+	public void setMaxProjectiles(int maxProjectiles) {
+		this.maxProjectiles = maxProjectiles;
+	}
+
 	public int getActiveProjectile() {
 		return activeProjectile;
 	}
@@ -74,7 +88,7 @@ public class Player extends Collidable
 		setPosX(4.f);
 		setSizeX(0.75f);
 		setSizeY(0.75f);
-		setSpeed(0.18f);
+		setSpeed(4.5f);
 		setVisualRangeMin(7.f);
 		setVisualRangeMax(15.f);
 		setScore(0);
@@ -93,8 +107,7 @@ public class Player extends Collidable
 		((Sprite)glow.get(0)).setTextureRegion(new TextureRegion(4, 2, 128));
 		((Sprite)glow.get(1)).setTextureRegion(new TextureRegion(5, 2, 128));
 		((Sprite)glow.get(2)).setTextureRegion(new TextureRegion(6, 2, 128));
-		
-		blocksRed = blocksBlue = blocksGreen = 0;
+
 		moveUp = moveDown = moveLeft = moveRight = false;
 		teleportUp = teleportDown = teleportLeft = teleportRight = false;
 		hp = maxHp = 100.f;
@@ -102,6 +115,16 @@ public class Player extends Collidable
 		invulnerableOnContactTimer = new Timer();
 		texture = new Vector<Texture>();
 		setActiveProjectile(0);
+		setLevel(1);
+		setMaxXp(10);
+		setMaxProjectiles(5);
+		
+		energyRed = new EnergyStore(10.f, 1.f);
+		energyBlue = new EnergyStore(10.f, 1.f);
+		energyGreen = new EnergyStore(10.f, 1.f);
+		energyYellow = new EnergyStore(10.f, 1.f);
+//		redEnergyAdder = new TimeStore(1.f);
+		
 //		animationInterval = 500.f;
 //		blockAttackSpeed = 200.f;
 //		try
@@ -136,30 +159,30 @@ public class Player extends Collidable
 
 	public Player(Player orig)
 	{
-		setPosX(orig.getPosX());
-		setPosY(orig.getPosY());
-		setSizeX(orig.getSizeX());
-		setSizeY(orig.getSizeY());
-		hp = orig.hp;
-		maxHp = orig.maxHp;
-		speed = orig.getSpeed();
-		blocksRed = orig.blocksRed;
-		blocksBlue = orig.blocksBlue;
-		blocksGreen = orig.blocksGreen;
-		maxAbilities = orig.maxAbilities;
-		abilities = new int[maxAbilities];
-		setActiveProjectile(0);
-		for (int i=0;i<maxAbilities;i++)
-		{
-			abilities[i] = orig.abilities[i];
-		}
-		activeAbility = orig.activeAbility;
-		teleportStep = orig.teleportStep;
-
-		moveUp = moveDown = moveLeft = moveRight = false;
-		teleportUp = teleportDown = teleportLeft = teleportRight = false;
-		attackBlockTimer = new Timer();
-		texture = new Vector<Texture>();
+//		setPosX(orig.getPosX());
+//		setPosY(orig.getPosY());
+//		setSizeX(orig.getSizeX());
+//		setSizeY(orig.getSizeY());
+//		hp = orig.hp;
+//		maxHp = orig.maxHp;
+//		speed = orig.getSpeed();
+//		blocksRed = orig.blocksRed;
+//		blocksBlue = orig.blocksBlue;
+//		blocksGreen = orig.blocksGreen;
+//		maxAbilities = orig.maxAbilities;
+//		abilities = new int[maxAbilities];
+//		setActiveProjectile(0);
+//		for (int i=0;i<maxAbilities;i++)
+//		{
+//			abilities[i] = orig.abilities[i];
+//		}
+//		activeAbility = orig.activeAbility;
+//		teleportStep = orig.teleportStep;
+//
+//		moveUp = moveDown = moveLeft = moveRight = false;
+//		teleportUp = teleportDown = teleportLeft = teleportRight = false;
+//		attackBlockTimer = new Timer();
+//		texture = new Vector<Texture>();
 //		animationTimer = new Timer();
 //		try
 //		{
@@ -208,45 +231,13 @@ public class Player extends Collidable
 		}
 	}
 	
-	public void addBlockRed()
+	public void levelUp()
 	{
-		blocksRed++;
+		level++;
+		setXp(0);
+		setMaxXp(getMaxXp()+10);
 	}
 	
-	public int getBlocksRed()
-	{
-		return blocksRed;
-	}
-	
-	public boolean decreaseBlocksRed()
-	{
-		if (blocksRed > 0)
-		{
-			blocksRed--;
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean decreaseBlocksBlue()
-	{
-		if (blocksBlue > 0)
-		{
-			blocksBlue--;
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean decreaseBlocksGreen()
-	{
-		if (blocksGreen > 0)
-		{
-			blocksGreen--;
-			return true;
-		}
-		return false;
-	}
 	
 	// TODO: blocksBlue, blocksGreen
 	
@@ -403,6 +394,18 @@ public class Player extends Collidable
 	public void update()
 	{
 		this.updatePosition();
+		
+		// level up?
+		if (getXp() >= getMaxXp())
+		{
+			Print.outln("LEVEL UP!");
+			setXp(getXp()-getMaxXp());
+			levelUp();
+		}
+		
+//		Print.outln("dt: "+ redEnergyAdder.getCurrent());
+		energyRed.increase(Darklords.dt);
+		
 //		System.out.println("Player: ("+this.getPosX()+", "+this.getPosY()+")");
 		
 		if (attackBlockTimer.getTimeDelta() > blockAttackSpeed) this.stopAttackBlockTimer();
@@ -414,23 +417,23 @@ public class Player extends Collidable
 		if (moveUp)
 		{
 //			System.out.println("UP!");
-			setPosY(getPosY() - speed);
+			setPosY(getPosY() - speed*Darklords.dt);
 		}
 		
 		if (moveDown)
 		{
-			setPosY(getPosY() + speed);
+			setPosY(getPosY() + speed*Darklords.dt);
 //			System.out.println("posY: "+posY);
 		}
 		
 		if (moveLeft)
 		{
-			setPosX(getPosX() - speed);
+			setPosX(getPosX() - speed*Darklords.dt);
 		}
 		
 		if (moveRight)
 		{
-			setPosX(getPosX() + speed);
+			setPosX(getPosX() + speed*Darklords.dt);
 		}
 	}
 	
@@ -599,13 +602,16 @@ public class Player extends Collidable
 		switch (type)
 		{
 		case BLOCK_RED:
-			blocksRed++;
+			crystalsRed++;
 			break;
 		case BLOCK_BLUE:
-			blocksBlue++;
+			crystalsBlue++;
 			break;
 		case BLOCK_GREEN:
-			blocksGreen++;
+			crystalsGreen++;
+			break;
+		case BLOCK_YELLOW:
+			crystalsYellow++;
 			break;
 		case ABILITY_TELEPORT:
 			abilities[0]++;
@@ -637,26 +643,6 @@ public class Player extends Collidable
 		hp -= f;
 		if (hp <= 0) return true;
 		return false;
-	}
-
-	public void setBlocksRed(int blocksRed) {
-		this.blocksRed = blocksRed;
-	}
-
-	public int getBlocksBlue() {
-		return blocksBlue;
-	}
-
-	public void setBlocksBlue(int blocksBlue) {
-		this.blocksBlue = blocksBlue;
-	}
-
-	public int getBlocksGreen() {
-		return blocksGreen;
-	}
-
-	public void setBlocksGreen(int blocksGreen) {
-		this.blocksGreen = blocksGreen;
 	}
 
 	public float getVisualRangeMax() {
@@ -693,5 +679,159 @@ public class Player extends Collidable
 
 	public void setXp(int xp) {
 		this.xp = xp;
+	}
+	
+	public void addXp(int xp)
+	{
+		Print.outln("add "+xp+" XP");
+		this.xp += xp;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
+	public int getMaxXp() {
+		return maxXp;
+	}
+
+	public void setMaxXp(int maxXp) {
+		this.maxXp = maxXp;
+	}
+
+	public float getEnergyRed() {
+		return energyRed.getCurrent();
+	}
+
+	public void setEnergyRed(float energyRed) {
+		this.energyRed.setCurrent(energyRed);
+	}
+	
+	public boolean decreaseEnergyRed(float decrease) {
+		if (getEnergyRed() >= decrease)
+		{
+			this.energyRed.decrease(decrease);
+			return true;
+		}
+		return false;
+	}
+
+	public float getEnergyBlue() {
+		return energyBlue.getCurrent();
+	}
+
+	public void setEnergyBlue(float energyBlue) {
+		this.energyBlue.setCurrent(energyBlue);
+	}
+	
+	public boolean decreaseEnergyBlue(float decrease) {
+		if (getEnergyBlue() >= decrease)
+		{
+			this.energyBlue.decrease(decrease);
+			return true;
+		}
+		return false;
+	}
+	
+	public float getEnergyGreen() {
+		return energyGreen.getCurrent();
+	}
+
+	public void setEnergyGreen(float energyGreen) {
+		this.energyGreen.setCurrent(energyGreen);
+	}
+
+	public boolean decreaseEnergyGreen(float decrease) {
+		if (getEnergyGreen() >= decrease)
+		{
+			this.energyGreen.decrease(decrease);
+			return true;
+		}
+		return false;
+	}
+	
+	public float getEnergyYellow() {
+		return energyYellow.getCurrent();
+	}
+
+	public void setEnergyYellow(float energyYellow) {
+		this.energyYellow.setCurrent(energyYellow);
+	}
+
+	public boolean decreaseEnergyYellow(float decrease) {
+		if (getEnergyYellow() >= decrease)
+		{
+			this.energyYellow.decrease(decrease);
+			return true;
+		}
+		return false;
+	}
+	
+	public float getEnergyRedMax() {
+		return energyRed.getMax();
+	}
+
+	public void setEnergyRedMax(float energyRedMax) {
+		this.energyRed.setMax(energyRedMax);
+	}
+
+	public float getEnergyBlueMax() {
+		return energyBlue.getMax();
+	}
+
+	public void setEnergyBlueMax(float energyBlueMax) {
+		this.energyBlue.setMax(energyBlueMax);
+	}
+
+	public float getEnergyGreenMax() {
+		return energyGreen.getMax();
+	}
+
+	public void setEnergyGreenMax(float energyGreenMax) {
+		this.energyGreen.setMax(energyGreenMax);
+	}
+
+	public float getEnergyYellowMax() {
+		return energyYellow.getMax();
+	}
+
+	public void setEnergyYellowMax(float energyYellowMax) {
+		this.energyYellow.setMax(energyYellowMax);
+	}
+
+	public int getCrystalsRed() {
+		return crystalsRed;
+	}
+
+	public void setCrystalsRed(int crystalsRed) {
+		this.crystalsRed = crystalsRed;
+	}
+
+	public int getCrystalsBlue() {
+		return crystalsBlue;
+	}
+
+	public void setCrystalsBlue(int crystalsBlue) {
+		this.crystalsBlue = crystalsBlue;
+	}
+
+	public int getCrystalsGreen() {
+		return crystalsGreen;
+	}
+
+	public void setCrystalsGreen(int crystalsGreen) {
+		this.crystalsGreen = crystalsGreen;
+	}
+
+	public int getCrystalsYellow() {
+		return crystalsYellow;
+	}
+
+	public void setCrystalsYellow(int crystalsYellow) {
+		this.crystalsYellow = crystalsYellow;
 	}
 }

@@ -103,6 +103,9 @@ public class Collectable extends Collidable
 			case BLOCK_GREEN:		// green
 				((Sprite)appearance).setTextureRegion(5*128, 0*128, 128, 128);
 				break;
+			case BLOCK_YELLOW:		// green
+				((Sprite)appearance).setTextureRegion(0*128, 1*128, 128, 128);
+				break;
 			case DIAMOND:		// diamond
 				((Sprite)appearance).setTextureRegion(3*128, 1*128, 128, 128);
 				break;

@@ -39,7 +39,7 @@ public class EnemyRandomMove extends Enemy
 	public EnemyRandomMove(float x, float y, int type)
 	{
 		super(x, y, type);
-		setXp(10);
+		setXp(3);
 		direction = new Vector2f();
 //		speed = 1.f;
 		motionTimer = new Timer();

@@ -21,6 +21,7 @@ public class Level
 	private static float playerBorderX = 0.3f;
 	private static float playerBorderY = 0.3f; // in percent
 	private float posX, posY;
+	private int resX, resY;
 //	private Block grid[][];
 	public static float scale = 0.2f;
 	public static  float gridSize = 80.f;
@@ -66,7 +67,7 @@ public class Level
 //		collectableObjects = new Vector<Collectable>();
 		mainPlayer = new Player(map.start.getX(), map.start.getY());
 //		Print.out("created Player at "); map.start.print();
-		map.getBlockAt((int) mainPlayer.getPosX(), (int) mainPlayer.getPosY()).setType(0);
+		map.getBlockAt((int) mainPlayer.getPosX(), (int) mainPlayer.getPosY()).setType(BlockType.BLOCK_NONE);
 		mainSelectBox = new SelectBox();
 		projectiles = new Vector<Projectile>();
 		hostileProjectiles = new Vector<Projectile>();
@@ -82,6 +83,10 @@ public class Level
 	{
 		posX = 1.f;
 		posY = 1.f;
+		
+		resX = Darklords.resX;
+		resY = Darklords.resY;
+		
 		if (!filename.equals(""))
 		{
 			setName(filename);
@@ -110,7 +115,7 @@ public class Level
 		
 		
 		mainPlayer = new Player(map.start.getX(), map.start.getY());
-		map.getBlockAt((int) mainPlayer.getPosX(), (int) mainPlayer.getPosY()).setType(0);
+		map.getBlockAt((int) mainPlayer.getPosX(), (int) mainPlayer.getPosY()).setType(BlockType.BLOCK_NONE);
 		mainSelectBox = new SelectBox();
 		projectiles = new Vector<Projectile>();
 		hostileProjectiles = new Vector<Projectile>();
@@ -231,17 +236,20 @@ public class Level
 	{
 		if (mainPlayer.canAttackBlock())
 		{
-			int type = map.getBlockAt(x, y).getType();
-			if (map.getBlockAt(x, y).isDestroyable() && map.getBlockAt(x, y).attack())
+//			BlockType type = map.getBlockAt(x, y).getType();
+			Block tmpBlock = map.getBlockAt(x, y);
+			CollectableType tmpCollectableType = tmpBlock.dropOnDestroy();
+			
+			if (tmpBlock.isDestroyable() && tmpBlock.attack())
 			{
 				//destroyed
 //				System.out.println("Block destroyed!");
-				if (type == 1) mainPlayer.decreaseDiggingCount();
+//				if (type == BlockType.BLOCK_ROCK) mainPlayer.decreaseDiggingCount();
 				Random rnd = new Random();
 				float rndX = 0.20f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
 				float rndY = 0.20f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
 //				System.out.println(rndX);
-				map.collectableObjects.add(new Collectable(CollectableType.values()[type], x+0.25f+rndX, y+0.25f+rndY));
+				map.collectableObjects.add(new Collectable(tmpCollectableType, x+0.25f+rndX, y+0.25f+rndY));
 			}
 			mainPlayer.startAttackBlockTimer();
 		}
@@ -281,7 +289,7 @@ public class Level
 		
 		// draw blocks
 		
-		Block backgroundBlock = new Block(0);
+		Block backgroundBlock = new Block(BlockType.BLOCK_NONE);
 		
 		int minX = Math.max(0, (int)mainPlayer.getPosX()-drawSize);
 		int maxX = Math.min(map.getMapSizeX(), (int)mainPlayer.getPosX()+drawSize);
@@ -465,15 +473,20 @@ public class Level
 //		}
 	}
 	
-	public int getNumerOfPojectiles(int type)
+//	public int getNumerOfPojectiles(int type)
+//	{
+//		int amount = 0;
+//		for (Iterator<Projectile> object = projectiles.iterator(); object.hasNext();)
+//		{
+//			Projectile p = object.next();
+//			if (p.getType() == type) amount++;
+//		}
+//		return amount;
+//	}
+	
+	public int getNumerOfPojectiles()
 	{
-		int amount = 0;
-		for (Iterator<Projectile> object = projectiles.iterator(); object.hasNext();)
-		{
-			Projectile p = object.next();
-			if (p.getType() == type) amount++;
-		}
-		return amount;
+		return projectiles.size();
 	}
 	
 	/**
@@ -501,7 +514,7 @@ public class Level
 			switch (mainPlayer.getActiveAbility())
 			{
 				case DIG:
-					if (((mainPlayer.getDiggingNum()!=0) || map.getBlockAt(x_int, y_int).getType() != 1) && (Math.abs(this.mainPlayer.getPosX()+0.5f-mouseGrid.getX()) < 1.5f) && (Math.abs(this.mainPlayer.getPosY()+0.5f-mouseGrid.getY()) < 1.5f))
+					if (((mainPlayer.getDiggingNum()!=0) || map.getBlockAt(x_int, y_int).getType() != BlockType.BLOCK_ROCK) && (Math.abs(this.mainPlayer.getPosX()+0.5f-mouseGrid.getX()) < 1.5f) && (Math.abs(this.mainPlayer.getPosY()+0.5f-mouseGrid.getY()) < 1.5f))
 					{
 						this.attackBlock(x_int, y_int);
 					}
@@ -525,12 +538,12 @@ public class Level
 	 */
 	public void startProjectile(Vector2f pos)
 	{
-		int ammo = 0;
-		if (mainPlayer.getActiveProjectile() == 0) ammo = mainPlayer.getBlocksRed();
-		if (mainPlayer.getActiveProjectile() == 1) ammo = mainPlayer.getBlocksBlue();
-		if (mainPlayer.getActiveProjectile() == 2) ammo = mainPlayer.getBlocksGreen();
+		float ammo = 0;
+		if (mainPlayer.getActiveProjectile() == 0) ammo = mainPlayer.getEnergyRed();
+//		if (mainPlayer.getActiveProjectile() == 1) ammo = mainPlayer.getEnergyBlue();
+//		if (mainPlayer.getActiveProjectile() == 2) ammo = mainPlayer.getEnergyGreen();
 		
-		if (ammo > getNumerOfPojectiles(mainPlayer.getActiveProjectile()))
+		if (mainPlayer.getMaxProjectiles() > getNumerOfPojectiles() && ammo >= 1)
 		{
 			// shoot
 			Vector2f dir = new Vector2f();
@@ -541,6 +554,7 @@ public class Level
 			position = position.add(dir.mul(0.5f));
 			
 			projectiles.add(new Projectile(position, dir, mainPlayer.getActiveProjectile()));
+			mainPlayer.decreaseEnergyRed(1);
 //			System.out.println("Create Projectile at ("+pos.getX()+", "+pos.getY()+")");;
 //			mainPlayer.switchActiveAbility();	
 		}
@@ -571,7 +585,7 @@ public class Level
 		// right mouse button
 		if (button == 1)
 		{
-			map.setBlock(x_int, y_int, 0);
+			map.setBlock(x_int, y_int, BlockType.BLOCK_NONE);
 			switch (DevModeSettings.getActiveEnemy())
 			{
 			case 0:
@@ -621,10 +635,10 @@ public class Level
 //		System.out.println(mainPlayer.getPosX());
 //		System.out.println(this.getPlayerBorderX()*(Darklords.resX/gridSize));
 		
-		float diffLeft = playerScreenX - this.getPlayerBorderX()*(Darklords.resX/gridSize);
-		float diffRight = playerScreenX - (mainPlayer.getSizeX() - this.getPlayerBorderX())*(Darklords.resX/gridSize);
-		float diffTop = playerScreenY - this.getPlayerBorderY()*(Darklords.resY/gridSize);
-		float diffBottom = playerScreenY - (mainPlayer.getSizeY() - this.getPlayerBorderY())*(Darklords.resY/gridSize);
+		float diffLeft = playerScreenX - this.getPlayerBorderX()*(resX/gridSize);
+		float diffRight = playerScreenX - (mainPlayer.getSizeX() - this.getPlayerBorderX())*(resX/gridSize);
+		float diffTop = playerScreenY - this.getPlayerBorderY()*(resY/gridSize);
+		float diffBottom = playerScreenY - (mainPlayer.getSizeY() - this.getPlayerBorderY())*(resY/gridSize);
 		
 		if (diffLeft < 0.f)
 		{
@@ -684,18 +698,18 @@ public class Level
 				destroyed = true;
 				
 
-				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 6)	// blue projectile
+				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
 				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
 //					System.out.println("ice crystal destroyed");
-					mainPlayer.decreaseBlocksBlue();
+//					mainPlayer.decreaseBlocksBlue();
 				}
 				
-				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 7)	// green projectile
+				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
 				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
 //					System.out.println("plants destroyed");
-					mainPlayer.decreaseBlocksGreen();
+//					mainPlayer.decreaseBlocksGreen();
 				}
 				continue;
 			}
@@ -709,18 +723,18 @@ public class Level
 				destroyed = true;
 				
 
-				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 6)	// blue projectile
+				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
 				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
 //					System.out.println("ice crystal destroyed");
-					mainPlayer.decreaseBlocksBlue();
+//					mainPlayer.decreaseBlocksBlue();
 				}
 				
-				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 7)	// green projectile
+				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
 				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
 					System.out.println("plants destroyed");
-					mainPlayer.decreaseBlocksGreen();
+//					mainPlayer.decreaseBlocksGreen();
 				}
 				continue;
 			}
@@ -734,18 +748,18 @@ public class Level
 				destroyed = true;
 				
 
-				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 6)	// blue projectile
+				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
 				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
 //					System.out.println("ice crystal destroyed");
-					mainPlayer.decreaseBlocksBlue();
+//					mainPlayer.decreaseBlocksBlue();
 				}
 				
-				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 7)	// green projectile
+				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
 				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
 //					System.out.println("plants destroyed");
-					mainPlayer.decreaseBlocksGreen();
+//					mainPlayer.decreaseBlocksGreen();
 				}
 				continue;
 			}
@@ -759,18 +773,18 @@ public class Level
 				destroyed = true;
 				
 
-				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 6)	// blue projectile
+				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
 				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
 //					System.out.println("ice crystal destroyed");
-					mainPlayer.decreaseBlocksBlue();
+//					mainPlayer.decreaseBlocksBlue();
 				}
 				
-				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == 7)	// green projectile
+				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
 				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, 0);
+					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
 //					System.out.println("plants destroyed");
-					mainPlayer.decreaseBlocksGreen();
+//					mainPlayer.decreaseBlocksGreen();
 				}
 				continue;
 			}
@@ -803,15 +817,19 @@ public class Level
 							tmpBubble.setTextureRegion(new TextureRegion(6*128, 3*128, 2*128, 1*128));
 							bubbles.add(tmpBubble);
 							
-							mainPlayer.decreaseBlocksRed();
-							if (e.decreaseHp(tmp.getDamage())) obj2.remove();	
+//							mainPlayer.decreaseBlocksRed();
+							if (e.decreaseHp(tmp.getDamage())) 
+							{
+								mainPlayer.addXp(e.getXp());
+								obj2.remove();
+							}
 						}
 						
 						// blue projectiles
 						if (tmp.getType() == 1 && e instanceof StaticEnemyCrystal)	// red projectile
 						{
 							System.out.println("crystal damaged by projectile");
-							mainPlayer.decreaseBlocksBlue();
+//							mainPlayer.decreaseBlocksBlue();
 							if (e.decreaseHp(tmp.getDamage())) obj2.remove();	
 						}
 						
@@ -1023,6 +1041,22 @@ public class Level
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public int getResX() {
+		return resX;
+	}
+
+	public void setResX(int resX) {
+		this.resX = resX;
+	}
+
+	public int getResY() {
+		return resY;
+	}
+
+	public void setResY(int resY) {
+		this.resY = resY;
 	}
 	
 //	public Level createCopy()

@@ -26,7 +26,7 @@ public class Grid
 		this(10, 10);
 	}
 	
-	public Grid(int x, int y, int t)
+	public Grid(int x, int y, BlockType t)
 	{
 		gridSizeX = x;
 		gridSizeY = y;
@@ -48,10 +48,10 @@ public class Grid
 	
 	public Grid(int x, int y)
 	{
-		this(x, y, 0);
+		this(x, y, BlockType.BLOCK_NONE);
 	}
 	
-	private void initDefault(int t)
+	private void initDefault(BlockType t)
 	{
 		for (int i=0;i<gridSizeX;i++)
 		{
@@ -59,7 +59,7 @@ public class Grid
 			{
 				if ((i==0) || (j==0) || (i==gridSizeX-1) || (j==gridSizeY-1))
 				{
-					theGrid[i][j] = new Block(1);
+					theGrid[i][j] = new Block(BlockType.BLOCK_ROCK);
 				} else // inner level
 				{
 					theGrid[i][j] = new Block(t);
@@ -73,63 +73,63 @@ public class Grid
 		return theGrid[x][y];
 	}
 	
-	private void initTest()
-	{
-		Random rnd = new Random();
-		
-		for (int i=0;i<gridSizeX;i++)
-		{
-			for (int j=0;j<gridSizeY;j++)
-			{
-				theGrid[i][j] = new Block(2);
-			}
-		}
-		
-		for (int i=0;i<gridSizeX;i++)
-		{
-			for (int j=0;j<gridSizeY;j++)
-			{
-//				grid[i][j] = new Block();
-				if ((i==0) || (j==0) || (i==gridSizeX-1) || (j==gridSizeY-1))
-				{
-					theGrid[i][j].setType(1);
-				} else // inner level
-				{
-					if (rnd.nextGaussian() < 0.5)
-					{
-						theGrid[i][j].setType(2);
-					}
-					if (rnd.nextGaussian() > 1.0)
-					{
-						int rndType = (int)Math.floor((1.f*rnd.nextInt()/Integer.MAX_VALUE+1)*0.5*3+3);
-//						System.out.println(rndType);
-						theGrid[i][j].setType(rndType);
-						if (rnd.nextGaussian() > 0.3)
-						{
-							if ((i+1)<gridSizeX-1)
-							{
-//								System.out.println(i+1+ ", "+j);
-								theGrid[i+1][j].setType(rndType);
-							}
-						}
-					}
-				}
-			}
-		}
-		theGrid[1][4].setType(0);
-		theGrid[1][3].setType(0);
-		theGrid[2][3].setType(0);
-		theGrid[7][7].setType(0);
-//		enemies.add(new StaticEnemy(1.f, 4.f));
-		enemies.add(new EnemyRandomMove(1.f, 4.f));
-		enemies.add(new StaticEnemy(7.f, 7.f));
-//		grid[(int)Math.round(mainPlayer.getPosX())][(int)Math.round(mainPlayer.getPosY())].setType(0);
-		
-//		collectableObjects.add(new Collectable(CollectableType.ABILITY_TELEPORT, 7.25f, 3.25f));
-//		collectableObjects.add(new Collectable(CollectableType.ABILITY_DIGGING, 6.25f, 2.25f));
-	}
+//	private void initTest()
+//	{
+//		Random rnd = new Random();
+//		
+//		for (int i=0;i<gridSizeX;i++)
+//		{
+//			for (int j=0;j<gridSizeY;j++)
+//			{
+//				theGrid[i][j] = new Block(BlockType.BLOCK_DIRT);
+//			}
+//		}
+//		
+//		for (int i=0;i<gridSizeX;i++)
+//		{
+//			for (int j=0;j<gridSizeY;j++)
+//			{
+////				grid[i][j] = new Block();
+//				if ((i==0) || (j==0) || (i==gridSizeX-1) || (j==gridSizeY-1))
+//				{
+//					theGrid[i][j].setType(BlockType.BLOCK_ROCK);
+//				} else // inner level
+//				{
+//					if (rnd.nextGaussian() < 0.5)
+//					{
+//						theGrid[i][j].setType(BlockType.BLOCK_DIRT);
+//					}
+//					if (rnd.nextGaussian() > 1.0)
+//					{
+//						int rndType = (int)Math.floor((1.f*rnd.nextInt()/Integer.MAX_VALUE+1)*0.5*3+3);
+////						System.out.println(rndType);
+//						theGrid[i][j].setType(BlockType(rndType));
+//						if (rnd.nextGaussian() > 0.3)
+//						{
+//							if ((i+1)<gridSizeX-1)
+//							{
+////								System.out.println(i+1+ ", "+j);
+//								theGrid[i+1][j].setType(rndType);
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+//		theGrid[1][4].setType(0);
+//		theGrid[1][3].setType(0);
+//		theGrid[2][3].setType(0);
+//		theGrid[7][7].setType(0);
+////		enemies.add(new StaticEnemy(1.f, 4.f));
+//		enemies.add(new EnemyRandomMove(1.f, 4.f));
+//		enemies.add(new StaticEnemy(7.f, 7.f));
+////		grid[(int)Math.round(mainPlayer.getPosX())][(int)Math.round(mainPlayer.getPosY())].setType(0);
+//		
+////		collectableObjects.add(new Collectable(CollectableType.ABILITY_TELEPORT, 7.25f, 3.25f));
+////		collectableObjects.add(new Collectable(CollectableType.ABILITY_DIGGING, 6.25f, 2.25f));
+//	}
 
-	public boolean setTypeAt(int x_int, int y_int, int t)
+	public boolean setTypeAt(int x_int, int y_int, BlockType t)
 	{
 		if (x_int > 0 && x_int < getGridSizeX() && y_int > 0 && y_int < getGridSizeY())
 		{

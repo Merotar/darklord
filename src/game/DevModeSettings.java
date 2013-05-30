@@ -13,18 +13,23 @@ public class DevModeSettings
 	
 	static int maxActiveBlock = 8;
 //		static int maxActiveCollectable = 2;
-	static int activeBlock = 1;
+	static BlockType activeBlock = BlockType.BLOCK_ROCK;
 	static int maxActiveEnemy = 1;
 	static int activeEnemy = 0;
 	static CollectableType activeCollectable = CollectableType.ABILITY_DIGGING;
 	
 	static void increaseActiveBlock()
 	{
-		activeBlock++;
-		if (activeBlock > maxActiveBlock) activeBlock = 0;
+		if (activeBlock == BlockType.BLOCK_YELLOW) {activeBlock =  BlockType.BLOCK_NONE; return;}
+		if (activeBlock == BlockType.BLOCK_GREEN) {activeBlock =  BlockType.BLOCK_YELLOW; return;}
+		if (activeBlock == BlockType.BLOCK_BLUE) {activeBlock =  BlockType.BLOCK_GREEN; return;}
+		if (activeBlock == BlockType.BLOCK_RED) {activeBlock =  BlockType.BLOCK_BLUE; return;}
+		if (activeBlock == BlockType.BLOCK_DIRT) {activeBlock =  BlockType.BLOCK_RED; return;}
+		if (activeBlock == BlockType.BLOCK_ROCK) {activeBlock =  BlockType.BLOCK_DIRT; return;}
+		if (activeBlock == BlockType.BLOCK_NONE) {activeBlock =  BlockType.BLOCK_ROCK; return;}
 	}
 	
-	static int getActiveBLock()
+	static BlockType getActiveBLock()
 	{
 		return activeBlock;
 	}

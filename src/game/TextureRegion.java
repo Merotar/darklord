@@ -39,6 +39,11 @@ public class TextureRegion
 		setHeight(theHeight);
 	}
 	
+	public TextureRegion(TextureRegion t)
+	{
+		this(t.getX(), t.getY(), t.getWidth(), t.getHeight());
+	}
+	
 	public void set(float theX, float theY, float theWidth, float theHeight)
 	{
 		setX(theX);

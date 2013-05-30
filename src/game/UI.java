@@ -12,20 +12,22 @@ import java.util.Vector;
  * 
  */
 
-public class Menu
+public class UI
 {
 	Vector2f position, size;
 	SpriteSheet spriteSheet;
 	TextureRegion background;
 	Vector<Button> buttons;
+	Vector<UIObject> UIObjects;
 	
-	public Menu(String fileName)
+	public UI(String fileName)
 	{
 		spriteSheet = new SpriteSheet(fileName);
 		buttons = new Vector<Button>();
+		UIObjects = new Vector<UIObject>();
 	}
 	
-	public Menu()
+	public UI()
 	{
 		this("./img/main_menu.png");
 	}
@@ -40,10 +42,15 @@ public class Menu
 		buttons.add(theButton);
 	}
 	
+	public void addUIObject(UIObject theUIObject)
+	{
+		UIObjects.add(theUIObject);
+	}
+	
 	public void draw()
 	{
 		spriteSheet.begin();
-		spriteSheet.draw(background, getPosition().getX(), getPosition().getY(), getSize().getX(), getSize().getY());
+		if (background != null) spriteSheet.draw(background, getPosition().getX(), getPosition().getY(), getSize().getX(), getSize().getY());
 		for (Iterator<Button> object = buttons.iterator();object.hasNext();)
 		{
 			Button tmpButton = object.next();
@@ -52,6 +59,16 @@ public class Menu
 					getPosition().getY()+tmpButton.getPosition().getY()*getSize().getY(), 
 					tmpButton.getSize().getX()*getSize().getX(), 
 					tmpButton.getSize().getY()*getSize().getY());
+		}
+		
+		for (Iterator<UIObject> object = UIObjects.iterator();object.hasNext();)
+		{
+			UIObject tmpUIObject = object.next();
+			spriteSheet.draw(tmpUIObject.getTextureRegion(), 
+					getPosition().getX()+tmpUIObject.getPosition().getX()*getSize().getX(), 
+					getPosition().getY()+tmpUIObject.getPosition().getY()*getSize().getY(), 
+					tmpUIObject.getSize().getX()*getSize().getX(), 
+					tmpUIObject.getSize().getY()*getSize().getY());
 		}
 		spriteSheet.end();
 	}

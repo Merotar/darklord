@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import javax.swing.text.Position;
 
+import org.lwjgl.input.Controller;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.LWJGLException;
@@ -35,11 +36,12 @@ public class Darklords {
 	static float ratio;
 	Level world;
 	Vector<String> levelList;
-	Vector<Level> worldLife;
+//	Vector<Level> worldLife;
 	boolean isLeftMouseDown, isRightMouseDown, isLeftMouseReleased;
 	Vector2f posMouseDown, posRightMouseDown;
 	Vector2f mousePos;
 	Timer worldTimer, rightMouseDelayTimer;
+	static float dt;
 	int rightMouseDelay = 200;
 //	static DTextures textures;
 	KeyboardSettings myKeyboard;
@@ -48,21 +50,22 @@ public class Darklords {
 	private int program=0;
 	boolean useShader;
 	int locResX, locResY;
-	Vector2f gameScreenPos;
+	Vector2f gameScreenPos; // (0, 0) ist top left
 	float gameScreenScale;
 	static SpriteSheet sprites01;
 	GameStatus gameStatus;
-	Menu mainMenu;
+	UI mainMenu;
+	IngameUI ingameUI;
 	
 	/**
 	 * initializes global variables
 	 */
 	public void init()
 	{
-		resX = 800;
-		resY = 600;
+		resX = 1280;
+		resY = 800;
 		gameScreenScale = 1.0f;
-		gameScreenPos = new Vector2f(0.f, 0.f);
+		gameScreenPos = new Vector2f(0.5f, 0.f);
 		fullscreen = false;
 		useShader = false;
 		maxFPS = 30;
@@ -74,7 +77,7 @@ public class Darklords {
 		posMouseDown = new Vector2f(0.f, 0.f);
 		posRightMouseDown = new Vector2f(0.f, 0.f);
 		mousePos = new Vector2f(0.f, 0.f);
-		worldLife = new Vector<Level>();
+//		worldLife = new Vector<Level>();
 		ratio = 1.f*resX/resY;
 		myKeyboard = new KeyboardSettings();
 		gameStatus = GameStatus.MAIN_MENU;
@@ -84,14 +87,60 @@ public class Darklords {
 //		levelList.add(new String("defaultMap.map"));
 //		levelList.add(new String("defaultMap.map"));
 //		levelList.add(new String("test.txt"));
-		levelList.add(new String("level01.txt"));
-//		levelList.add(new String(""));
+//		levelList.add(new String("level01.txt"));
+		levelList.add(new String(""));
 		
+	}
+	
+	public void initGameUI()
+	{
+        ingameUI = new IngameUI("./img/ui.png");
+        ingameUI.setPosition(new Vector2f(-1.f, -1.f));
+        ingameUI.setSize(new Vector2f(2.f, 2.f));
+        
+        UIObject panelLeft = new UIObject(new TextureRegion(0.f, 0.f, 3*128, 6*128), "panel left");
+        panelLeft.setSize(new Vector2f(0.25f, 2.f));
+        panelLeft.setPosition(new Vector2f(0.f, 0.f));
+        ingameUI.addUIObject(panelLeft);
+        
+        UIBar energyBarRed = new UIBar(new TextureRegion(0.f, 6*128+0*32, 2*128, 32), "energy bar red");
+        energyBarRed.setSize(new Vector2f(0.8f*0.25f, .02f));
+        energyBarRed.setPosition(new Vector2f(0.1f*0.25f, 0.85f));
+        ingameUI.setEnergyBarRed(energyBarRed);
+        
+        UIBar energyBarBlue = new UIBar(new TextureRegion(0.f, 6*128+1*32, 2*128, 32), "energy bar red");
+        energyBarBlue.setSize(new Vector2f(0.8f*0.25f, .02f));
+        energyBarBlue.setPosition(new Vector2f(0.1f*0.25f, 0.8f));
+        ingameUI.setEnergyBarBlue(energyBarBlue);
+        
+        UIBar energyBarGreen = new UIBar(new TextureRegion(0.f, 6*128+2*32, 2*128, 32), "energy bar red");
+        energyBarGreen.setSize(new Vector2f(0.8f*0.25f, .02f));
+        energyBarGreen.setPosition(new Vector2f(0.1f*0.25f, 0.75f));
+        ingameUI.setEnergyBarGreen(energyBarGreen);
+        
+        UIBar energyBarYellow = new UIBar(new TextureRegion(0.f, 6*128+3*32, 2*128, 32), "energy bar red");
+        energyBarYellow.setSize(new Vector2f(0.8f*0.25f, .02f));
+        energyBarYellow.setPosition(new Vector2f(0.1f*0.25f, 0.7f));
+        ingameUI.setEnergyBarYellow(energyBarYellow);
+        
+//        // add start button
+//        Button startButton = new Button(new TextureRegion(0*64, 10*64, 3*64, 64),
+//        		new TextureRegion(3*64, 10*64, 3*64, 64),"start");
+//        startButton.setSize(new Vector2f(3.0f*0.1f, 0.1f*ratio));
+//        startButton.setPosition(new Vector2f(0.5f, 0.4f).sub(startButton.getSize().mul(0.5f)));
+//        mainMenu.addButton(startButton);
+//        
+//        // add quit button
+//        Button quitButton = new Button(new TextureRegion(0*64, 11*64, 3*64, 64), 
+//        		new TextureRegion(3*64, 11*64, 3*64, 64), "quit");
+//        quitButton.setSize(new Vector2f(3.0f*0.1f, 0.1f*ratio));
+//        quitButton.setPosition(new Vector2f(0.5f, 0.7f).sub(quitButton.getSize().mul(0.5f)));
+//        mainMenu.addButton(quitButton);
 	}
 	
 	public void initMainMenu()
 	{
-        mainMenu = new Menu("./img/main_menu.png");
+        mainMenu = new UI("./img/main_menu.png");
         mainMenu.setBackground(new TextureRegion(0.f, 0.f, 800, 600));
         mainMenu.setPosition(new Vector2f(-1.f, -1.f));
         mainMenu.setSize(new Vector2f(2.f, 2.f));
@@ -202,22 +251,29 @@ public class Darklords {
         // init other stuff
         
         world = new Level(levelList.firstElement());
+//        world.setResX((int)(resX-(gameScreenPos.getX()*resX/2.f)));
+//        world.setResX((int)(resY-(gameScreenPos.getY()*resY/2.f)));
         
 //      world = new Level(15,15);
         sprites01 = new SpriteSheet("./img/textures.png");
         
         initMainMenu();
+        initGameUI();
         
 		worldTimer = new Timer();
 		rightMouseDelayTimer = new Timer();
-		Timer fpsTimer = new Timer();
+//		Timer fpsTimer = new Timer();
 		worldTimer.start();
-		fpsTimer.start();
+		dt = 0;
+//		fpsTimer.start();
 		
 		while (!Display.isCloseRequested())
 		{
 			int glErr = GL11.glGetError();
 			if (glErr != 0) Print.err("OpenglGL error: "+glErr);
+			
+			dt = worldTimer.getTimeDelta()/1000.f;
+			worldTimer.reset();
 			
 			switch (gameStatus)
 			{
@@ -233,22 +289,22 @@ public class Darklords {
 			}
 			// main loop repeated while the window is not closed
 			
-			long waitingTime = (int)Math.round((1000000.f/maxFPS - fpsTimer.getTimeDelta())/1000.);
-			if (waitingTime > 0)
-			{
-				// wait for 30 fps
-				try
-				{
-					Thread.sleep(waitingTime);
-				} catch(Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
+//			long waitingTime = (int)Math.round((1000000.f/maxFPS - fpsTimer.getTimeDelta())/1000.);
+//			if (waitingTime > 0)
+//			{
+//				// wait for 30 fps
+//				try
+//				{
+//					Thread.sleep(waitingTime);
+//				} catch(Exception e)
+//				{
+//					e.printStackTrace();
+//				}
+//			}
 //			System.out.println("FPS: "+1000./waitingTime);
 			Display.update();
-//			Display.sync(30);
-			fpsTimer.reset();
+			Display.sync(30);
+//			fpsTimer.reset();
 		}
 
 		Display.destroy();
@@ -322,27 +378,27 @@ public class Darklords {
 		{
 			posMouseDown.set(Mouse.getX(), Mouse.getY());
 //			if (isLeftMouseDown) System.out.println("left mouse down");
-			if (isLeftMouseDown) world.mouseDownReaction(posMouseDown, 0);
+			if (isLeftMouseDown) world.mouseDownReaction(globalToGamescreen(posMouseDown), 0);
 			if (isRightMouseDown)
 			{
 				if (rightMouseDelayTimer.getTimeDelta() == 0)
 				{
 					rightMouseDelayTimer.reset();
 					rightMouseDelayTimer.start();
-					world.mouseDownReaction(posMouseDown, 1);
+					world.mouseDownReaction(globalToGamescreen(posMouseDown), 1);
 				}
 			}
 		} else
 		{
-			if (isLeftMouseDown) world.mouseDownReactionDev(posMouseDown, 0);
+			if (isLeftMouseDown) world.mouseDownReactionDev(globalToGamescreen(posMouseDown), 0);
 			if (isRightMouseDown)
 			{
-				world.mouseDownReactionDev(posRightMouseDown, 1);
+				world.mouseDownReactionDev(globalToGamescreen(posRightMouseDown), 1);
 				isRightMouseDown = false;
 			}
 		}
 
-		world.mousePositionReaction(mousePos);
+		world.mousePositionReaction(globalToGamescreen(mousePos));
 		float playerPosOld_x = world.mainPlayer.getPosX();
 		float playerPosOld_y = world.mainPlayer.getPosY();
 		if (!devMode) world.update();
@@ -461,7 +517,7 @@ public class Darklords {
 		}
 		
 		Block tmpBlock = world.map.getBlockAt((int)tmpX, (int) tmpY);
-		if ( tmpBlock!= null && tmpBlock.getType() == 8)
+		if ( tmpBlock!= null && tmpBlock.getType() == BlockType.BLOCK_GOAL)
 		{
 			Print.outln("level finished!");
 			if (levelList.size() > 1)
@@ -475,7 +531,10 @@ public class Darklords {
 			}
 		}
 		
+		ingameUI.update(world.mainPlayer);
+		
 		drawIngame();
+		drawUI();
 		
 		if (rightMouseDelayTimer.getTimeDelta() > rightMouseDelay)
 		{
@@ -588,11 +647,11 @@ public class Darklords {
      * checks mouse input
      */
 	public void checkMouse()
-	{		
+	{
 		while (Mouse.next())
 		{
-//			mousePos.set(Mouse.getX(), Mouse.getY());
-			mousePos = globalToGamescreen(new Vector2f(Mouse.getX(),Mouse.getY()));
+			mousePos.set(Mouse.getX(), Mouse.getY());
+//			mousePos = globalToGamescreen(new Vector2f(Mouse.getX(),Mouse.getY()));
 			
 			if (Mouse.getEventButtonState())
 			{
@@ -648,15 +707,15 @@ public class Darklords {
 		{
 //			mousePos = globalToGamescreen(new Vector2f(Mouse.getX(),Mouse.getY()));
 			
-			mousePos = globalToGamescreen(new Vector2f(1.f*Mouse.getX()/resX,1.f-1.f*Mouse.getY()/resY));
-			
+			mousePos = new Vector2f(1.f*Mouse.getX()/resX,1.f-1.f*Mouse.getY()/resY);
+
 			if (Mouse.getEventButtonState())
 			{
 //				Print.outln("down?");
 				if (Mouse.isButtonDown(0))
 				{
 					// calculate mouse position (left top=(0,0), right bottom=(1,1))
-					mousePos.print();
+//					mousePos.print();
 					isLeftMouseDown = true;
 					
 					for (Iterator<Button> buttonObj = mainMenu.getButtons().iterator();buttonObj.hasNext();)
@@ -932,6 +991,18 @@ public class Darklords {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * draws the UI
+	 */
+	public void drawUI()
+	{
+		ingameUI.draw();
+		
+//		spritesUI.begin();
+//		spritesUI.draw(UILeft);
+//		spritesUI.end();
 	}
 	
 	/**

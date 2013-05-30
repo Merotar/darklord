@@ -14,19 +14,20 @@ import org.newdawn.slick.Color;
 public class Block
 {
 	private boolean visible, solid;
-	private int id, type, hp, maxHp;
+	private int id, hp, maxHp;
 	private boolean destroyable;
 //	private TextureRegion textureRegion;
 	private Drawable appearance;
 	private static Drawable crack = new Sprite();
+	private BlockType type;
 	
 	
 	public Block()
 	{
-		setType(0);
+		setType(BlockType.BLOCK_NONE);
 	}
 	
-	public Block(int t)
+	public Block(BlockType t)
 	{
 //		textureRegion = new TextureRegion();
 		appearance = new Sprite();
@@ -98,11 +99,11 @@ public class Block
 		
 		if (this.getHp() <= 0)
 		{
-			this.setType(0);
+			this.setType(BlockType.BLOCK_NONE);
 		}
 	}
 	
-	public int getType() {
+	public BlockType getType() {
 		return type;
 	}
 	
@@ -122,62 +123,85 @@ public class Block
 		
 		return false;
 	}
+	
+	public CollectableType dropOnDestroy()
+	{
+		switch (getType())
+		{
+		case BLOCK_NONE:
+			return CollectableType.NONE;
+		case BLOCK_ROCK:
+			return CollectableType.NONE;
+		case BLOCK_DIRT:
+			return CollectableType.NONE;
+		case BLOCK_RED:
+			return CollectableType.BLOCK_RED;
+		case BLOCK_BLUE:
+			return CollectableType.BLOCK_BLUE;
+		case BLOCK_GREEN:
+			return CollectableType.BLOCK_GREEN;
+		case BLOCK_YELLOW:
+			return CollectableType.BLOCK_YELLOW;
+		default:
+			return CollectableType.NONE;
+		}
+	}
 
 
-	public void setType(int type) {
+	public void setType(BlockType type) {
 		this.type = type;
 		
 		try{
 			switch (type){
-			case 0:		// background
+			case BLOCK_NONE:		// background
 				solid = false;
 				destroyable = false;
 				((Sprite)appearance).setTextureRegion(0*128, 0*128, 128, 128);
 				setMaxHp(1);
 				break;
-			case 1:		// rock
+			case BLOCK_ROCK:		// rock
 				solid = true;
 				destroyable = false;
 				((Sprite)appearance).setTextureRegion(1*128, 0*128, 128, 128);
 				setMaxHp(1);
 				break;
-			case 2:		// dirt
+			case BLOCK_DIRT:		// dirt
 				solid = true;
 				destroyable = true;
 				((Sprite)appearance).setTextureRegion(2*128, 0*128, 128, 128);
 				setMaxHp(2);
 				break;
-			case 3:		// red
+			case BLOCK_RED:		// red
 				solid = true;
 				destroyable = true;
 				((Sprite)appearance).setTextureRegion(3*128, 0*128, 128, 128);
 				setMaxHp(2);
 				break;
-			case 4:		// blue
+			case BLOCK_BLUE:		// blue
 				solid = true;
 				destroyable = true;
 				((Sprite)appearance).setTextureRegion(4*128, 0*128, 128, 128);
 				setMaxHp(2);
 				break;
-			case 5:		// green
+			case BLOCK_GREEN:		// green
 				solid = true;
 				destroyable = true;
 				((Sprite)appearance).setTextureRegion(5*128, 0*128, 128, 128);
 				setMaxHp(2);
 				break;
-			case 6:		// free
-				solid = false;
-				destroyable = false;
-				((Sprite)appearance).setTextureRegion(4*128, 1*128, 128, 128);
-				setMaxHp(1);
+			case BLOCK_YELLOW:		// free
+				solid = true;
+				destroyable = true;
+				((Sprite)appearance).setTextureRegion(0*128, 1*128, 128, 128);
+				setMaxHp(2);
 				break;
-			case 7:		// plants
+			case BLOCK_PLANTS:		// plants
 				solid = true;
 				destroyable = false;
 				((Sprite)appearance).setTextureRegion(7*128, 0*128, 128, 128);
 				setMaxHp(1);
 				break;
-			case 8:		// goal
+			case BLOCK_GOAL:		// goal
 				solid = false;
 				destroyable = false;
 				((Sprite)appearance).setTextureRegion(6*128, 1*128, 128, 128);

@@ -75,7 +75,7 @@ public class Projectile extends Collidable
 		timer = new Timer();
 		timer.start();
 		active = true;
-		speed = 2.f;
+		setSpeed(7.f);
 		timePassed = 0.f;
 		setSize(0.3f);
 		setDamage(1);
@@ -185,7 +185,7 @@ public class Projectile extends Collidable
 		while ((time-timePassed) > 1.f/Darklords.maxFPS)
 		{
 			timePassed = time;
-			setPos(getPos().add(direction.mul(speed*0.1f)));
+			setPos(getPos().add(direction.mul(Darklords.dt*speed)));
 //			position = position.add(direction.mul(speed*0.1f));
 		}
 	}
@@ -208,5 +208,13 @@ public class Projectile extends Collidable
 
 	public Vector2f getDirection() {
 		return direction;
+	}
+
+	public float getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(float speed) {
+		this.speed = speed;
 	}
 }
