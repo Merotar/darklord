@@ -19,7 +19,7 @@ public class Enemy extends Collidable
 	public Enemy()
 	{
 		type = 0;
-		hp = maxHp = 2.f;
+		hp = maxHp = 3.f;
 		xp = 1;
 		dmgOnContact = 1.f;
 		setSizeX(1.f);

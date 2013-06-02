@@ -64,6 +64,7 @@ public class Player extends Collidable
 	private int score;
 	private int level;
 	private int maxProjectiles;
+	private Beam beam;
 //	private TimeStore redEnergyAdder;
 	
 	public int getMaxProjectiles() {
@@ -89,8 +90,8 @@ public class Player extends Collidable
 		setSizeX(0.75f);
 		setSizeY(0.75f);
 		setSpeed(4.5f);
-		setVisualRangeMin(7.f);
-		setVisualRangeMax(15.f);
+		setVisualRangeMin(1.f);//7.f);
+		setVisualRangeMax(4.f);//15.f);
 		setScore(0);
 		
 		appearance = new Animation();
@@ -108,6 +109,8 @@ public class Player extends Collidable
 		((Sprite)glow.get(1)).setTextureRegion(new TextureRegion(5, 2, 128));
 		((Sprite)glow.get(2)).setTextureRegion(new TextureRegion(6, 2, 128));
 
+		beam = new Beam();
+		
 		moveUp = moveDown = moveLeft = moveRight = false;
 		teleportUp = teleportDown = teleportLeft = teleportRight = false;
 		hp = maxHp = 100.f;
@@ -394,6 +397,8 @@ public class Player extends Collidable
 	public void update()
 	{
 		this.updatePosition();
+		
+		this.beam.update();
 		
 		// level up?
 		if (getXp() >= getMaxXp())
@@ -833,5 +838,13 @@ public class Player extends Collidable
 
 	public void setCrystalsYellow(int crystalsYellow) {
 		this.crystalsYellow = crystalsYellow;
+	}
+
+	public Beam getBeam() {
+		return beam;
+	}
+
+	public void setBeam(Beam beam) {
+		this.beam = beam;
 	}
 }

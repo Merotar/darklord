@@ -116,6 +116,7 @@ public class Block
 		{
 			boolean destroyed = false;
 			this.decreaseHp(1);
+			Darklords.sounds.digSound.playAsSoundEffect(1.f, 1.f, false);
 			if (this.getHp() <= 0) destroyed=true;
 			this.update();
 			if (destroyed) return true;
@@ -280,5 +281,10 @@ public class Block
 
 	public void setDestroyable(boolean destroyable) {
 		this.destroyable = destroyable;
+	}
+	
+	public void print()
+	{
+		System.out.println("Block type: "+type);
 	}
 }

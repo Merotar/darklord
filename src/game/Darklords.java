@@ -13,6 +13,8 @@ import org.lwjgl.input.Controller;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.LWJGLException;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.AL10;
 import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.Display;
@@ -51,11 +53,12 @@ public class Darklords {
 	boolean useShader;
 	int locResX, locResY;
 	Vector2f gameScreenPos; // (0, 0) ist top left
-	float gameScreenScale;
+	float gameScreenScale, musicPosition;
 	static SpriteSheet sprites01;
 	GameStatus gameStatus;
 	UI mainMenu;
 	IngameUI ingameUI;
+	static SoundLoader sounds;
 	
 	/**
 	 * initializes global variables
@@ -81,6 +84,8 @@ public class Darklords {
 		ratio = 1.f*resX/resY;
 		myKeyboard = new KeyboardSettings();
 		gameStatus = GameStatus.MAIN_MENU;
+		sounds = new SoundLoader();
+		musicPosition = 0.f;
 		
 		// add levels 
 		levelList = new Vector<String>();
@@ -251,6 +256,7 @@ public class Darklords {
         // init other stuff
         
         world = new Level(levelList.firstElement());
+        
 //        world.setResX((int)(resX-(gameScreenPos.getX()*resX/2.f)));
 //        world.setResX((int)(resY-(gameScreenPos.getY()*resY/2.f)));
         
@@ -265,6 +271,7 @@ public class Darklords {
 //		Timer fpsTimer = new Timer();
 		worldTimer.start();
 		dt = 0;
+		sounds.mainTheme.playAsMusic(1.f, sounds.volumeMusic, true);
 //		fpsTimer.start();
 		
 		while (!Display.isCloseRequested())
@@ -307,7 +314,7 @@ public class Darklords {
 //			fpsTimer.reset();
 		}
 
-		Display.destroy();
+		quitGame();
 		
 	}
 	
@@ -329,6 +336,7 @@ public class Darklords {
 					{
 						if (tmpButton.getName().equals("start"))
 						{
+							// start / resume game
 							gameStatus = GameStatus.INGAME;
 							isLeftMouseReleased = false;
 							isLeftMouseDown = false;
@@ -337,7 +345,7 @@ public class Darklords {
 						if (tmpButton.getName().equals("quit"))
 						{
 							isLeftMouseReleased = false;
-							System.exit(0);
+							quitGame();
 						}
 					}
 				}
@@ -353,6 +361,13 @@ public class Darklords {
 //		GL11.glTranslatef(0.f, -resY, 0.f);
 		mainMenu.draw();
 		GL11.glPopMatrix();
+	}
+	
+	public void quitGame()
+	{
+		Display.destroy();
+		AL.destroy();
+		System.exit(0);
 	}
 	
 	public void ingame()
@@ -527,7 +542,7 @@ public class Darklords {
 			} else
 			{
 				Print.outln("game finished!");
-				System.exit(0);
+				quitGame();
 			}
 		}
 		
@@ -949,17 +964,17 @@ public class Darklords {
 					world.mainPlayer.setPos(world.map.getStart());
 				}
 				
-				if (Keyboard.isKeyDown(myKeyboard.KEY_PERIOD) && devMode)
-				{
-					world.map.writeToFile(world.getName(), world.mainPlayer.getPos());
-					Print.outln("level saved as "+world.getName());
-				}
-				
-				if (Keyboard.isKeyDown(myKeyboard.KEY_COMMA) && devMode)
-				{
-//					System.out.println("test: "+Keyboard.getEventKey());
-					world.map.readFile();
-				}
+//				if (Keyboard.isKeyDown(myKeyboard.KEY_PERIOD) && devMode)
+//				{
+//					world.map.writeToFile(world.getName(), world.mainPlayer.getPos());
+//					Print.outln("level saved as "+world.getName());
+//				}
+//				
+//				if (Keyboard.isKeyDown(myKeyboard.KEY_COMMA) && devMode)
+//				{
+////					System.out.println("test: "+Keyboard.getEventKey());
+//					world.map.readFile();
+//				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_W))
 				{

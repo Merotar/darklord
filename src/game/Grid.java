@@ -20,6 +20,8 @@ public class Grid
 	public int gridSizeX, gridSizeY;
 	private float[][] fogMap;
 	private int fogDensity;
+	public Vector<Collectable> collectableObjects;
+	public Vector<Chest> chests;
 	
 	public Grid()
 	{
@@ -32,23 +34,36 @@ public class Grid
 		gridSizeY = y;
 		theGrid = new Block[gridSizeX][gridSizeY];
 		
-		this.setFogDensity(5);
+		this.setFogDensity(1);
 		fogMap = new float[getGridSizeX()*getFogDensity()][getGridSizeY()*getFogDensity()];
 		for (int i=0;i<getGridSizeX()*getFogDensity();i++)
 		{
 			for (int j=0;j<getGridSizeY()*getFogDensity();j++)
 			{
-				fogMap[i][j] = 127;
+				fogMap[i][j] = 1.f;
 			}
 		}
 		
 		enemies = new Vector<Enemy>();
+		collectableObjects = new Vector<Collectable>();
+		chests = new Vector<Chest>();
+		
 		initDefault(t);
 	}
 	
 	public Grid(int x, int y)
 	{
 		this(x, y, BlockType.BLOCK_NONE);
+	}
+	
+	public void addCollectable(Collectable theCollectable)
+	{
+		collectableObjects.add(theCollectable);
+	}
+	
+	public void addChest(Chest theChest)
+	{
+		chests.add(theChest);
 	}
 	
 	private void initDefault(BlockType t)
@@ -59,7 +74,7 @@ public class Grid
 			{
 				if ((i==0) || (j==0) || (i==gridSizeX-1) || (j==gridSizeY-1))
 				{
-					theGrid[i][j] = new Block(BlockType.BLOCK_ROCK);
+					theGrid[i][j] = new Block(BlockType.BLOCK_YELLOW);
 				} else // inner level
 				{
 					theGrid[i][j] = new Block(t);
@@ -171,7 +186,11 @@ public class Grid
 
 	public float getFogAt(int x, int y)
 	{
-		return fogMap[x][y];
+		if (x >= 0 && x < getGridSizeX()*getFogDensity() && y >= 0 && y < getGridSizeY()*getFogDensity())
+		{
+			return fogMap[x][y];
+		}
+		return 0.f;
 	}
 
 	public void setFogAt(int x, int y, float value)
@@ -181,7 +200,7 @@ public class Grid
 		this.fogMap[x][y] = value;
 	}
 	
-	public void drawFog()
+	public void drawFog(int x, int y)
 	{
 		GL11.glBegin(GL11.GL_QUADS);
 		
@@ -190,11 +209,33 @@ public class Grid
 		float sizeX = 1.f/getFogDensity();
 		float sizeY = 1.f/getFogDensity();
 				
+		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x, y));
+
+//		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x, y+1));
 		GL11.glVertex2f(posX, posY+sizeY);
+//		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x+1, y+1));
 		GL11.glVertex2f(posX+sizeX, posY+sizeY);
+//		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x+1, y));
 		GL11.glVertex2f(posX+sizeX, posY);
+//		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x, y));
 		GL11.glVertex2f(posX, posY);
 		GL11.glEnd();
+	}
+
+	public Vector<Collectable> getCollectableObjects() {
+		return collectableObjects;
+	}
+
+	public void setCollectableObjects(Vector<Collectable> collectableObjects) {
+		this.collectableObjects = collectableObjects;
+	}
+
+	public Vector<Chest> getChests() {
+		return chests;
+	}
+
+	public void setChests(Vector<Chest> chests) {
+		this.chests = chests;
 	}
 	
 }

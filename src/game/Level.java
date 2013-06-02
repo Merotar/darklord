@@ -32,7 +32,7 @@ public class Level
 	public Vector<Projectile> projectiles;
 	public Vector<Projectile> hostileProjectiles;
 	public Vector<MovingSprite> bubbles;
-	public static final int drawSize = 15;
+	public static final int drawSize = 8;
 	String name;
 
 	public Level()
@@ -102,15 +102,16 @@ public class Level
 	        		map.readTextFile(filename);
 	        	} else
 	        	{
-	            	map.readFile(filename);
+//	            	map.readFile(filename);
+	        		map = new Map(30, 30);
 	        	}
 	        } else
 	        {
-	        	map = new Map(10, 10);
+	        	map = new Map(100, 100);
 	        }
 		} else
 		{
-			map = new Map(50, 50);
+			map = new Map(30, 30);
 		}
 		
 		
@@ -196,7 +197,7 @@ public class Level
 	
 	public boolean isBlockSolid(int x, int y)
 	{
-		if ((x < 0) || (y < 0) || (x >= map.getMapSizeX()) || (y >= map.getMapSizeY())) return false;
+//		if ((x < 0) || (y < 0) || (x >= map.getMapSizeX()) || (y >= map.getMapSizeY())) return false;
 		return map.getBlockAt(x, y).isSolid();
 	}
 
@@ -249,7 +250,7 @@ public class Level
 				float rndX = 0.20f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
 				float rndY = 0.20f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
 //				System.out.println(rndX);
-				map.collectableObjects.add(new Collectable(tmpCollectableType, x+0.25f+rndX, y+0.25f+rndY));
+				map.getCollectableObjects().add(new Collectable(tmpCollectableType, x+0.25f+rndX, y+0.25f+rndY));
 			}
 			mainPlayer.startAttackBlockTimer();
 		}
@@ -291,11 +292,16 @@ public class Level
 		
 		Block backgroundBlock = new Block(BlockType.BLOCK_NONE);
 		
-		int minX = Math.max(0, (int)mainPlayer.getPosX()-drawSize);
-		int maxX = Math.min(map.getMapSizeX(), (int)mainPlayer.getPosX()+drawSize);
-		int minY = Math.max(0, (int)mainPlayer.getPosY()-drawSize);
-		int maxY = Math.min(map.getMapSizeY(), (int)mainPlayer.getPosY()+drawSize);
+//		int minX = Math.max(0, (int)mainPlayer.getPosX()-drawSize);
+//		int maxX = Math.min(map.getMapSizeX(), (int)mainPlayer.getPosX()+drawSize);
+//		int minY = Math.max(0, (int)mainPlayer.getPosY()-drawSize);
+//		int maxY = Math.min(map.getMapSizeY(), (int)mainPlayer.getPosY()+drawSize);
 		
+		int minX = (int)mainPlayer.getPosX()-drawSize;
+		int maxX = (int)mainPlayer.getPosX()+drawSize;
+		int minY =(int)mainPlayer.getPosY()-drawSize;
+		int maxY =(int)mainPlayer.getPosY()+drawSize;
+
 		
 		Darklords.sprites01.begin();
 		
@@ -327,9 +333,27 @@ public class Level
 		Darklords.sprites01.end();
 		
 		// draw collectable objects
-		for (Iterator<Collectable> object = map.collectableObjects.iterator(); object.hasNext();)
+		for (Iterator<Collectable> object = map.getCollectableObjects().iterator(); object.hasNext();)
 		{
 			Collectable tmp = object.next();
+			
+			GL11.glPushMatrix();
+//			GL11.glTranslated((float)i*gridSize, (float)j*gridSize, 0.f);
+			GL11.glTranslated(tmp.getPosX(), tmp.getPosY(), 0.);
+//			GL11.glScaled(1., -1., 1.);
+//			GL11.glScaled(1./Darklords.resX, 1./Darklords.resY, 1.);
+//			Vector2f pos = gridToScreen(new Vector2f(i,j));
+//			pos.print();
+//			GL11.glTranslatef(pos.getX(), pos.getY(), 0.f);
+
+			tmp.draw();
+			GL11.glPopMatrix();
+		}
+		
+		// draw chests objects
+		for (Iterator<Chest> object = map.getChests().iterator(); object.hasNext();)
+		{
+			Chest tmp = object.next();
 			
 			GL11.glPushMatrix();
 //			GL11.glTranslated((float)i*gridSize, (float)j*gridSize, 0.f);
@@ -360,6 +384,14 @@ public class Level
 		GL11.glTranslated(mainSelectBox.getX(), mainSelectBox.getY(), 0.f);
 		mainSelectBox.draw();
 		GL11.glPopMatrix();
+		
+		// draw the players beam
+		if (mainPlayer.getBeam().isActive())
+		{
+			GL11.glPushMatrix();
+			mainPlayer.getBeam().draw();
+			GL11.glPopMatrix();
+		}
 		
 		// draw player
 		GL11.glPushMatrix();
@@ -394,10 +426,10 @@ public class Level
 		{
 			minX *= map.getFogDensity();
 			maxX *= map.getFogDensity();
-			if (maxX >= map.getMapSizeX()*map.getFogDensity()) maxX = map.getMapSizeX()*map.getFogDensity()-1;
+//			if (maxX >= map.getMapSizeX()*map.getFogDensity()) maxX = map.getMapSizeX()*map.getFogDensity()-1;
 			minY *= map.getFogDensity();
 			maxY *= map.getFogDensity();
-			if (maxY >= map.getMapSizeY()*map.getFogDensity()) maxY = map.getMapSizeY()*map.getFogDensity()-1;
+//			if (maxY >= map.getMapSizeY()*map.getFogDensity()) maxY = map.getMapSizeY()*map.getFogDensity()-1;
 			
 			for (int i=minX;i<=maxX;i++)
 			{
@@ -405,8 +437,8 @@ public class Level
 				{
 					GL11.glPushMatrix();
 					GL11.glTranslated(1.f*i/map.getFogDensity(), 1.f*j/map.getFogDensity(), 0.);
-					GL11.glColor4f(0.f, 0.f, 0.f, map.getFogAt(i, j));
-					map.drawFog();
+//					GL11.glColor4f(0.f, 0.f, 0.f, map.getFogAt(i, j));
+					map.drawFog(i, j);
 					GL11.glPopMatrix();
 				}
 			}
@@ -528,6 +560,16 @@ public class Level
 		if (button == 1)
 		{
 			startProjectile(mouseGrid);
+			
+			if (!mainPlayer.getBeam().isActive())
+			{
+				Vector2f dir = mouseGrid.sub(mainPlayer.getCenter());
+				mainPlayer.getBeam().setStart(mainPlayer.getCenter());
+				mainPlayer.getBeam().setDirection(dir);
+				mainPlayer.getBeam().calcEnd(map);
+				mainPlayer.getBeam().setActive(true);
+				mainPlayer.getBeam().resetLifetime();
+			}
 		}
 
 	}
@@ -555,6 +597,7 @@ public class Level
 			
 			projectiles.add(new Projectile(position, dir, mainPlayer.getActiveProjectile()));
 			mainPlayer.decreaseEnergyRed(1);
+			Darklords.sounds.shot.playAsSoundEffect(1.f, Darklords.sounds.volumeEffects, false);
 //			System.out.println("Create Projectile at ("+pos.getX()+", "+pos.getY()+")");;
 //			mainPlayer.switchActiveAbility();	
 		}
@@ -663,7 +706,7 @@ public class Level
 		mainPlayer.update();
 	
 		// collect Collectables
-		for (Iterator<Collectable> object = map.collectableObjects.iterator(); object.hasNext();)
+		for (Iterator<Collectable> object = map.getCollectableObjects().iterator(); object.hasNext();)
 		{
 			Collectable tmp = object.next();
 //			if (Collider.collideBorders(mainPlayer.getPosX(), mainPlayer.getPosX()+mainPlayer.getSizeX(), mainPlayer.getPosY(), mainPlayer.getPosY()+mainPlayer.getSizeY(),
@@ -672,6 +715,20 @@ public class Level
 			{
 //				System.out.println("collide with collectable");
 				mainPlayer.addItem(tmp.getType());
+				object.remove();
+			}
+		}
+		
+		// collide with chests
+		for (Iterator<Chest> object = map.getChests().iterator(); object.hasNext();)
+		{
+			Chest tmp = object.next();
+//			if (Collider.collideBorders(mainPlayer.getPosX(), mainPlayer.getPosX()+mainPlayer.getSizeX(), mainPlayer.getPosY(), mainPlayer.getPosY()+mainPlayer.getSizeY(),
+//					tmp.getX(), tmp.getX()+tmp.getSize(), tmp.getY(), tmp.getY()+tmp.getSize()))
+			if (mainPlayer.collide(tmp))
+			{
+//				System.out.println("collide with collectable");
+				tmp.onCollision(mainPlayer);
 				object.remove();
 			}
 		}
@@ -804,6 +861,8 @@ public class Level
 					Enemy e = obj2.next();
 					if (e.collide(tmp))
 					{
+						Darklords.sounds.explosion.playAsSoundEffect(1.f, Darklords.sounds.volumeEffects, false);
+						
 						// red projectiles
 						if (tmp.getType() == 0 && e instanceof EnemyRandomMove)	// red projectile
 						{
@@ -962,19 +1021,27 @@ public class Level
 		// update fog
 		Vector2f playerPos =mainPlayer.getCenter().mul(map.getFogDensity());
 		float range = mainPlayer.getVisualRangeMax();
+//		int xLower = (int)Math.round(playerPos.getX()-range);
+//		if (xLower < 0) xLower = 0;
+//		int xUpper = (int)Math.round(playerPos.getX()+range);
+//		if (xUpper >= map.getMapSizeX()*map.getFogDensity()) xUpper = map.getMapSizeX()*map.getFogDensity()-1;
+
 		int xLower = (int)Math.round(playerPos.getX()-range);
-		if (xLower < 0) xLower = 0;
 		int xUpper = (int)Math.round(playerPos.getX()+range);
-		if (xUpper >= map.getMapSizeX()*map.getFogDensity()) xUpper = map.getMapSizeX()*map.getFogDensity()-1;
+
 		
 		for (int i=xLower;i<=xUpper;i++)
 		{
 			// pythagoras
 			double sqrt = Math.sqrt(range*range-(playerPos.getX()-i)*(playerPos.getX()-i));
+//			int yLower = (int)Math.round(playerPos.getY() - sqrt);
+//			if (yLower < 0) yLower = 0;
+//			int yUpper = (int)Math.round(playerPos.getY() + sqrt);
+//			if (yUpper >= map.getMapSizeY()*map.getFogDensity()) yUpper = map.getMapSizeY()*map.getFogDensity()-1;
+
 			int yLower = (int)Math.round(playerPos.getY() - sqrt);
-			if (yLower < 0) yLower = 0;
 			int yUpper = (int)Math.round(playerPos.getY() + sqrt);
-			if (yUpper >= map.getMapSizeY()*map.getFogDensity()) yUpper = map.getMapSizeY()*map.getFogDensity()-1;
+
 			
 			for (int j=yLower;j<=yUpper;j++)
 			{

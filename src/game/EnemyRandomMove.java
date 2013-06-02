@@ -43,7 +43,7 @@ public class EnemyRandomMove extends Enemy
 		direction = new Vector2f();
 //		speed = 1.f;
 		motionTimer = new Timer();
-		motionTime = 1000;
+		motionTime = 500;
 		oldPos = getPos();
 		
 		appearance = new Animation();

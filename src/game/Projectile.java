@@ -99,8 +99,8 @@ public class Projectile extends Collidable
 	public Projectile(Vector2f pos, Vector2f dir, int type)
 	{
 		this(type);
-		setPosX(pos.getX());
-		setPosY(pos.getY());
+		setPosX(pos.getX()-size/2.f);
+		setPosY(pos.getY()-size/2.f);
 		direction = dir;
 	}
 	
