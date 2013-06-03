@@ -1,5 +1,9 @@
 package game;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Random;
 import java.util.Vector;
 
@@ -13,13 +17,13 @@ import org.lwjgl.opengl.GL11;
  * @since 12-05-2013
  * 
  */
-public class Grid
+public class Grid implements Serializable
 {
 	private Block[][] theGrid;
 	private Vector<Enemy> enemies;
 	public int gridSizeX, gridSizeY;
 	private float[][] fogMap;
-	private int fogDensity;
+	private int fogDensity, posX, posY;
 	public Vector<Collectable> collectableObjects;
 	public Vector<Chest> chests;
 	
@@ -28,10 +32,14 @@ public class Grid
 		this(10, 10);
 	}
 	
-	public Grid(int x, int y, BlockType t)
+	public Grid(int x, int y, int thePosX, int thePosY, BlockType t)
 	{
 		gridSizeX = x;
 		gridSizeY = y;
+		
+		posX = thePosX;
+		posY = thePosY;
+		
 		theGrid = new Block[gridSizeX][gridSizeY];
 		
 		this.setFogDensity(1);
@@ -53,7 +61,7 @@ public class Grid
 	
 	public Grid(int x, int y)
 	{
-		this(x, y, BlockType.BLOCK_NONE);
+		this(x, y, 0, 0, BlockType.BLOCK_NONE);
 	}
 	
 	public void addCollectable(Collectable theCollectable)
@@ -64,6 +72,11 @@ public class Grid
 	public void addChest(Chest theChest)
 	{
 		chests.add(theChest);
+	}
+	
+	public void addEnemy(Enemy theEnemy)
+	{
+		enemies.add(theEnemy);
 	}
 	
 	private void initDefault(BlockType t)
@@ -200,6 +213,11 @@ public class Grid
 		this.fogMap[x][y] = value;
 	}
 	
+	public void setBlockAt(int x, int y, Block theBlock)
+	{
+		theGrid[x][y] = theBlock;
+	}
+	
 	public void drawFog(int x, int y)
 	{
 		GL11.glBegin(GL11.GL_QUADS);
@@ -237,5 +255,24 @@ public class Grid
 	public void setChests(Vector<Chest> chests) {
 		this.chests = chests;
 	}
-	
+
+	public int getPosX() {
+		return posX;
+	}
+
+	public void setPosX(int posX) {
+		this.posX = posX;
+	}
+
+	public int getPosY() {
+		return posY;
+	}
+
+	public void setPosY(int posY) {
+		this.posY = posY;
+	}
+
+	public void setEnemies(Vector<Enemy> enemies) {
+		this.enemies = enemies;
+	}
 }

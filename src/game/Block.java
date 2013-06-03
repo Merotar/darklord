@@ -1,5 +1,7 @@
 package game;
 
+import java.io.Serializable;
+
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 
@@ -11,7 +13,7 @@ import org.newdawn.slick.Color;
  * @since 12-05-2013
  * 
  */
-public class Block
+public class Block implements Serializable
 {
 	private boolean visible, solid;
 	private int id, hp, maxHp;

@@ -1,5 +1,7 @@
 package game;
 
+import java.io.Serializable;
+
 /**
  * class used for timing 
  * 
@@ -8,7 +10,8 @@ package game;
  * @since 12-05-2013
  * 
  */
-public class Timer{
+public class Timer implements Serializable
+{
 	long time0;
 	boolean running;
 	

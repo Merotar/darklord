@@ -1,5 +1,7 @@
 package game;
 
+import java.io.Serializable;
+
 /**
  * enum to describe different collectables
  * 
@@ -8,7 +10,7 @@ package game;
  * @since 12-05-2013
  * 
  */
-enum CollectableType
+enum CollectableType implements Serializable
 {
 	
 	NONE(0), BLOCK_ROCK(1), BLOCK_BROWN(2), BLOCK_RED(3), BLOCK_BLUE(4), BLOCK_GREEN(5),

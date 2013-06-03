@@ -1,5 +1,7 @@
 package game;
 
+import java.io.Serializable;
+
 /**
  * enum to describe different blocks
  * 
@@ -8,7 +10,7 @@ package game;
  * @since 12-05-2013
  * 
  */
-enum BlockType
+enum BlockType implements Serializable
 {
 	
 	BLOCK_NONE(0), BLOCK_DIRT(1), BLOCK_ROCK(2), BLOCK_RED(3), BLOCK_BLUE(4),

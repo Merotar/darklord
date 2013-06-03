@@ -33,7 +33,6 @@ public class Level
 	public Vector<Projectile> hostileProjectiles;
 	public Vector<MovingSprite> bubbles;
 	public static final int drawSize = 8;
-	String name;
 
 	public Level()
 	{
@@ -48,7 +47,6 @@ public class Level
 		projectiles = new Vector<Projectile>();
 		hostileProjectiles = new Vector<Projectile>();
 		bubbles = new Vector<MovingSprite>();
-		name = "defaultMap.map";
 		
 //		initTest();
 	}
@@ -59,9 +57,8 @@ public class Level
 //		this.dimY = sizeY;
 		posX = 1.f;
 		posY = 1.f;
-		name = "defaultMap.txt";
 		
-        map = new Map(sizeX, sizeY);
+        map = new Map(sizeX, sizeY, "default");
 		
 //		grid = new Block[dimX][dimY];
 //		collectableObjects = new Vector<Collectable>();
@@ -79,7 +76,7 @@ public class Level
 //		initTest();
 }
 	
-	public Level(String filename)
+	public Level(String name)
 	{
 		posX = 1.f;
 		posY = 1.f;
@@ -87,33 +84,8 @@ public class Level
 		resX = Darklords.resX;
 		resY = Darklords.resY;
 		
-		if (!filename.equals(""))
-		{
-			setName(filename);
-			String fileExtension = filename.substring(filename.length()-3, filename.length());
-			
-	        File f = new File(filename);
-	        if (f.exists())
-	        {
-	        	map = new Map();
-	        	name = filename;
-	        	if (fileExtension.equals("txt"))
-	        	{
-	        		map.readTextFile(filename);
-	        	} else
-	        	{
-//	            	map.readFile(filename);
-	        		map = new Map(30, 30);
-	        	}
-	        } else
-	        {
-	        	map = new Map(100, 100);
-	        }
-		} else
-		{
-			map = new Map(30, 30);
-		}
-		
+		map = new Map(20, 20, name);
+		map.setName(name);
 		
 		mainPlayer = new Player(map.start.getX(), map.start.getY());
 		map.getBlockAt((int) mainPlayer.getPosX(), (int) mainPlayer.getPosY()).setType(BlockType.BLOCK_NONE);
@@ -225,6 +197,11 @@ public class Level
 //			mainPlayer.startAttackBlockTimer();
 //		}
 		return true;
+	}
+	
+	public void finalize()
+	{
+		map.saveCurrentGrid();
 	}
 	
 	/**
@@ -658,7 +635,7 @@ public class Level
 	{
 		boolean collide = false;
 		
-		if ((x<0)||(x>=map.getMapSizeX())||(y<0)||(y>=map.getMapSizeY())) return false;
+//		if ((x<0)||(x>=map.getMapSizeX())||(y<0)||(y>=map.getMapSizeY())) return false;
 		
 		if (map.getBlockAt(x, y).isSolid())
 		{
@@ -704,7 +681,29 @@ public class Level
 		}
 		
 		mainPlayer.update();
-	
+		
+		if (mainPlayer.getPosX() < map.getCurrentGridX()*map.getGridSizeX())
+		{
+			map.decreaseCurrentGridX();
+		} else
+		{
+			if (mainPlayer.getPosX() > (map.getCurrentGridX()+1)*map.getGridSizeX())
+			{
+				map.increaseCurrentGridX();
+			}
+		}
+		
+		if (mainPlayer.getPosY() < map.getCurrentGridY()*map.getGridSizeY())
+		{
+			map.decreaseCurrentGridY();
+		} else
+		{
+			if (mainPlayer.getPosY() > (map.getCurrentGridY()+1)*map.getGridSizeY())
+			{
+				map.increaseCurrentGridY();
+			}
+		}
+
 		// collect Collectables
 		for (Iterator<Collectable> object = map.getCollectableObjects().iterator(); object.hasNext();)
 		{
@@ -995,9 +994,9 @@ public class Level
 		
 		// update blocks
 		
-		for (int i=0;i<map.getMapSizeX();i++)
+		for (int i=map.getCurrentGridX()*map.getGridSizeX();i<(map.getCurrentGridX()+1)*map.getGridSizeX()-1;i++)
 		{
-			for (int j=0;j<map.getMapSizeY();j++)
+			for (int j=map.getCurrentGridY()*map.getGridSizeY();j<(map.getCurrentGridY()+1)*map.getGridSizeY()-1;j++)
 			{
 				map.getBlockAt(i, j).update();
 				// workaround
@@ -1017,6 +1016,9 @@ public class Level
 			tmp.update();
 			if (!tmp.isAlive()) object.remove();
 		}
+		
+		// update map
+		map.update();
 		
 		// update fog
 		Vector2f playerPos =mainPlayer.getCenter().mul(map.getFogDensity());
@@ -1100,14 +1102,6 @@ public class Level
 //			System.out.println("test");
 			e.startMotion(dir);
 		}
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public int getResX() {

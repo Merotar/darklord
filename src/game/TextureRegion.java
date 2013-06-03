@@ -1,4 +1,7 @@
 package game;
+
+import java.io.Serializable;
+
 /**
  * description of a region in a texture
  * 
@@ -8,7 +11,7 @@ package game;
  * 
  */
 
-public class TextureRegion
+public class TextureRegion implements Serializable
 {
 	private float x, y, width, height;
 	

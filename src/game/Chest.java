@@ -1,6 +1,8 @@
 package game;
 
-public class Chest extends Collidable
+import java.io.Serializable;
+
+public class Chest extends Collidable implements Serializable
 {
 	Drawable appearance;
 	

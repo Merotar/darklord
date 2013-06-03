@@ -1,5 +1,7 @@
 package game;
 
+import java.io.Serializable;
+
 /**
  * description of an enemy which performs random movement
  * 
@@ -8,7 +10,7 @@ package game;
  * @since 12-05-2013
  * 
  */
-public class EnemyRandomMove extends Enemy
+public class EnemyRandomMove extends Enemy implements Serializable
 {
 	Vector2f direction, oldPos;
 //	float speed;

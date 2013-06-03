@@ -1,5 +1,6 @@
 package game;
 
+import java.io.Serializable;
 import java.util.Vector;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Vector;
  * 
  */
 
-public interface Drawable
+public interface Drawable extends Serializable
 {
 	
 	public void draw();
