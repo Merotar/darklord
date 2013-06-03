@@ -466,7 +466,7 @@ public class Level
 		int x_int = (int)Math.floor(mouseGrid.getX());
 		int y_int = (int)Math.floor(mouseGrid.getY());
 		
-		if (x_int < map.getMapSizeX() && x_int >= 0 && y_int < map.getMapSizeY() && y_int >= 0)
+//		if (x_int < map.getMapSizeX() && x_int >= 0 && y_int < map.getMapSizeY() && y_int >= 0)
 //		{
 			if (this.isBlockSolid(x_int, y_int))
 			{
@@ -737,6 +737,11 @@ public class Level
 		{
 			Projectile tmp = object.next();
 			tmp.update();
+			if (!tmp.isActive())
+			{
+				object.remove();
+				continue;
+			}
 			
 			int projectileX = (int)Math.floor(tmp.getPosX());
 			int projectileY = (int)Math.floor(tmp.getPosY());

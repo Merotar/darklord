@@ -15,15 +15,55 @@ public class Projectile extends Collidable
 {
 //	private Vector2f position, direction;
 	private Vector2f direction;
-	private float lifeTime;
-	private Timer timer;
+//	private float lifeTime;
+//	private Timer timer;
+	private TimeStore time;
 	private boolean active;
 	private float speed;
-	private float timePassed;
+//	private float timePassed;
 	private float size;
 	private int type;
 	private int damage;
 	private Drawable appearance;
+	
+	public Projectile()
+	{
+//		position = new Vector2f();
+		direction = new Vector2f();
+//		lifeTime = 1000;
+//		timer = new Timer();
+//		timer.start();
+		active = true;
+		setSpeed(7.f);
+		
+		float range = 7.f;	// use variable instead of modifying lifetime
+		time = new TimeStore(range/getSpeed());
+		setSize(0.3f);
+		setDamage(1);
+		appearance = new Sprite();
+		setType(0);
+	}
+	
+	public Projectile(int t)
+	{
+		this();
+		setType(t);
+	}
+	
+//	public Projectile(float posX, float posY)
+//	{
+//		this();
+//		position.setX(posX);
+//		position.setY(posY);
+//	}
+	
+	public Projectile(Vector2f pos, Vector2f dir, int type)
+	{
+		this(type);
+		setPosX(pos.getX()-size/2.f);
+		setPosY(pos.getY()-size/2.f);
+		direction = dir;
+	}
 	
 	public int getType() {
 		return type;
@@ -67,42 +107,6 @@ public class Projectile extends Collidable
 		this.setSizeY(size);
 	}
 
-	public Projectile()
-	{
-//		position = new Vector2f();
-		direction = new Vector2f();
-		lifeTime = 1000;
-		timer = new Timer();
-		timer.start();
-		active = true;
-		setSpeed(7.f);
-		timePassed = 0.f;
-		setSize(0.3f);
-		setDamage(1);
-		appearance = new Sprite();
-		setType(0);
-	}
-	
-	public Projectile(int t)
-	{
-		this();
-		setType(t);
-	}
-	
-//	public Projectile(float posX, float posY)
-//	{
-//		this();
-//		position.setX(posX);
-//		position.setY(posY);
-//	}
-	
-	public Projectile(Vector2f pos, Vector2f dir, int type)
-	{
-		this(type);
-		setPosX(pos.getX()-size/2.f);
-		setPosY(pos.getY()-size/2.f);
-		direction = dir;
-	}
 	
 //	public void setPositionX(float posX)
 //	{
@@ -174,20 +178,24 @@ public class Projectile extends Collidable
 	
 	public void update()
 	{
-		float time = timer.getTimeDelta();
+//		float time = timer.getTimeDelta();
 		
-		if (time > lifeTime)
+		if (time.add(Darklords.dt))
 		{
 			active = false;
 		}
+		if (active)
+		{
+			setPos(getPos().add(direction.mul(Darklords.dt*speed)));
+		}
 		
 		// move
-		while ((time-timePassed) > 1.f/Darklords.maxFPS)
-		{
-			timePassed = time;
-			setPos(getPos().add(direction.mul(Darklords.dt*speed)));
-//			position = position.add(direction.mul(speed*0.1f));
-		}
+//		while ((time-timePassed) > 1.f/Darklords.maxFPS)
+//		{
+//			timePassed = time;
+//			setPos(getPos().add(direction.mul(Darklords.dt*speed)));
+////			position = position.add(direction.mul(speed*0.1f));
+//		}
 	}
 
 	public boolean isActive() {
