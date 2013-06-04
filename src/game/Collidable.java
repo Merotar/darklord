@@ -1,5 +1,7 @@
 package game;
 
+import java.io.Serializable;
+
 /**
  * basic class for objects which can collide with each other
  * 
@@ -8,7 +10,7 @@ package game;
  * @since 12-05-2013
  * 
  */
-abstract class Collidable
+abstract class Collidable implements Serializable
 {
 	private float posX, posY, sizeX, sizeY;
 	

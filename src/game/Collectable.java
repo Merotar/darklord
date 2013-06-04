@@ -27,8 +27,8 @@ public class Collectable extends Collidable implements Serializable
 		this.setType(CollectableType.BLOCK_BROWN);
 		setPosX(0.f);
 		setPosY(0.f);
-		setSizeX(0.5f);
-		setSizeY(0.5f);
+		setSizeX(0.8f);
+		setSizeY(0.8f);
 	}
 	
 	public Collectable(CollectableType t)
@@ -97,16 +97,16 @@ public class Collectable extends Collidable implements Serializable
 				((Sprite)appearance).setTextureRegion(2*128, 0*128, 128, 128);
 				break;
 			case BLOCK_RED:		// red
-				((Sprite)appearance).setTextureRegion(3*128, 0*128, 128, 128);
+				((Sprite)appearance).setTextureRegion(4*128, 3*128, 128, 128);
 				break;
 			case BLOCK_BLUE:		// blue
-				((Sprite)appearance).setTextureRegion(4*128, 0*128, 128, 128);
+				((Sprite)appearance).setTextureRegion(5*128, 3*128, 128, 128);
 				break;
 			case BLOCK_GREEN:		// green
-				((Sprite)appearance).setTextureRegion(5*128, 0*128, 128, 128);
+				((Sprite)appearance).setTextureRegion(3*128, 3*128, 128, 128);
 				break;
 			case BLOCK_YELLOW:		// green
-				((Sprite)appearance).setTextureRegion(0*128, 1*128, 128, 128);
+				((Sprite)appearance).setTextureRegion(2*128, 3*128, 128, 128);
 				break;
 			case DIAMOND:		// diamond
 				((Sprite)appearance).setTextureRegion(3*128, 1*128, 128, 128);

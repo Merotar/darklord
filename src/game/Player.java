@@ -90,7 +90,7 @@ public class Player extends Collidable
 		setSizeX(0.75f);
 		setSizeY(0.75f);
 		setSpeed(4.5f);
-		setVisualRangeMin(1.f);//7.f);
+		setVisualRangeMin(2.f);//7.f);
 		setVisualRangeMax(4.f);//15.f);
 		setScore(0);
 		
@@ -394,7 +394,7 @@ public class Player extends Collidable
 		attackBlockTimer.reset();
 	}
 	
-	public void update()
+	public void update(float dt)
 	{
 		this.updatePosition();
 		
@@ -409,7 +409,7 @@ public class Player extends Collidable
 		}
 		
 //		Print.outln("dt: "+ redEnergyAdder.getCurrent());
-		energyRed.increase(Darklords.dt);
+		energyRed.increase(dt);
 		
 //		System.out.println("Player: ("+this.getPosX()+", "+this.getPosY()+")");
 		

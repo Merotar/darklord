@@ -34,9 +34,9 @@ public class Projectile extends Collidable
 //		timer = new Timer();
 //		timer.start();
 		active = true;
-		setSpeed(7.f);
 		
 		float range = 7.f;	// use variable instead of modifying lifetime
+		setSpeed(7.f);
 		time = new TimeStore(range/getSpeed());
 		setSize(0.3f);
 		setDamage(1);
@@ -176,7 +176,7 @@ public class Projectile extends Collidable
 		return collision;
 	}
 	
-	public void update()
+	public void update(float dt)
 	{
 //		float time = timer.getTimeDelta();
 		
@@ -186,7 +186,7 @@ public class Projectile extends Collidable
 		}
 		if (active)
 		{
-			setPos(getPos().add(direction.mul(Darklords.dt*speed)));
+			setPos(getPos().add(direction.mul(dt*speed)));
 		}
 		
 		// move

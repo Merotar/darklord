@@ -1,15 +1,20 @@
 package game;
 
+import java.util.Iterator;
+import java.util.Vector;
+
 public class IngameUI extends UI
 {
 	UIBar energyBarRed;
 	UIBar energyBarBlue;
 	UIBar energyBarGreen;
 	UIBar energyBarYellow;
+	Vector<UIObject> uiObjectsIngame;
 	
 	public IngameUI(String string)
 	{
 		super(string);
+		uiObjectsIngame = new Vector<UIObject>();
 	}
 
 	public UIBar getEnergyBarRed() {
@@ -20,12 +25,16 @@ public class IngameUI extends UI
 		this.energyBarRed = energyBarRed;
 	}
 
+	public void addUIObjectIngame(UIObject theObject)
+	{
+		uiObjectsIngame.add(theObject);
+	}
+	
 	public void draw()
 	{
 		super.draw();
 		
 		spriteSheet.begin();
-		
 		// draw energy bars
 		UIBar[] tmpUIBar = {energyBarRed, energyBarBlue, energyBarGreen, energyBarYellow};
 		for (int i=0;i<tmpUIBar.length;i++)
@@ -41,8 +50,23 @@ public class IngameUI extends UI
 						tmpUIBar[i].getSize().getY()*getSize().getY());
 			}
 		}
-		
 		spriteSheet.end();
+		
+		// draw UIObjects
+		
+		Darklords.sprites01.begin();
+		for (Iterator<UIObject> object = uiObjectsIngame.iterator();object.hasNext();)
+		{
+			UIObject tmp = object.next();
+			
+			Darklords.sprites01.draw(tmp.getTextureRegion(), 
+						getPosition().getX()+tmp.getPosition().getX()*getSize().getX(), 
+						getPosition().getY()+tmp.getPosition().getY()*getSize().getY(), 
+						tmp.getSize().getX()*getSize().getX(), 
+						tmp.getSize().getY()*getSize().getY());
+
+		}
+		Darklords.sprites01.end();
 	}
 
 	public UIBar getEnergyBarBlue() {

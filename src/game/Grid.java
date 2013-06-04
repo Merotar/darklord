@@ -227,15 +227,15 @@ public class Grid implements Serializable
 		float sizeX = 1.f/getFogDensity();
 		float sizeY = 1.f/getFogDensity();
 				
-		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x, y));
-
-//		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x, y+1));
-		GL11.glVertex2f(posX, posY+sizeY);
-//		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x+1, y+1));
-		GL11.glVertex2f(posX+sizeX, posY+sizeY);
-//		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x+1, y));
-		GL11.glVertex2f(posX+sizeX, posY);
 //		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x, y));
+
+		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x, y+1));
+		GL11.glVertex2f(posX, posY+sizeY);
+		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x+1, y+1));
+		GL11.glVertex2f(posX+sizeX, posY+sizeY);
+		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x+1, y));
+		GL11.glVertex2f(posX+sizeX, posY);
+		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x, y));
 		GL11.glVertex2f(posX, posY);
 		GL11.glEnd();
 	}

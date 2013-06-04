@@ -35,7 +35,7 @@ public class StaticEnemyCrystal extends Enemy
 		this.setPosY(y);
 	}
 	
-	public void update(Level level)
+	public void update(float dt, Level level)
 	{
 		if (shootTimer.getTimeDelta() >= shootDelay)
 		{

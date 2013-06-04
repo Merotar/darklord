@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.Iterator;
 
 /**
@@ -42,7 +43,10 @@ public class Map implements Serializable
 	private Grid currentGrid[][];
 	Vector<Enemy> currentEnemies;
 	Vector<Chest> currentChests;
+	Vector<Collectable> currentCollectables;
 	Vector<GridLoader> gridLoaders;
+	ExecutorService saveGridExecutor;
+	Vector<Future<Boolean>> savedGridFutures;
 	String name;
 //	private Grid gridBottomRight[][];
 //	private Grid gridBottomLeft[][];
@@ -90,8 +94,11 @@ public class Map implements Serializable
 		
 		currentEnemies = new Vector<Enemy>();
 		currentChests = new Vector<Chest>();
+		currentCollectables = new Vector<Collectable>();
 		
 		gridLoaders = new Vector<GridLoader>();
+		saveGridExecutor = Executors.newCachedThreadPool();
+		savedGridFutures = new Vector<Future<Boolean>>();
 		
 		File dir = new File("./"+getName());
 		boolean isNewMap = !dir.exists();
@@ -107,8 +114,7 @@ public class Map implements Serializable
 			{
 //				loadGridAt(1+i, 1+j, currentGridX+i, currentGridY+j);
 				currentGrid[1+i][1+j] = getGridAtInstant(currentGridX+i, currentGridY+j);
-				currentEnemies.addAll(currentGrid[1+i][1+j].getEnemies());
-				currentChests.addAll(currentGrid[1+i][1+j].getChests());
+				addAllToCurrent(currentGrid[1+i][1+j]);
 			}
 		}
 		
@@ -254,12 +260,17 @@ public class Map implements Serializable
 	
 	public Vector<Enemy> getEnemies()
 	{
+//		Vector<Enemy> tmp = currentGrid[1][1].getEnemies();
+		
+//		if (currentGrid[0][1] != null) tmp.addAll(currentGrid[0][1].getEnemies());
+//		if (currentGrid[1][1] != null) tmp.addAll(currentGrid[0][1].getEnemies());
+
 		return currentEnemies;
 	}
 	
 	Vector<Collectable> getCollectableObjects()
 	{
-		return currentGrid[1][1].getCollectableObjects();
+		return currentCollectables;
 	}
 	
 	Vector<Chest> getChests()
@@ -394,7 +405,8 @@ public class Map implements Serializable
 		} else
 		{
 			currentGrid[x][y] = new Grid(getGridSizeX(), getGridSizeY(), currentX, currentY, BlockType.BLOCK_DIRT);
-			initDungeon(currentGrid[x][y], x, y);
+			initDungeon(currentGrid[x][y], currentX, currentY);
+			currentEnemies.addAll(currentGrid[x][y].getEnemies());
 		}
 		
 	}
@@ -840,8 +852,9 @@ public class Map implements Serializable
 	
 	public void saveGrid(Grid theGrid, String fileName)
 	{
-		Thread tmpThread = new Thread(new GridStoreRunnable(theGrid, fileName));
-		tmpThread.start();
+//		saveGridThreads.add(new Thread(new GridStoreRunnable(theGrid, fileName)));
+//		saveGridThreads.lastElement().start();
+		savedGridFutures.add(saveGridExecutor.submit(new GridStoreCallable(theGrid, fileName)));
 	}
 	
 //	public Grid loadGrid()
@@ -878,12 +891,29 @@ public class Map implements Serializable
 //		return null;
 //	}
 	
+	public void finalize()
+	{
+		saveCurrentGrid();
+		
+		while(savedGridFutures.size() != 0)
+		{
+			update();
+//			try {
+//				Thread.sleep(10);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+		}
+	}
+	
 	void saveCurrentGrid()
 	{
 		for (int i=-1;i<2;i++)
 		{
 			for (int j=-1;j<2;j++)
 			{
+				saveAllToGrid(currentGrid[1+i][1+j]);
 				saveGrid(currentGrid[1+i][1+j], getFileName(currentGridX+i, currentGridY+j));
 //				Thread tmpThread = new Thread(new GridStoreRunnable(currentGrid[1+i][1+j], getFileName(currentGridX+i, currentGridY+j)));
 //				tmpThread.start();
@@ -907,7 +937,9 @@ public class Map implements Serializable
 	
 	public void increaseCurrentGridX()
 	{
-		// save unused grids
+		saveAllToGrid(currentGrid[0][0]);
+		saveAllToGrid(currentGrid[0][1]);
+		saveAllToGrid(currentGrid[0][2]);
 		
 		saveGrid(currentGrid[0][0], getFileName(currentGridX-1, currentGridY-1));
 		saveGrid(currentGrid[0][1], getFileName(currentGridX-1, currentGridY));
@@ -934,10 +966,19 @@ public class Map implements Serializable
 	
 	public void decreaseCurrentGridX()
 	{
+//		Print.outln("numEnemies 1: "+currentEnemies.size());
+		saveAllToGrid(currentGrid[2][0]);
+		saveAllToGrid(currentGrid[2][1]);
+		saveAllToGrid(currentGrid[2][2]);
+//		Print.outln("numEnemies 2: "+currentEnemies.size());
+		
 		saveGrid(currentGrid[2][0], getFileName(currentGridX+1, currentGridY-1));
 		saveGrid(currentGrid[2][1], getFileName(currentGridX+1, currentGridY));
 		saveGrid(currentGrid[2][2], getFileName(currentGridX+1, currentGridY+1));
 
+		currentEnemies.removeAll(currentGrid[2][0].getEnemies());
+		currentEnemies.removeAll(currentGrid[2][1].getEnemies());
+		currentEnemies.removeAll(currentGrid[2][2].getEnemies());
 		
 		currentGridX -= 1;
 		
@@ -961,6 +1002,10 @@ public class Map implements Serializable
 	
 	public void increaseCurrentGridY()
 	{
+		saveAllToGrid(currentGrid[0][0]);
+		saveAllToGrid(currentGrid[1][0]);
+		saveAllToGrid(currentGrid[2][0]);
+		
 		saveGrid(currentGrid[0][0], getFileName(currentGridX-1, currentGridY-1));
 		saveGrid(currentGrid[1][0], getFileName(currentGridX, currentGridY-1));
 		saveGrid(currentGrid[2][0], getFileName(currentGridX+1, currentGridY-1));
@@ -987,6 +1032,10 @@ public class Map implements Serializable
 	
 	public void decreaseCurrentGridY()
 	{
+		saveAllToGrid(currentGrid[0][2]);
+		saveAllToGrid(currentGrid[1][2]);
+		saveAllToGrid(currentGrid[2][2]);
+		
 		saveGrid(currentGrid[0][2], getFileName(currentGridX-1, currentGridY+1));
 		saveGrid(currentGrid[1][2], getFileName(currentGridX, currentGridY+1));
 		saveGrid(currentGrid[2][2], getFileName(currentGridX+1, currentGridY+1));
@@ -1008,7 +1057,98 @@ public class Map implements Serializable
 //		currentGrid[0][0] = getGridAt(currentGridX-1, currentGridY-1);
 //		currentGrid[1][0] = getGridAt(currentGridX, currentGridY-1);
 //		currentGrid[2][0] = getGridAt(currentGridX+1, currentGridY-1);
-
+	}
+	
+	public void saveAllToGrid(Grid theGrid)
+	{
+		saveEnemiesToGrid(theGrid);
+		saveChestsToGrid(theGrid);
+		saveCollectablesToGrid(theGrid);
+	}
+	
+	public void addAllToCurrent(Grid theGrid)
+	{
+		currentEnemies.addAll(theGrid.getEnemies());
+		currentCollectables.addAll(theGrid.getCollectableObjects());
+		currentChests.addAll(theGrid.getChests());
+	}
+	
+	public void saveEnemiesToGrid(Grid theGrid)
+	{
+		theGrid.getEnemies().removeAllElements();
+		
+		for (Iterator<Enemy> object = currentEnemies.iterator();object.hasNext();)
+		{
+			Enemy tmpEnemy = object.next();
+			
+			int gridX = (int)Math.floor(1.f * tmpEnemy.getPosX() / getGridSizeX());
+			int gridY = (int)Math.floor(1.f * tmpEnemy.getPosY() / getGridSizeY());
+			
+			if (gridX >= currentGridX-1 && gridX <= currentGridX+1
+					&& gridY >= currentGridY-1 && gridY <= currentGridY+1)	// is in currentGrid
+			{
+				if (gridX == theGrid.getPosX() && gridY == theGrid.getPosY())	//is in the chosen grid
+				{
+					theGrid.getEnemies().add(tmpEnemy);
+					object.remove();
+				}
+			} else
+			{
+				object.remove();
+			}
+		}		
+	}
+	
+	public void saveChestsToGrid(Grid theGrid)
+	{
+		theGrid.getChests().removeAllElements();
+		
+		for (Iterator<Chest> object = currentChests.iterator();object.hasNext();)
+		{
+			Chest tmpChest = object.next();
+			
+			int gridX = (int)Math.floor(1.f * tmpChest.getPosX() / getGridSizeX());
+			int gridY = (int)Math.floor(1.f * tmpChest.getPosY() / getGridSizeY());
+			
+			if (gridX >= currentGridX-1 && gridX <= currentGridX+1
+					&& gridY >= currentGridY-1 && gridY <= currentGridY+1)	// is in currentGrid
+			{
+				if (gridX == theGrid.getPosX() && gridY == theGrid.getPosY())	//is in the chosen grid
+				{
+					theGrid.getChests().add(tmpChest);
+					object.remove();
+				}
+			} else
+			{
+				object.remove();
+			}
+		}		
+	}
+	
+	public void saveCollectablesToGrid(Grid theGrid)
+	{
+		theGrid.getCollectableObjects().removeAllElements();
+		
+		for (Iterator<Collectable> object = currentCollectables.iterator();object.hasNext();)
+		{
+			Collectable tmpCollectable = object.next();
+			
+			int gridX = (int)Math.floor(1.f * tmpCollectable.getPosX() / getGridSizeX());
+			int gridY = (int)Math.floor(1.f * tmpCollectable.getPosY() / getGridSizeY());
+			
+			if (gridX >= currentGridX-1 && gridX <= currentGridX+1
+					&& gridY >= currentGridY-1 && gridY <= currentGridY+1)	// is in currentGrid
+			{
+				if (gridX == theGrid.getPosX() && gridY == theGrid.getPosY())	//is in the chosen grid
+				{
+					theGrid.getCollectableObjects().add(tmpCollectable);
+					object.remove();
+				}
+			} else
+			{
+				object.remove();
+			}
+		}		
 	}
 
 	public Vector2f getStart() {
@@ -1079,49 +1219,50 @@ public class Map implements Serializable
 			  ois = new ObjectInputStream(fis);
 
 			  
-//			  tmpGrid = (Grid)ois.readObject();
-			  int tmpX, tmpY;
-			  
-			  tmpX = ois.readInt();
-			  tmpY = ois.readInt();
-			  
-			  tmpGrid = new Grid(tmpX, tmpY);
-			  
-			  for (int i=0;i<tmpGrid.getGridSizeX();i++)
-			  {
-				  for (int j=0;j<tmpGrid.getGridSizeY();j++)
-				  {
-					  tmpGrid.setBlockAt(i, j, (Block)ois.readObject());
-				  }
-			  }
-			  
-			  for (int i=0;i<tmpGrid.getGridSizeX()*tmpGrid.getFogDensity();i++)
-			  {
-				  for (int j=0;j<tmpGrid.getGridSizeY()*tmpGrid.getFogDensity();j++)
-				  {
-					  tmpGrid.setFogAt(i, j, ois.readFloat());
-				  }
-			  }
-			  
-			  int tmpNum = ois.readInt();
-			  for (int i=0;i<tmpNum;i++)
-			  {
-				  tmpGrid.addCollectable((Collectable)ois.readObject());
-			  }
-			  
-			  tmpNum = ois.readInt();
-			  for (int i=0;i<tmpNum;i++)
-			  {
-				  tmpGrid.addEnemy((Enemy)ois.readObject());
-			  }
-			  
-			  tmpNum = ois.readInt();
-			  for (int i=0;i<tmpNum;i++)
-			  {
-				  tmpGrid.addChest((Chest)ois.readObject());
-			  }
+			  tmpGrid = (Grid)ois.readObject();
+//			  int tmpX, tmpY;
+//			  
+//			  tmpX = ois.readInt();
+//			  tmpY = ois.readInt();
+//			  
+//			  tmpGrid = new Grid(tmpX, tmpY);
+//			  
+//			  for (int i=0;i<tmpGrid.getGridSizeX();i++)
+//			  {
+//				  for (int j=0;j<tmpGrid.getGridSizeY();j++)
+//				  {
+//					  tmpGrid.setBlockAt(i, j, (Block)ois.readObject());
+//				  }
+//			  }
+//			  
+//			  for (int i=0;i<tmpGrid.getGridSizeX()*tmpGrid.getFogDensity();i++)
+//			  {
+//				  for (int j=0;j<tmpGrid.getGridSizeY()*tmpGrid.getFogDensity();j++)
+//				  {
+//					  tmpGrid.setFogAt(i, j, ois.readFloat());
+//				  }
+//			  }
+//			  
+//			  int tmpNum = ois.readInt();
+//			  for (int i=0;i<tmpNum;i++)
+//			  {
+//				  tmpGrid.addCollectable((Collectable)ois.readObject());
+//			  }
+//			  
+//			  tmpNum = ois.readInt();
+//			  for (int i=0;i<tmpNum;i++)
+//			  {
+//				  tmpGrid.addEnemy((Enemy)ois.readObject());
+//			  }
+//			  
+//			  tmpNum = ois.readInt();
+//			  for (int i=0;i<tmpNum;i++)
+//			  {
+//				  tmpGrid.addChest((Chest)ois.readObject());
+//			  }
 			}
 			catch (Exception e) {
+				Print.err("error loading file: "+fileName);
 				e.printStackTrace();
 			}
 			finally {
@@ -1140,8 +1281,17 @@ public class Map implements Serializable
 			if (tmp.isActive() && tmp.isDone())
 			{
 				currentGrid[tmp.getX()][tmp.getY()] = tmp.getResultGrid();
+				addAllToCurrent(currentGrid[tmp.getX()][tmp.getY()]);
 				object.remove();
 			}
+		}
+		
+//		Print.outln("grids to save: "+savedGridFutures.size());
+		
+		for (Iterator<Future<Boolean>> object = savedGridFutures.iterator();object.hasNext();)
+		{
+			Future<Boolean> tmpFuture = object.next();
+			if (tmpFuture.isDone()) object.remove();
 		}
 	}
 }

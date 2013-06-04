@@ -110,23 +110,45 @@ public class Darklords {
         
         UIBar energyBarRed = new UIBar(new TextureRegion(0.f, 6*128+0*32, 2*128, 32), "energy bar red");
         energyBarRed.setSize(new Vector2f(0.8f*0.25f, .02f));
-        energyBarRed.setPosition(new Vector2f(0.1f*0.25f, 0.85f));
+        energyBarRed.setPosition(new Vector2f(0.1f*0.25f, 0.2f));
         ingameUI.setEnergyBarRed(energyBarRed);
         
         UIBar energyBarBlue = new UIBar(new TextureRegion(0.f, 6*128+1*32, 2*128, 32), "energy bar red");
         energyBarBlue.setSize(new Vector2f(0.8f*0.25f, .02f));
-        energyBarBlue.setPosition(new Vector2f(0.1f*0.25f, 0.8f));
+        energyBarBlue.setPosition(new Vector2f(0.1f*0.25f, 0.25f));
         ingameUI.setEnergyBarBlue(energyBarBlue);
         
         UIBar energyBarGreen = new UIBar(new TextureRegion(0.f, 6*128+2*32, 2*128, 32), "energy bar red");
         energyBarGreen.setSize(new Vector2f(0.8f*0.25f, .02f));
-        energyBarGreen.setPosition(new Vector2f(0.1f*0.25f, 0.75f));
+        energyBarGreen.setPosition(new Vector2f(0.1f*0.25f, 0.3f));
         ingameUI.setEnergyBarGreen(energyBarGreen);
         
         UIBar energyBarYellow = new UIBar(new TextureRegion(0.f, 6*128+3*32, 2*128, 32), "energy bar red");
         energyBarYellow.setSize(new Vector2f(0.8f*0.25f, .02f));
-        energyBarYellow.setPosition(new Vector2f(0.1f*0.25f, 0.7f));
+        energyBarYellow.setPosition(new Vector2f(0.1f*0.25f, 0.35f));
         ingameUI.setEnergyBarYellow(energyBarYellow);
+        
+        // add UIObjects
+        
+        UIObject crystalRed = new UIObject(new TextureRegion(4*128, 3*128, 128, 128), "crystal red");
+        crystalRed.setSize(new Vector2f(0.05f, .05f*ratio));
+        crystalRed.setPosition(new Vector2f(0.01f, .45f));
+        ingameUI.addUIObjectIngame(crystalRed);
+        
+        UIObject crystalBlue = new UIObject(new TextureRegion(5*128, 3*128, 128, 128), "crystal red");
+        crystalBlue.setSize(new Vector2f(0.05f, .05f*ratio));
+        crystalBlue.setPosition(new Vector2f(0.07f, .45f));
+        ingameUI.addUIObjectIngame(crystalBlue);
+        
+        UIObject crystalGreen = new UIObject(new TextureRegion(3*128, 3*128, 128, 128), "crystal red");
+        crystalGreen.setSize(new Vector2f(0.05f, .05f*ratio));
+        crystalGreen.setPosition(new Vector2f(0.13f, .45f));
+        ingameUI.addUIObjectIngame(crystalGreen);
+        
+        UIObject crystalYellow = new UIObject(new TextureRegion(2*128, 3*128, 128, 128), "crystal red");
+        crystalYellow.setSize(new Vector2f(0.05f, .05f*ratio));
+        crystalYellow.setPosition(new Vector2f(0.19f, .45f));
+        ingameUI.addUIObjectIngame(crystalYellow);
         
 //        // add start button
 //        Button startButton = new Button(new TextureRegion(0*64, 10*64, 3*64, 64),
@@ -417,7 +439,7 @@ public class Darklords {
 		world.mousePositionReaction(globalToGamescreen(mousePos));
 		float playerPosOld_x = world.mainPlayer.getPosX();
 		float playerPosOld_y = world.mainPlayer.getPosY();
-		if (!devMode) world.update();
+		if (!devMode) world.update(dt);
 		
 		// normal motion
 		
@@ -760,7 +782,7 @@ public class Darklords {
 	 */
 	public void checkKeyboard()
 	{
-		Keyboard.enableRepeatEvents(true);
+		Keyboard.enableRepeatEvents(false);
 		while (Keyboard.next())
 		{
 			if (Keyboard.getEventKeyState())
@@ -1014,7 +1036,11 @@ public class Darklords {
 	 */
 	public void drawUI()
 	{
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+		GL11.glScaled(1., -1., 1.);
 		ingameUI.draw();
+		GL11.glPopMatrix();
 		
 //		spritesUI.begin();
 //		spritesUI.draw(UILeft);

@@ -25,48 +25,50 @@ public class GridLoadCallable implements Callable<Grid>
 			  fis = new FileInputStream(fileName);
 			  ois = new ObjectInputStream(fis);
 
-//			  tmpGrid = (Grid)ois.readObject();
+			  tmpGrid = (Grid)ois.readObject();
 			  
-			  int tmpX, tmpY;
+			  Print.outln("enemy:"+tmpGrid.getEnemies().get(0).dmgOnContact);
 			  
-			  tmpX = ois.readInt();
-			  tmpY = ois.readInt();
-			  
-			  tmpGrid = new Grid(tmpX, tmpY);
-			  
-			  for (int i=0;i<tmpGrid.getGridSizeX();i++)
-			  {
-				  for (int j=0;j<tmpGrid.getGridSizeY();j++)
-				  {
-					  tmpGrid.setBlockAt(i, j, (Block)ois.readObject());
-				  }
-			  }
-			  
-			  for (int i=0;i<tmpGrid.getGridSizeX()*tmpGrid.getFogDensity();i++)
-			  {
-				  for (int j=0;j<tmpGrid.getGridSizeY()*tmpGrid.getFogDensity();j++)
-				  {
-					  tmpGrid.setFogAt(i, j, ois.readFloat());
-				  }
-			  }
-			  
-			  int tmpNum = ois.readInt();
-			  for (int i=0;i<tmpNum;i++)
-			  {
-				  tmpGrid.addCollectable((Collectable)ois.readObject());
-			  }
-			  
-			  tmpNum = ois.readInt();
-			  for (int i=0;i<tmpNum;i++)
-			  {
-				  tmpGrid.addEnemy((Enemy)ois.readObject());
-			  }
-			  
-			  tmpNum = ois.readInt();
-			  for (int i=0;i<tmpNum;i++)
-			  {
-				  tmpGrid.addChest((Chest)ois.readObject());
-			  }
+//			  int tmpX, tmpY;
+//			  
+//			  tmpX = ois.readInt();
+//			  tmpY = ois.readInt();
+//			  
+//			  tmpGrid = new Grid(tmpX, tmpY);
+//			  
+//			  for (int i=0;i<tmpGrid.getGridSizeX();i++)
+//			  {
+//				  for (int j=0;j<tmpGrid.getGridSizeY();j++)
+//				  {
+//					  tmpGrid.setBlockAt(i, j, (Block)ois.readObject());
+//				  }
+//			  }
+//			  
+//			  for (int i=0;i<tmpGrid.getGridSizeX()*tmpGrid.getFogDensity();i++)
+//			  {
+//				  for (int j=0;j<tmpGrid.getGridSizeY()*tmpGrid.getFogDensity();j++)
+//				  {
+//					  tmpGrid.setFogAt(i, j, ois.readFloat());
+//				  }
+//			  }
+//			  
+//			  int tmpNum = ois.readInt();
+//			  for (int i=0;i<tmpNum;i++)
+//			  {
+//				  tmpGrid.addCollectable((Collectable)ois.readObject());
+//			  }
+//			  
+//			  tmpNum = ois.readInt();
+//			  for (int i=0;i<tmpNum;i++)
+//			  {
+//				  tmpGrid.addEnemy((Enemy)ois.readObject());
+//			  }
+//			  
+//			  tmpNum = ois.readInt();
+//			  for (int i=0;i<tmpNum;i++)
+//			  {
+//				  tmpGrid.addChest((Chest)ois.readObject());
+//			  }
 			}
 			catch (Exception e) {
 				e.printStackTrace();

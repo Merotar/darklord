@@ -23,6 +23,7 @@ public class SpriteSheet
 	private Texture texture;
 	
 	int width, height;
+	float red, green, blue;
 	
 	public SpriteSheet()
 	{
@@ -36,11 +37,19 @@ public class SpriteSheet
 			texture = TextureLoader.getTexture("PNG", new FileInputStream(fileName));
 			width = texture.getImageWidth();
 			height = texture.getImageHeight();
+			setColor(1.f, 1.f, 1.f);
 		} catch (Exception e)
 		{
 			e.printStackTrace();
 			System.exit(0);
 		}
+	}
+	
+	void setColor(float r, float g, float b)
+	{
+		red = r;
+		green = g;
+		blue = b;
 	}
 	
 	public void begin()
@@ -75,7 +84,7 @@ public class SpriteSheet
 		float dy = 1.f*region.getHeight()/height;		
 		
 		// FIXME: workaround
-		GL11.glColor4f(1.f, 1.f, 1.f, intensity);
+		GL11.glColor4f(red, green, blue, intensity);
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glTexCoord2f(x, y+dy);
 		GL11.glVertex2f(posX, posY+sizeY);

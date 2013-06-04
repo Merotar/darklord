@@ -1,5 +1,7 @@
 package game;
 
+import java.io.Serializable;
+
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 
@@ -11,7 +13,7 @@ import org.newdawn.slick.Color;
  * @since 12-05-2013
  * 
  */
-public class Enemy extends Collidable
+public class Enemy extends Collidable implements Serializable
 {
 	int type, xp;
 	float maxHp, hp, dmgOnContact;
@@ -93,7 +95,7 @@ public class Enemy extends Collidable
 		this.dmgOnContact = dmgOnContact;
 	}
 	
-	public void update()
+	public void update(float dt)
 	{
 		
 	}

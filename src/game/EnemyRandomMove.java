@@ -35,7 +35,7 @@ public class EnemyRandomMove extends Enemy implements Serializable
 	
 	public EnemyRandomMove(float x, float y)
 	{
-		this(x, y,1);
+		this(x, y, 1);
 	}
 	
 	public EnemyRandomMove(float x, float y, int type)
@@ -88,7 +88,7 @@ public class EnemyRandomMove extends Enemy implements Serializable
 	/**
 	 * updates position
 	 */
-	public void update()
+	public void update(float dt)
 	{
 		if (motionTimer.getTimeDelta() > motionTime)
 		{

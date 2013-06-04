@@ -60,7 +60,7 @@ public class MovingSprite extends Sprite
 		this.lifetime = lifetime;
 	}
 	
-	public void update()
+	public void update(float dt)
 	{
 //		if (motionTimer.getTimeDelta() < getFullIntensityTime())
 //		{

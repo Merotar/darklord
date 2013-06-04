@@ -32,7 +32,9 @@ public class Level
 	public Vector<Projectile> projectiles;
 	public Vector<Projectile> hostileProjectiles;
 	public Vector<MovingSprite> bubbles;
-	public static final int drawSize = 8;
+	public static final int drawSize = 9;
+	private TextDrawer textDrawer;
+	private Vector<MovingText> movingTexts;
 
 	public Level()
 	{
@@ -47,6 +49,8 @@ public class Level
 		projectiles = new Vector<Projectile>();
 		hostileProjectiles = new Vector<Projectile>();
 		bubbles = new Vector<MovingSprite>();
+		textDrawer = new TextDrawer();
+		movingTexts = new Vector<MovingText>();
 		
 //		initTest();
 	}
@@ -69,6 +73,8 @@ public class Level
 		projectiles = new Vector<Projectile>();
 		hostileProjectiles = new Vector<Projectile>();
 		bubbles = new Vector<MovingSprite>();
+		textDrawer = new TextDrawer();
+		movingTexts = new Vector<MovingText>();
 		
 //		map.readTextFile("test.txt");
 //		mainPlayer.setPos(map.getStart());
@@ -93,6 +99,8 @@ public class Level
 		projectiles = new Vector<Projectile>();
 		hostileProjectiles = new Vector<Projectile>();
 		bubbles = new Vector<MovingSprite>();
+		textDrawer = new TextDrawer();
+		movingTexts = new Vector<MovingText>();
 	}
 	
 	// copy constructor
@@ -201,7 +209,7 @@ public class Level
 	
 	public void finalize()
 	{
-		map.saveCurrentGrid();
+		map.finalize();
 	}
 	
 	/**
@@ -224,10 +232,10 @@ public class Level
 //				System.out.println("Block destroyed!");
 //				if (type == BlockType.BLOCK_ROCK) mainPlayer.decreaseDiggingCount();
 				Random rnd = new Random();
-				float rndX = 0.20f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
-				float rndY = 0.20f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
+				float rndX = 0.10f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
+				float rndY = 0.10f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
 //				System.out.println(rndX);
-				map.getCollectableObjects().add(new Collectable(tmpCollectableType, x+0.25f+rndX, y+0.25f+rndY));
+				map.getCollectableObjects().add(new Collectable(tmpCollectableType, x+0.1f+rndX, y+0.1f+rndY));
 			}
 			mainPlayer.startAttackBlockTimer();
 		}
@@ -431,6 +439,20 @@ public class Level
 //			tmp.draw(tmp.getPosition().getX(), tmp.getPosition().getY(),tmp.getSize().getX(), tmp.getSize().getX());
 			GL11.glPopMatrix();
 		}
+		
+		// draw text
+		
+		for (Iterator<MovingText> object = movingTexts.iterator();object.hasNext();)
+		{
+			MovingText tmpText = object.next();
+			tmpText.draw(textDrawer);
+		}
+		
+		GL11.glPushMatrix();
+		GL11.glTranslated(2.,2., 0.);
+//		GL11.glColor3f(1.f, 0.f, 1.f);
+		textDrawer.draw(Float.toString(mainPlayer.getHp()));
+		GL11.glPopMatrix();
 		
 		GL11.glPopMatrix();
 	}
@@ -645,7 +667,7 @@ public class Level
 		return collide;
 	}
 	
-	public void update()
+	public void update(float dt)
 	{
 		// update level position
 		
@@ -680,7 +702,7 @@ public class Level
 			this.setPosY(this.getPosY() - diffBottom);
 		}
 		
-		mainPlayer.update();
+		mainPlayer.update(dt);
 		
 		if (mainPlayer.getPosX() < map.getCurrentGridX()*map.getGridSizeX())
 		{
@@ -736,7 +758,7 @@ public class Level
 		for (Iterator<Projectile> object = projectiles.iterator(); object.hasNext();)
 		{
 			Projectile tmp = object.next();
-			tmp.update();
+			tmp.update(dt);
 			if (!tmp.isActive())
 			{
 				object.remove();
@@ -884,6 +906,9 @@ public class Level
 							if (e.decreaseHp(tmp.getDamage())) 
 							{
 								mainPlayer.addXp(e.getXp());
+								Vector2f tmpPos = new Vector2f(mainPlayer.getCenter());
+								tmpPos.addY(-1.0f);
+								movingTexts.add(new MovingText("+"+e.getXp()+"XP", tmpPos));
 								obj2.remove();
 							}
 						}
@@ -907,7 +932,7 @@ public class Level
 		for (Iterator<Projectile> object = hostileProjectiles.iterator(); object.hasNext();)
 		{
 			Projectile tmp = object.next();
-			tmp.update();
+			tmp.update(dt);
 			
 			int projectileX = (int)Math.floor(tmp.getPosX());
 			int projectileY = (int)Math.floor(tmp.getPosY());
@@ -991,10 +1016,10 @@ public class Level
 				}
 			}
 			
-			e.update();
+			e.update(dt);
 			
 			// special update for StaticEnemyCrystal to be able to spawn projectiles
-			if (e instanceof StaticEnemyCrystal) ((StaticEnemyCrystal) e).update(this);
+			if (e instanceof StaticEnemyCrystal) ((StaticEnemyCrystal) e).update(dt, this);
 		}
 		
 		// update blocks
@@ -1018,12 +1043,23 @@ public class Level
 		for (Iterator<MovingSprite> object = bubbles.iterator(); object.hasNext();)
 		{
 			MovingSprite tmp = object.next();
-			tmp.update();
+			tmp.update(dt);
 			if (!tmp.isAlive()) object.remove();
 		}
 		
 		// update map
 		map.update();
+		
+		// update moving texts
+		for (Iterator<MovingText> object = movingTexts.iterator();object.hasNext();)
+		{
+			MovingText tmpText = object.next();
+			tmpText.update(dt);
+			if (!tmpText.isAlive())
+			{
+				object.remove();
+			}
+		}
 		
 		// update fog
 		Vector2f playerPos =mainPlayer.getCenter().mul(map.getFogDensity());
