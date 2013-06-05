@@ -1,7 +1,13 @@
 package game;
 
-public class TimeStore extends StoreObject<Float>
+import java.io.Serializable;
+
+public class TimeStore extends StoreObject<Float> implements Serializable
 {
+	public TimeStore()
+	{
+		super(0.f);
+	}
 
 	public TimeStore(Float value)
 	{

@@ -1,6 +1,8 @@
 package game;
 
-public class EnergyStore extends StoreObject<Float>
+import java.io.Serializable;
+
+public class EnergyStore extends StoreObject<Float> implements Serializable
 {
 	float amountPerSecond;
 	

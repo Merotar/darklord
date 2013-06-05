@@ -1,8 +1,10 @@
 package game;
 
+import java.io.Serializable;
+
 import org.lwjgl.opengl.GL11;
 
-public class Beam
+public class Beam implements Serializable
 {
 	Vector2f start, direction, end;
 	float maxLength, length, width, stepSize;

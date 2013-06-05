@@ -18,7 +18,7 @@ public class MovingText {
 		setIntensity(1.f);
 		size = new Vector2f(0.5f, 1.f);
 		setAlive(true);
-		theStart.addX(-size.getX()*s.length()/2.f);
+//		theStart.addX(-size.getX()*s.length()/2.f);
 		setStart(theStart);
 		dir.normalize();
 		setDirection(dir);

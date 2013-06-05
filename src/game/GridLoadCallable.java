@@ -27,7 +27,7 @@ public class GridLoadCallable implements Callable<Grid>
 
 			  tmpGrid = (Grid)ois.readObject();
 			  
-			  Print.outln("enemy:"+tmpGrid.getEnemies().get(0).dmgOnContact);
+//			  Print.outln("enemy:"+tmpGrid.getEnemies().get(0).dmgOnContact);
 			  
 //			  int tmpX, tmpY;
 //			  

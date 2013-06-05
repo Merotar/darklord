@@ -1,4 +1,5 @@
 package game;
+import java.io.Serializable;
 import java.util.Vector;
 //import game.CollectableType;
 
@@ -14,7 +15,7 @@ import org.newdawn.slick.opengl.Texture;
  * @since 12-05-2013
  * 
  */
-enum PlayerAbility
+enum PlayerAbility implements Serializable
 {
 	TELEPORT(1), SHOOT(2), DIG(5);
 			
@@ -34,12 +35,12 @@ enum PlayerAbility
  * @since 12-05-2013
  * 
  */
-public class Player extends Collidable
+public class Player extends Collidable implements Serializable
 {
 //	private float posX, posY, sizeX, sizeY;
 	private int xp, maxXp;
 	private float hp, maxHp;
-	private Vector<Texture> texture;
+//	private Vector<Texture> texture;
 	private float speed;
 	private boolean moveUp, moveDown, moveLeft, moveRight;
 	private boolean teleportUp, teleportDown, teleportLeft, teleportRight;
@@ -116,7 +117,7 @@ public class Player extends Collidable
 		hp = maxHp = 100.f;
 		attackBlockTimer = new Timer();
 		invulnerableOnContactTimer = new Timer();
-		texture = new Vector<Texture>();
+//		texture = new Vector<Texture>();
 		setActiveProjectile(0);
 		setLevel(1);
 		setMaxXp(10);
@@ -604,18 +605,23 @@ public class Player extends Collidable
 
 	public void addItem(CollectableType type)
 	{
+		
 		switch (type)
 		{
 		case BLOCK_RED:
+			Darklords.sounds.chest.playAsSoundEffect(1.f, Darklords.sounds.volumeEffects, false);
 			crystalsRed++;
 			break;
 		case BLOCK_BLUE:
+			Darklords.sounds.chest.playAsSoundEffect(1.f, Darklords.sounds.volumeEffects, false);
 			crystalsBlue++;
 			break;
 		case BLOCK_GREEN:
+			Darklords.sounds.chest.playAsSoundEffect(1.f, Darklords.sounds.volumeEffects, false);
 			crystalsGreen++;
 			break;
 		case BLOCK_YELLOW:
+			Darklords.sounds.chest.playAsSoundEffect(1.f, Darklords.sounds.volumeEffects, false);
 			crystalsYellow++;
 			break;
 		case ABILITY_TELEPORT:

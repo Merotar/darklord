@@ -70,7 +70,7 @@ public class Map implements Serializable
 //		initTest();
 	}
 	
-	public Map(int x, int y, String theName)
+	public Map(int x, int y, String theName, boolean isNewMap)
 	{
 		setName(theName);
 		start = new Vector2f(2.f, 2.f);
@@ -99,15 +99,7 @@ public class Map implements Serializable
 		gridLoaders = new Vector<GridLoader>();
 		saveGridExecutor = Executors.newCachedThreadPool();
 		savedGridFutures = new Vector<Future<Boolean>>();
-		
-		File dir = new File("./"+getName());
-		boolean isNewMap = !dir.exists();
-		
-		if (isNewMap)
-		{
-			dir.mkdir();
-		}
-		
+			
 		for (int i=-1;i<2;i++)
 		{
 			for (int j=-1;j<2;j++)

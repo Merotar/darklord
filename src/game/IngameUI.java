@@ -3,6 +3,8 @@ package game;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.lwjgl.opengl.GL11;
+
 public class IngameUI extends UI
 {
 	UIBar energyBarRed;
@@ -10,11 +12,15 @@ public class IngameUI extends UI
 	UIBar energyBarGreen;
 	UIBar energyBarYellow;
 	Vector<UIObject> uiObjectsIngame;
+	StaticText<Integer> numCrystalsRed, numCrystalsBlue, numCrystalsGreen,
+		numCrystalsYellow, numPlayerHealth, numPlayerXp, numPlayerLevel;
+	Vector<StaticText<Integer>> staticTextsInt;
 	
 	public IngameUI(String string)
 	{
 		super(string);
 		uiObjectsIngame = new Vector<UIObject>();
+		staticTextsInt = new Vector<StaticText<Integer>>();
 	}
 
 	public UIBar getEnergyBarRed() {
@@ -28,6 +34,16 @@ public class IngameUI extends UI
 	public void addUIObjectIngame(UIObject theObject)
 	{
 		uiObjectsIngame.add(theObject);
+	}
+	
+	public void addStaticTextInt(StaticText<Integer> theText)
+	{
+//		theText.getPosition().setX(getPosition().getX()+theText.getPosition().getX()*getSize().getX());
+//		theText.getPosition().setY(getPosition().getY()+theText.getPosition().getY()*getSize().getY());
+//		theText.getSize().setX(theText.getSize().getX()*getSize().getX());
+//		theText.getSize().setY(theText.getSize().getY()*getSize().getY());
+		
+		staticTextsInt.add(theText);
 	}
 	
 	public void draw()
@@ -67,6 +83,29 @@ public class IngameUI extends UI
 
 		}
 		Darklords.sprites01.end();
+		
+		// draw texts
+		
+		for (StaticText<Integer> tmpText : staticTextsInt)
+		{
+			GL11.glPushMatrix();
+			GL11.glTranslatef(getPosition().getX(), getPosition().getY(), 0.f);
+			GL11.glScalef(getSize().getX(), getSize().getY(), 1.f);
+			tmpText.draw(Darklords.textDrawer);
+			GL11.glPopMatrix();
+		}
+		
+		GL11.glPushMatrix();
+		GL11.glTranslatef(getPosition().getX(), getPosition().getY(), 0.f);
+		GL11.glScalef(getSize().getX(), getSize().getY(), 1.f);
+		numCrystalsRed.draw(Darklords.textDrawer);
+		numCrystalsBlue.draw(Darklords.textDrawer);
+		numCrystalsGreen.draw(Darklords.textDrawer);
+		numCrystalsYellow.draw(Darklords.textDrawer);
+		numPlayerHealth.draw(Darklords.textDrawer);
+		numPlayerXp.draw(Darklords.textDrawer);
+		numPlayerLevel.draw(Darklords.textDrawer);
+		GL11.glPopMatrix();
 	}
 
 	public UIBar getEnergyBarBlue() {
@@ -100,5 +139,73 @@ public class IngameUI extends UI
 		energyBarBlue.setScale(1.f*player.getEnergyBlue()/player.getEnergyBlueMax());
 		energyBarGreen.setScale(1.f*player.getEnergyGreen()/player.getEnergyGreenMax());
 		energyBarYellow.setScale(1.f*player.getEnergyYellow()/player.getEnergyYellowMax());
+	
+		// update crystal numbers
+		
+		numCrystalsRed.setValue(player.getCrystalsRed());
+		numCrystalsBlue.setValue(player.getCrystalsBlue());
+		numCrystalsGreen.setValue(player.getCrystalsGreen());
+		numCrystalsYellow.setValue(player.getCrystalsYellow());
+		
+		// update players stats
+		numPlayerHealth.setValue((int)player.getHp());
+		numPlayerXp.setValue(player.getXp());
+		numPlayerLevel.setValue(player.getLevel());
+	}
+
+	public StaticText<Integer> getNumCrystalsRed() {
+		return numCrystalsRed;
+	}
+
+	public void setNumCrystalsRed(StaticText<Integer> numCrystalsRed) {
+		this.numCrystalsRed = numCrystalsRed;
+	}
+
+	public StaticText<Integer> getNumCrystalsBlue() {
+		return numCrystalsBlue;
+	}
+
+	public void setNumCrystalsBlue(StaticText<Integer> numCrystalsBlue) {
+		this.numCrystalsBlue = numCrystalsBlue;
+	}
+
+	public StaticText<Integer> getNumCrystalsGreen() {
+		return numCrystalsGreen;
+	}
+
+	public void setNumCrystalsGreen(StaticText<Integer> numCrystalsGreen) {
+		this.numCrystalsGreen = numCrystalsGreen;
+	}
+
+	public StaticText<Integer> getNumCrystalsYellow() {
+		return numCrystalsYellow;
+	}
+
+	public void setNumCrystalsYellow(StaticText<Integer> numCrystalsYellow) {
+		this.numCrystalsYellow = numCrystalsYellow;
+	}
+
+	public StaticText<Integer> getNumPlayerHealth() {
+		return numPlayerHealth;
+	}
+
+	public void setNumPlayerHealth(StaticText<Integer> playerHealthNum) {
+		this.numPlayerHealth = playerHealthNum;
+	}
+
+	public StaticText<Integer> getNumPlayerXp() {
+		return numPlayerXp;
+	}
+
+	public void setNumPlayerXp(StaticText<Integer> numPlayerXp) {
+		this.numPlayerXp = numPlayerXp;
+	}
+
+	public StaticText<Integer> getNumPlayerLevel() {
+		return numPlayerLevel;
+	}
+
+	public void setNumPlayerLevel(StaticText<Integer> numPlayerLevel) {
+		this.numPlayerLevel = numPlayerLevel;
 	}
 }

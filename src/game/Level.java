@@ -3,6 +3,11 @@ import org.lwjgl.opengl.GL11;
 //import org.lwjgl.util.vector.Vector2f;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Random;
 import java.util.Vector;
 import java.util.Iterator;
@@ -33,7 +38,6 @@ public class Level
 	public Vector<Projectile> hostileProjectiles;
 	public Vector<MovingSprite> bubbles;
 	public static final int drawSize = 9;
-	private TextDrawer textDrawer;
 	private Vector<MovingText> movingTexts;
 
 	public Level()
@@ -49,38 +53,36 @@ public class Level
 		projectiles = new Vector<Projectile>();
 		hostileProjectiles = new Vector<Projectile>();
 		bubbles = new Vector<MovingSprite>();
-		textDrawer = new TextDrawer();
 		movingTexts = new Vector<MovingText>();
 		
 //		initTest();
 	}
 	
-	public Level(int sizeX, int sizeY)
-	{
-//		this.dimX = sizeX;
-//		this.dimY = sizeY;
-		posX = 1.f;
-		posY = 1.f;
-		
-        map = new Map(sizeX, sizeY, "default");
-		
-//		grid = new Block[dimX][dimY];
-//		collectableObjects = new Vector<Collectable>();
-		mainPlayer = new Player(map.start.getX(), map.start.getY());
-//		Print.out("created Player at "); map.start.print();
-		map.getBlockAt((int) mainPlayer.getPosX(), (int) mainPlayer.getPosY()).setType(BlockType.BLOCK_NONE);
-		mainSelectBox = new SelectBox();
-		projectiles = new Vector<Projectile>();
-		hostileProjectiles = new Vector<Projectile>();
-		bubbles = new Vector<MovingSprite>();
-		textDrawer = new TextDrawer();
-		movingTexts = new Vector<MovingText>();
-		
-//		map.readTextFile("test.txt");
-//		mainPlayer.setPos(map.getStart());
-		
-//		initTest();
-}
+//	public Level(int sizeX, int sizeY)
+//	{
+////		this.dimX = sizeX;
+////		this.dimY = sizeY;
+//		posX = 1.f;
+//		posY = 1.f;
+//		
+//        map = new Map(sizeX, sizeY, "default");
+//		
+////		grid = new Block[dimX][dimY];
+////		collectableObjects = new Vector<Collectable>();
+//		mainPlayer = new Player(map.start.getX(), map.start.getY());
+////		Print.out("created Player at "); map.start.print();
+//		map.getBlockAt((int) mainPlayer.getPosX(), (int) mainPlayer.getPosY()).setType(BlockType.BLOCK_NONE);
+//		mainSelectBox = new SelectBox();
+//		projectiles = new Vector<Projectile>();
+//		hostileProjectiles = new Vector<Projectile>();
+//		bubbles = new Vector<MovingSprite>();
+//		movingTexts = new Vector<MovingText>();
+//		
+////		map.readTextFile("test.txt");
+////		mainPlayer.setPos(map.getStart());
+//		
+////		initTest();
+//}
 	
 	public Level(String name)
 	{
@@ -90,16 +92,25 @@ public class Level
 		resX = Darklords.resX;
 		resY = Darklords.resY;
 		
-		map = new Map(20, 20, name);
-		map.setName(name);
+		File dir = new File("./"+name);
+		boolean isNewMap = !dir.exists();
 		
-		mainPlayer = new Player(map.start.getX(), map.start.getY());
+		map = new Map(20, 20, name, isNewMap);
+		
+		if (isNewMap)
+		{
+			dir.mkdir();
+			mainPlayer = new Player(map.start.getX(), map.start.getY());
+		} else
+		{
+			mainPlayer = readPlayerFromFile();
+		}		
+		
 		map.getBlockAt((int) mainPlayer.getPosX(), (int) mainPlayer.getPosY()).setType(BlockType.BLOCK_NONE);
 		mainSelectBox = new SelectBox();
 		projectiles = new Vector<Projectile>();
 		hostileProjectiles = new Vector<Projectile>();
 		bubbles = new Vector<MovingSprite>();
-		textDrawer = new TextDrawer();
 		movingTexts = new Vector<MovingText>();
 	}
 	
@@ -210,6 +221,7 @@ public class Level
 	public void finalize()
 	{
 		map.finalize();
+		writePlayerToFile(mainPlayer);
 	}
 	
 	/**
@@ -445,16 +457,16 @@ public class Level
 		for (Iterator<MovingText> object = movingTexts.iterator();object.hasNext();)
 		{
 			MovingText tmpText = object.next();
-			tmpText.draw(textDrawer);
+			tmpText.draw(Darklords.textDrawer);
 		}
 		
-		GL11.glPushMatrix();
-		GL11.glTranslated(2.,2., 0.);
+//		GL11.glPushMatrix();
+//		GL11.glTranslated(2.,2., 0.);
 //		GL11.glColor3f(1.f, 0.f, 1.f);
-		textDrawer.draw(Float.toString(mainPlayer.getHp()));
-		GL11.glPopMatrix();
+//		Darklords.textDrawer.draw(Float.toString(mainPlayer.getHp()));
+//		GL11.glPopMatrix();
 		
-		GL11.glPopMatrix();
+//		GL11.glPopMatrix();
 	}
 
 	public float getPosX() {
@@ -665,6 +677,55 @@ public class Level
 		}
 		
 		return collide;
+	}
+	
+	public void writePlayerToFile(Player thePlayer)
+	{
+		Print.outln("saving player");
+		
+		ObjectOutputStream oos = null;
+		FileOutputStream fos = null;
+		
+		String fileName = "./"+map.getName()+"/player.ser";
+		
+		try {
+		  fos = new FileOutputStream(fileName);
+		  oos = new ObjectOutputStream(fos);
+		  
+		  oos.writeObject(thePlayer);
+		}
+		catch (IOException e) {
+		  e.printStackTrace();
+		}
+		finally {
+		  if (oos != null) try { oos.close(); } catch (IOException e) {}
+		  if (fos != null) try { fos.close(); } catch (IOException e) {}
+		}
+	}
+	
+	public Player readPlayerFromFile()
+	{
+		Player tmpPlayer = null;
+		ObjectInputStream ois = null;
+		FileInputStream fis = null;
+		
+		Print.outln("load player");
+		
+		String fileName = "./"+map.getName()+"/player.ser";
+		try {
+			  fis = new FileInputStream(fileName);
+			  ois = new ObjectInputStream(fis);
+
+			  tmpPlayer = (Player)ois.readObject();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			finally {
+			  if (ois != null) try { ois.close(); } catch (IOException e) {}
+			  if (fis != null) try { fis.close(); } catch (IOException e) {}
+			}
+		return tmpPlayer;
 	}
 	
 	public void update(float dt)

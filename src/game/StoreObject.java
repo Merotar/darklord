@@ -1,8 +1,16 @@
 package game;
 
-public class StoreObject<T extends Number> {
+import java.io.Serializable;
+
+public class StoreObject<T extends Number> implements Serializable
+{
 	T current, max;
 
+	public StoreObject()
+	{
+		super();
+	}
+	
 	public StoreObject(T value, T theMax)
 	{
 		setMax(theMax);

@@ -59,6 +59,7 @@ public class Darklords {
 	UI mainMenu;
 	IngameUI ingameUI;
 	static SoundLoader sounds;
+	static TextDrawer textDrawer;
 	
 	/**
 	 * initializes global variables
@@ -149,6 +150,43 @@ public class Darklords {
         crystalYellow.setSize(new Vector2f(0.05f, .05f*ratio));
         crystalYellow.setPosition(new Vector2f(0.19f, .45f));
         ingameUI.addUIObjectIngame(crystalYellow);
+        
+        // add texts
+        
+        StaticText<Integer> numCrystalsRed = new StaticText<Integer>("$", world.mainPlayer.getCrystalsRed());
+        numCrystalsRed.setSize(new Vector2f(0.05f, 0.05f*ratio));
+        numCrystalsRed.setPosition(new Vector2f(0.033f, 0.455f));
+        ingameUI.setNumCrystalsRed(numCrystalsRed);
+        
+        StaticText<Integer> numCrystalsBlue = new StaticText<Integer>("$", world.mainPlayer.getCrystalsRed());
+        numCrystalsBlue.setSize(new Vector2f(0.05f, 0.05f*ratio));
+        numCrystalsBlue.setPosition(new Vector2f(0.091f, 0.455f));
+        ingameUI.setNumCrystalsBlue(numCrystalsBlue);
+        
+        StaticText<Integer> numCrystalsGreen = new StaticText<Integer>("$", world.mainPlayer.getCrystalsRed());
+        numCrystalsGreen.setSize(new Vector2f(0.05f, 0.05f*ratio));
+        numCrystalsGreen.setPosition(new Vector2f(0.148f, 0.455f));
+        ingameUI.setNumCrystalsGreen(numCrystalsGreen);
+        
+        StaticText<Integer> numCrystalsYellow = new StaticText<Integer>("$", world.mainPlayer.getCrystalsRed());
+        numCrystalsYellow.setSize(new Vector2f(0.05f, 0.05f*ratio));
+        numCrystalsYellow.setPosition(new Vector2f(0.205f, 0.455f));
+        ingameUI.setNumCrystalsYellow(numCrystalsYellow);
+        
+        StaticText<Integer> numPlayerHealth = new StaticText<Integer>("$HP", (int)world.mainPlayer.getHp());
+        numPlayerHealth.setSize(new Vector2f(0.05f, 0.05f*ratio));
+        numPlayerHealth.setPosition(new Vector2f(0.125f, 0.1f));
+        ingameUI.setNumPlayerHealth(numPlayerHealth);
+        
+        StaticText<Integer> numPlayerXp = new StaticText<Integer>("$XP", world.mainPlayer.getXp());
+        numPlayerXp.setSize(new Vector2f(0.05f, 0.05f*ratio));
+        numPlayerXp.setPosition(new Vector2f(0.125f, 0.8f));
+        ingameUI.setNumPlayerXp(numPlayerXp);
+        
+        StaticText<Integer> numPlayerLevel = new StaticText<Integer>("LEVEL:$", world.mainPlayer.getLevel());
+        numPlayerLevel.setSize(new Vector2f(0.05f, 0.05f*ratio));
+        numPlayerLevel.setPosition(new Vector2f(0.125f, 0.7f));
+        ingameUI.setNumPlayerLevel(numPlayerLevel);
         
 //        // add start button
 //        Button startButton = new Button(new TextureRegion(0*64, 10*64, 3*64, 64),
@@ -284,6 +322,7 @@ public class Darklords {
         
 //      world = new Level(15,15);
         sprites01 = new SpriteSheet("./img/textures.png");
+		textDrawer = new TextDrawer("./img/font.png");
         
         initMainMenu();
         initGameUI();
