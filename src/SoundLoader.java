@@ -1,5 +1,12 @@
 
-
+/**
+ * used to load sounds
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 07-06-2013
+ * 
+ */
 import java.io.IOException;
 
 import org.newdawn.slick.openal.Audio;

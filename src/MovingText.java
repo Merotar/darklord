@@ -2,6 +2,14 @@
 
 import org.lwjgl.opengl.GL11;
 
+/**
+ * describes a text moving along a path
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 07-06-2013
+ * 
+ */
 public class MovingText {
 	private Vector2f start, direction, position, size;
 	private TimeStore time;

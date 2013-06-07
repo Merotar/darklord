@@ -3,6 +3,14 @@
 import java.util.HashMap;
 import java.util.Vector;
 
+/**
+ * loads and draws the graphics of a text
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 07-06-2013
+ * 
+ */
 public class TextDrawer
 {
 	private SpriteSheet sprites;

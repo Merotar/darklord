@@ -2,6 +2,14 @@
 
 import java.io.Serializable;
 
+/**
+ * description of an object with maximaum and current amount
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 07-06-2013
+ * 
+ */
 public class StoreObject<T extends Number> implements Serializable
 {
 	T current, max;

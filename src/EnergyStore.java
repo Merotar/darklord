@@ -2,6 +2,14 @@
 
 import java.io.Serializable;
 
+/**
+ * class to handle refillable resource
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 07-06-2013
+ * 
+ */
 public class EnergyStore extends StoreObject<Float> implements Serializable
 {
 	float amountPerSecond;

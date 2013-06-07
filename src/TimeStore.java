@@ -2,6 +2,14 @@
 
 import java.io.Serializable;
 
+/**
+ * used to time events
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 07-06-2013
+ * 
+ */
 public class TimeStore extends StoreObject<Float> implements Serializable
 {
 	public TimeStore()

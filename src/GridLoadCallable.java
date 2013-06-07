@@ -5,6 +5,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.concurrent.Callable;
 
+/**
+ * callable used to load grids
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 07-06-2013
+ * 
+ */
 public class GridLoadCallable implements Callable<Grid>
 {
 	String fileName;

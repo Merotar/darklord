@@ -2,6 +2,14 @@
 
 import java.io.Serializable;
 
+/**
+ * description of a chest
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 07-06-2013
+ * 
+ */
 public class Chest extends Collidable implements Serializable
 {
 	Drawable appearance;

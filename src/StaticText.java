@@ -2,6 +2,14 @@
 
 import org.lwjgl.opengl.GL11;
 
+/**
+ * description of an static text
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 07-06-2013
+ * 
+ */
 public class StaticText<T extends Number>
 {
 	private T value;

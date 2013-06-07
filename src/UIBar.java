@@ -1,5 +1,12 @@
 
-
+/**
+ * describes a (partially filled) bar
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 07-06-2013
+ * 
+ */
 public class UIBar extends UIObject
 {
 	private float scale;

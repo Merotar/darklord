@@ -5,6 +5,14 @@ import java.util.Vector;
 
 import org.lwjgl.opengl.GL11;
 
+/**
+ * description of the specific darklord ingame ui
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 07-06-2013
+ * 
+ */
 public class IngameUI extends UI
 {
 	UIBar energyBarRed;

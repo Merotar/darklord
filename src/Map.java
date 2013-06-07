@@ -22,9 +22,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.Iterator;
 
 /**
- * describes the grid and collectable objects of the map
+ * describes the active grids (3x3)
  * 
- * TODO: reorganize, merge with Grid
  * 
  * @author Sebastian Artz
  * @version 0.1

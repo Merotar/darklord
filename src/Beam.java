@@ -1,9 +1,16 @@
 
 
 import java.io.Serializable;
-
 import org.lwjgl.opengl.GL11;
 
+/**
+ * description of an energy beam
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 07-06-2013
+ * 
+ */
 public class Beam implements Serializable
 {
 	Vector2f start, direction, end;

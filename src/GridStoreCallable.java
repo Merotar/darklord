@@ -5,6 +5,14 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.concurrent.Callable;
 
+/**
+ * callable to store a grid
+ * 
+ * @author Sebastian Artz
+ * @version 0.1
+ * @since 07-06-2013
+ * 
+ */
 public class GridStoreCallable implements Callable<Boolean>
 {
 	Grid gridTostore;

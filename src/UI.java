@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 /**
- * representation of a menu
+ * representation of an ui
  * 
  * @author Sebastian Artz
  * @version 0.1

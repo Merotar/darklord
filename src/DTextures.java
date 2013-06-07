@@ -6,11 +6,12 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
 /**
- * class which loads and stores the used textures
+ * class which loads and stores the used textures, no longer used
  * 
  * @author Sebastian Artz
  * @version 0.1
  * @since 12-05-2013
+ * @deprecated
  * 
  */
 public class DTextures
