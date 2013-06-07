@@ -831,11 +831,11 @@ public class Darklords {
 					gameStatus = GameStatus.MAIN_MENU;
 				}
 				
-				if (Keyboard.isKeyDown(myKeyboard.KEY_F1))
-				{
-					System.out.println("edit mode on");
-					devMode = true;
-				}
+//				if (Keyboard.isKeyDown(myKeyboard.KEY_F1))
+//				{
+//					System.out.println("edit mode on");
+//					devMode = true;
+//				}
 //				
 //				if (Keyboard.isKeyDown(Keyboard.KEY_F))
 //				{
@@ -890,10 +890,10 @@ public class Darklords {
 						world.mainPlayer.startRight();
 					}
 				}
-				if (Keyboard.isKeyDown(myKeyboard.KEY_E))
-				{
-					world.mainPlayer.inreaseActiveProjectile();
-				}
+//				if (Keyboard.isKeyDown(myKeyboard.KEY_E))
+//				{
+//					world.mainPlayer.inreaseActiveProjectile();
+//				}
 			} else
 			{
 				world.mainPlayer.stopUp();

@@ -95,7 +95,7 @@ public class Level
 		File dir = new File("./"+name);
 		boolean isNewMap = !dir.exists();
 		
-		map = new Map(40, 40, name, isNewMap);
+		map = new Map(30, 30, name, isNewMap);
 		
 		if (isNewMap)
 		{
@@ -572,15 +572,15 @@ public class Level
 		{
 			startProjectile(mouseGrid);
 			
-			if (!mainPlayer.getBeam().isActive())
-			{
-				Vector2f dir = mouseGrid.sub(mainPlayer.getCenter());
-				mainPlayer.getBeam().setStart(mainPlayer.getCenter());
-				mainPlayer.getBeam().setDirection(dir);
-				mainPlayer.getBeam().calcEnd(map);
-				mainPlayer.getBeam().setActive(true);
-				mainPlayer.getBeam().resetLifetime();
-			}
+//			if (!mainPlayer.getBeam().isActive())
+//			{
+//				Vector2f dir = mouseGrid.sub(mainPlayer.getCenter());
+//				mainPlayer.getBeam().setStart(mainPlayer.getCenter());
+//				mainPlayer.getBeam().setDirection(dir);
+//				mainPlayer.getBeam().calcEnd(map);
+//				mainPlayer.getBeam().setActive(true);
+//				mainPlayer.getBeam().resetLifetime();
+//			}
 		}
 
 	}
@@ -671,6 +671,10 @@ public class Level
 		
 //		if ((x<0)||(x>=map.getMapSizeX())||(y<0)||(y>=map.getMapSizeY())) return false;
 		
+		if (map.getBlockAt(x, y) == null)
+		{
+			return true;
+		}
 		if (map.getBlockAt(x, y).isSolid())
 		{
 			collide = p.collideWithBlock(x, y);
@@ -951,7 +955,7 @@ public class Level
 						Darklords.sounds.explosion.playAsSoundEffect(1.f, Darklords.sounds.volumeEffects, false);
 						
 						// red projectiles
-						if (tmp.getType() == 0 && e instanceof EnemyRandomMove)	// red projectile
+//						if (tmp.getType() == 0 && e instanceof EnemyRandomMove)	// red projectile
 						{
 //							System.out.println("Enemy damaged by projectile");
 							// generate "BAM" bubble
@@ -974,13 +978,12 @@ public class Level
 							}
 						}
 						
-						// blue projectiles
-						if (tmp.getType() == 1 && e instanceof StaticEnemyCrystal)	// red projectile
-						{
-							System.out.println("crystal damaged by projectile");
-//							mainPlayer.decreaseBlocksBlue();
-							if (e.decreaseHp(tmp.getDamage())) obj2.remove();	
-						}
+//						if (tmp.getType() == 0 && e instanceof StaticEnemyCrystal)	// red projectile
+//						{
+//							System.out.println("crystal damaged by projectile");
+////							mainPlayer.decreaseBlocksBlue();
+//							if (e.decreaseHp(tmp.getDamage())) obj2.remove();	
+//						}
 						
 						object.remove();
 						break;

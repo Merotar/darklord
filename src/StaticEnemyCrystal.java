@@ -9,17 +9,15 @@
  */
 public class StaticEnemyCrystal extends Enemy
 {
-	Timer shootTimer;
-	float shootDelay;
+	TimeStore time;
 	private Drawable appearance;
 	
 	public StaticEnemyCrystal()
 	{
 		super();
-		shootTimer = new Timer();
-		shootTimer.start();
-		shootDelay = 2000;
-		setHp(1.f);
+		time = new TimeStore(2.f);
+		setHp(5.f);
+		setXp(2);
 		setType(2);
 		appearance = new Sprite();
 		((Sprite)appearance).setTextureRegion(6*128, 0*128, 128, 128);
@@ -34,11 +32,8 @@ public class StaticEnemyCrystal extends Enemy
 	
 	public void update(float dt, Level level)
 	{
-		if (shootTimer.getTimeDelta() >= shootDelay)
+		if (time.add(dt))
 		{
-			shootTimer.reset();
-			
-			
 			Vector2f pos, dir;
 			Projectile tmpProjectile;
 			

@@ -156,7 +156,8 @@ public class Map implements Serializable
 		float veinProbabilityRed = 0.03f;
 		float veinProbabilityBlue = 0.02f;
 		float veinProbabilityGreen = 0.01f;
-		float enemyRandomMovePropability = 0.1f;
+		float enemyRandomMovePropability = 0.05f;
+		float staticEnemyPropability = 0.2f;
 		float chestPropability = 0.1f;
 		
 		for (int x=1;x<theGrid.getGridSizeX()-1;x++)
@@ -193,7 +194,7 @@ public class Map implements Serializable
 					generateVein(theGrid, new Vector2f(x, y), 3, BlockType.BLOCK_GREEN);
 				}
 				
-				//generate random move enemies
+				//generate enemies
 				rnd = RandomGenerator.getRandomZeroToOne();
 				if (rnd < enemyRandomMovePropability)
 				{
@@ -203,6 +204,17 @@ public class Map implements Serializable
 					}
 				}
 				
+				rnd = RandomGenerator.getRandomZeroToOne();
+				if (rnd < staticEnemyPropability)
+				{
+					if (theGrid.getBlockAt(x, y).getType() == BlockType.BLOCK_NONE)
+					{
+						theGrid.getEnemies().add(new StaticEnemyCrystal(x+theX*getGridSizeX(), y+theY*getGridSizeY()));
+					}
+				}
+				
+				
+				//generate chests
 				if (rnd > 0.5 && rnd < chestPropability+0.5)
 				{
 					if (theGrid.getBlockAt(x, y).getType() == BlockType.BLOCK_NONE)
