@@ -423,12 +423,12 @@ public class Player extends Collidable implements Serializable
 		if (moveUp)
 		{
 //			System.out.println("UP!");
-			setPosY(getPosY() - speed*Darklords.dt);
+			setPosY(getPosY() + speed*Darklords.dt);
 		}
 		
 		if (moveDown)
 		{
-			setPosY(getPosY() + speed*Darklords.dt);
+			setPosY(getPosY() - speed*Darklords.dt);
 //			System.out.println("posY: "+posY);
 		}
 		

@@ -140,10 +140,63 @@ public class Map implements Serializable
 //		initDungeon(currentGrid[currentGridX-1][currentGridY-1]);
 		
 		currentGrid[currentGridX][currentGridY].setTypeAt((int)start.getX(), (int)start.getY(), BlockType.BLOCK_NONE);
-		
+
 //		enemies = new Vector<Enemy>();
 		
 //		initTest();
+	}
+	
+	public boolean setWall(int x, int y, int type)
+	{
+		Block tmpBlock = getBlockAt(x, y);
+		
+		if (tmpBlock.getType() != BlockType.BLOCK_NONE)
+		{
+			Wall tmpWall;
+			
+			if (tmpBlock.getOverlay() == null)
+			{
+				// create new wall
+				tmpBlock.setOverlay(new Wall());
+			}
+
+			if (tmpBlock.getOverlay() instanceof Wall)
+			{
+				// use existing wall
+				tmpWall = (Wall)tmpBlock.getOverlay();
+			} else
+			{
+				// overlay is not a wall
+				return false;
+			}
+
+			// finally set wall
+			switch (type)
+			{
+			case Wall.WALL_LEFT:
+				if (getBlockAt(x-1, y).getType() == BlockType.BLOCK_NONE) tmpWall.setLeft(true);
+				break;
+			case Wall.WALL_RIGHT:
+				if (getBlockAt(x+1, y).getType() == BlockType.BLOCK_NONE) tmpWall.setRight(true);
+				break;
+			case Wall.WALL_TOP:
+				if (getBlockAt(x, y+1).getType() == BlockType.BLOCK_NONE) tmpWall.setTop(true);
+				break;
+			case Wall.WALL_BOTTOM:
+				if (getBlockAt(x, y-1).getType() == BlockType.BLOCK_NONE) tmpWall.setBottom(true);
+				break;
+			default:
+			}
+			
+			if (!(tmpWall.isBottom() || tmpWall.isLeft() || tmpWall.isRight() || tmpWall.isTop()))
+			{
+				tmpBlock.removeOverlay();
+				return false;
+			}
+			
+			return true;
+		}
+		return false;
 	}
 	
 	private void initDungeon(Grid theGrid, int theX, int theY)

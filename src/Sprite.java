@@ -37,7 +37,7 @@ public class Sprite implements Drawable
 	
 	public void draw()
 	{
-		Darklords.sprites01.draw(getTextureRegion());
+		draw(0.f, 0.f, 1.f, 1.f);
 	}
 	
 	public void draw(float posX, float posY, float sizeX, float sizeY)

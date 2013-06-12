@@ -19,19 +19,23 @@ public class Block implements Serializable
 	private int id, hp, maxHp;
 	private boolean destroyable;
 //	private TextureRegion textureRegion;
+	private Drawable background;
 	private Drawable appearance;
 	private static Drawable crack = new Sprite();
 	private BlockType type;
+	private Buildable overlay;
 	
 	
 	public Block()
 	{
-		setType(BlockType.BLOCK_NONE);
+		this(BlockType.BLOCK_NONE);
 	}
 	
 	public Block(BlockType t)
 	{
 //		textureRegion = new TextureRegion();
+		overlay = null;
+		background = new Sprite();
 		appearance = new Sprite();
 		((Sprite)crack).setTextureRegion(new TextureRegion(5, 1, 128));
 		setType(t);
@@ -109,6 +113,18 @@ public class Block implements Serializable
 		return type;
 	}
 	
+	public void setOverlay(Buildable theOverlay)
+	{
+		overlay = theOverlay;
+		setDestroyable(false);
+	}
+	
+	public void removeOverlay()
+	{
+		overlay = null;
+		setType(getType());
+	}
+	
 	/**
 	 * @return returns true if object is destoyed
 	 */
@@ -159,60 +175,70 @@ public class Block implements Serializable
 			case BLOCK_NONE:		// background
 				solid = false;
 				destroyable = false;
-				((Sprite)appearance).setTextureRegion(0*128, 0*128, 128, 128);
+				((Sprite)background).setTextureRegion(0*128, 0*128, 128, 128);
+				((Sprite)appearance).setTextureRegion(7*128, 2*128, 128, 128);
 				setMaxHp(1);
 				break;
 			case BLOCK_ROCK:		// rock
 				solid = true;
 				destroyable = false;
+				((Sprite)background).setTextureRegion(0*128, 0*128, 128, 128);
 				((Sprite)appearance).setTextureRegion(1*128, 0*128, 128, 128);
 				setMaxHp(1);
 				break;
 			case BLOCK_DIRT:		// dirt
 				solid = true;
 				destroyable = true;
+				((Sprite)background).setTextureRegion(0*128, 0*128, 128, 128);
 				((Sprite)appearance).setTextureRegion(2*128, 0*128, 128, 128);
 				setMaxHp(2);
 				break;
 			case BLOCK_RED:		// red
 				solid = true;
 				destroyable = true;
+				((Sprite)background).setTextureRegion(0*128, 0*128, 128, 128);
 				((Sprite)appearance).setTextureRegion(3*128, 0*128, 128, 128);
 				setMaxHp(2);
 				break;
 			case BLOCK_BLUE:		// blue
 				solid = true;
 				destroyable = true;
+				((Sprite)background).setTextureRegion(0*128, 0*128, 128, 128);
 				((Sprite)appearance).setTextureRegion(4*128, 0*128, 128, 128);
 				setMaxHp(2);
 				break;
 			case BLOCK_GREEN:		// green
 				solid = true;
 				destroyable = true;
+				((Sprite)background).setTextureRegion(0*128, 0*128, 128, 128);
 				((Sprite)appearance).setTextureRegion(5*128, 0*128, 128, 128);
 				setMaxHp(2);
 				break;
 			case BLOCK_YELLOW:		// free
 				solid = true;
 				destroyable = true;
+				((Sprite)background).setTextureRegion(0*128, 0*128, 128, 128);
 				((Sprite)appearance).setTextureRegion(0*128, 1*128, 128, 128);
 				setMaxHp(2);
 				break;
 			case BLOCK_PLANTS:		// plants
 				solid = true;
 				destroyable = false;
+				((Sprite)background).setTextureRegion(0*128, 0*128, 128, 128);
 				((Sprite)appearance).setTextureRegion(7*128, 0*128, 128, 128);
 				setMaxHp(1);
 				break;
 			case BLOCK_GOAL:		// goal
 				solid = false;
 				destroyable = false;
+				((Sprite)background).setTextureRegion(0*128, 0*128, 128, 128);
 				((Sprite)appearance).setTextureRegion(6*128, 1*128, 128, 128);
 				setMaxHp(1);
 				break;
 			default:
 //				texture = null;
 				solid = true;
+				((Sprite)background).setTextureRegion(0*128, 0*128, 128, 128);
 				((Sprite)appearance).setTextureRegion(0*128, 10*128, 128, 128);
 				setMaxHp(1);
 				break;
@@ -225,10 +251,17 @@ public class Block implements Serializable
 	
 	public void draw()
 	{
+		background.draw();
 		appearance.draw();
+		
 		if (this.hp < this.maxHp)
 		{
 			crack.draw();
+		}
+		
+		if (overlay != null)
+		{
+			overlay.draw();
 		}
 		
 //		Darklords.sprites01.draw(getTextureRegion());
@@ -288,5 +321,9 @@ public class Block implements Serializable
 	public void print()
 	{
 		System.out.println("Block type: "+type);
+	}
+
+	public Sprite getOverlay() {
+		return overlay;
 	}
 }

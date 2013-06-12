@@ -39,6 +39,8 @@ public class Level
 	public Vector<MovingSprite> bubbles;
 	public static final int drawSize = 9;
 	private Vector<MovingText> movingTexts;
+	IngameStatus ingameStatus;
+	IngameUI mainUI;
 
 	public Level()
 	{
@@ -92,6 +94,8 @@ public class Level
 		resX = Darklords.resX;
 		resY = Darklords.resY;
 		
+		ingameStatus = IngameStatus.DEFAULT;
+		
 		File dir = new File("./"+name);
 		boolean isNewMap = !dir.exists();
 		
@@ -112,6 +116,9 @@ public class Level
 		hostileProjectiles = new Vector<Projectile>();
 		bubbles = new Vector<MovingSprite>();
 		movingTexts = new Vector<MovingText>();
+		
+        mainUI = new IngameUI(1.f*resX/resY);
+        mainUI.init(this);
 	}
 	
 	// copy constructor
@@ -276,11 +283,11 @@ public class Level
 		GL11.glPushMatrix();
 		
 		float posXgrid = posX*(gridSize/Darklords.resX)*2.f;
-		float posYgrid = -posY*(gridSize/Darklords.resY)*2.f;
+		float posYgrid = posY*(gridSize/Darklords.resY)*2.f;
 		GL11.glTranslatef(posXgrid, posYgrid, 0.f);
 		
 		// TODO: fix orientation
-		GL11.glScaled(1., -1., 1.);
+//		GL11.glScaled(1., -1., 1.);
 		GL11.glTranslated(-1., -1., 0.);
 //		GL11.glTranslated(-2.f*posX/(Darklords.resX), -2.f*posY/(Darklords.resY), 0.);
 		GL11.glScaled(2.f*gridSize/(Darklords.resX), 2.f*gridSize/(Darklords.resY), 1.);
@@ -460,6 +467,13 @@ public class Level
 			tmpText.draw(Darklords.textDrawer);
 		}
 		
+		// draw ui
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+//		GL11.glScaled(1., -1., 1.);
+		mainUI.draw();
+		GL11.glPopMatrix();
+		
 //		GL11.glPushMatrix();
 //		GL11.glTranslated(2.,2., 0.);
 //		GL11.glColor3f(1.f, 0.f, 1.f);
@@ -491,7 +505,7 @@ public class Level
 	 */
 	public void mousePositionReaction(Vector2f pos)
 	{
-		Vector2f mouseGrid = new Vector2f(pos.getX()/this.gridSize, (Darklords.resY-pos.getY())/this.gridSize);
+		Vector2f mouseGrid = new Vector2f(pos.getX()/this.gridSize, pos.getY()/this.gridSize);
 		// translate grid
 		mouseGrid.setX(mouseGrid.getX()-this.getPosX());
 		mouseGrid.setY(mouseGrid.getY()-this.getPosY());
@@ -539,7 +553,27 @@ public class Level
 	 */
 	public void mouseDownReaction(Vector2f pos, int button) // 0: left, 1: right
 	{
-		Vector2f mouseGrid = new Vector2f(pos.getX()/this.gridSize, (Darklords.resY-pos.getY())/this.gridSize);
+		switch (ingameStatus)
+		{
+		case DEFAULT:
+			mouseDownReactionDefault(pos, button);
+			break;
+		case BUILDING:
+			mouseDownReactionBuild(pos, button);
+			break;
+		default:
+			mouseDownReactionDefault(pos, button);
+		}
+	}
+	
+	/**
+	 * reaction to a pressed mouse button
+	 * @param pos
+	 * @param button
+	 */
+	public void mouseDownReactionDefault(Vector2f pos, int button) // 0: left, 1: right
+	{
+		Vector2f mouseGrid = new Vector2f(pos.getX()/this.gridSize, pos.getY()/this.gridSize);
 		// translate grid
 //		mouseGrid.print();
 		mouseGrid.setX(mouseGrid.getX()-this.getPosX());
@@ -571,7 +605,7 @@ public class Level
 		if (button == 1)
 		{
 			startProjectile(mouseGrid);
-			
+						
 //			if (!mainPlayer.getBeam().isActive())
 //			{
 //				Vector2f dir = mouseGrid.sub(mainPlayer.getCenter());
@@ -581,6 +615,59 @@ public class Level
 //				mainPlayer.getBeam().setActive(true);
 //				mainPlayer.getBeam().resetLifetime();
 //			}
+		}
+
+	}
+	
+	public void mouseDownReactionBuild(Vector2f pos, int button) // 0: left, 1: right
+	{
+		Vector2f mouseGrid = new Vector2f(pos.getX()/this.gridSize, pos.getY()/this.gridSize);
+		// translate grid
+//		mouseGrid.print();
+		mouseGrid.setX(mouseGrid.getX()-this.getPosX());
+		mouseGrid.setY(mouseGrid.getY()-this.getPosY());
+//		mouseGrid.print();
+//
+//		System.out.println("pos: ("+this.getPosX()+", "+this.getPosY()+")");
+		
+//		System.out.println("Mouse Pressed: "+mouseGrid.getX()+", "+mouseGrid.getY());
+		int x_int = (int)Math.floor(mouseGrid.getX());
+		int y_int = (int)Math.floor(mouseGrid.getY());
+		
+		if (button == 0)
+		{
+			if (mainUI.getActiveBuildable() != null)
+			{
+				if (mainUI.getActiveBuildable().equals("build_wall"))
+				{
+					float blockX = mouseGrid.getX() - x_int;
+					float blockY = mouseGrid.getY() - y_int;
+					
+					int type = Wall.WALL_TOP;
+					
+					if (blockY < blockX && blockY < (1.-blockX))
+					{
+						type = Wall.WALL_BOTTOM;
+					}
+					
+					if (blockX < blockY && blockX < (1.-blockY))
+					{
+						type = Wall.WALL_LEFT;
+					}
+					
+					if ((1.-blockX) < blockY && (1.-blockX) < (1.-blockY))
+					{
+						type = Wall.WALL_RIGHT;
+					}
+					
+					map.setWall(x_int, y_int, type);
+				}
+			}
+		}
+		
+		if (button == 1)
+		{
+			map.getBlockAt(x_int, y_int).removeOverlay();
 		}
 
 	}
@@ -621,7 +708,7 @@ public class Level
 	 */
 	public void mouseDownReactionDev(Vector2f pos, int button)
 	{
-		Vector2f mouseGrid = new Vector2f(pos.getX()/this.gridSize, (Darklords.resY-pos.getY())/this.gridSize);
+		Vector2f mouseGrid = new Vector2f(pos.getX()/this.gridSize, pos.getY()/this.gridSize);
 		// translate grid
 		mouseGrid.setX(mouseGrid.getX()-this.getPosX());
 		mouseGrid.setY(mouseGrid.getY()-this.getPosY());
@@ -744,8 +831,8 @@ public class Level
 		
 		float diffLeft = playerScreenX - this.getPlayerBorderX()*(resX/gridSize);
 		float diffRight = playerScreenX - (mainPlayer.getSizeX() - this.getPlayerBorderX())*(resX/gridSize);
-		float diffTop = playerScreenY - this.getPlayerBorderY()*(resY/gridSize);
-		float diffBottom = playerScreenY - (mainPlayer.getSizeY() - this.getPlayerBorderY())*(resY/gridSize);
+		float diffTop = playerScreenY - (mainPlayer.getSizeY() - this.getPlayerBorderY())*(resY/gridSize);
+		float diffBottom =  playerScreenY - this.getPlayerBorderY()*(resY/gridSize);
 		
 		if (diffLeft < 0.f)
 		{
@@ -757,12 +844,12 @@ public class Level
 			this.setPosX(this.getPosX() - diffRight);
 		}
 		
-		if (diffTop < 0.f)
+		if (diffTop > 0.f)
 		{
 			this.setPosY(this.getPosY() - diffTop);
 		}
 		
-		if (diffBottom > 0.f)
+		if (diffBottom < 0.f)
 		{
 			this.setPosY(this.getPosY() - diffBottom);
 		}
@@ -1169,6 +1256,9 @@ public class Level
 				}
 			}
 		}
+		
+		// update ui
+		mainUI.update(this, dt);
 	}
 
 	public float getPlayerBorderX() {

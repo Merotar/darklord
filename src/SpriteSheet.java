@@ -78,35 +78,55 @@ public class SpriteSheet
 
 	public void draw(TextureRegion region, float posX, float posY, float sizeX, float sizeY, float intensity)
 	{	
-		float x = 1.f*region.getX()/width;
-		float y = 1.f*region.getY()/height;
-		float dx = 1.f*region.getWidth()/width;
-		float dy = 1.f*region.getHeight()/height;		
-		
-		// FIXME: workaround
-		GL11.glColor4f(red, green, blue, intensity);
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glTexCoord2f(x, y+dy);
-		GL11.glVertex2f(posX, posY+sizeY);
-		GL11.glTexCoord2f(x+dx, y+dy);
-		GL11.glVertex2f(posX+sizeX, posY+sizeY);
-		GL11.glTexCoord2f(x+dx, y);
-		GL11.glVertex2f(posX+sizeX, posY);
-		GL11.glTexCoord2f(x, y);
-		GL11.glVertex2f(posX, posY);
-		GL11.glEnd();
-		
-		// TODO: uncomment
-//		GL11.glBegin(GL11.GL_QUADS);
-//		GL11.glTexCoord2f(x, y+dy); // bottom left
-//		GL11.glVertex2f(0.f, 0.f);
-//		GL11.glTexCoord2f(x+dx, y+dy); // bottom right
-//		GL11.glVertex2f(1.f, 0.f);
-//		GL11.glTexCoord2f(x+dx, y); // top right
-//		GL11.glVertex2f(1.f, 1.f);
-//		GL11.glTexCoord2f(x, y); // top left
-//		GL11.glVertex2f(0.f, 1.f);
-//		GL11.glEnd();
+		if (region != null)
+		{
+			float x = 1.f*region.getX()/width;
+			float y = 1.f*region.getY()/height;
+			float dx = 1.f*region.getWidth()/width;
+			float dy = 1.f*region.getHeight()/height;		
+			
+			// FIXME: workaround
+//			GL11.glColor4f(red, green, blue, intensity);
+//			GL11.glBegin(GL11.GL_QUADS);
+//			GL11.glTexCoord2f(x, y+dy);
+//			GL11.glVertex2f(posX, posY+sizeY);
+//			GL11.glTexCoord2f(x+dx, y+dy);
+//			GL11.glVertex2f(posX+sizeX, posY+sizeY);
+//			GL11.glTexCoord2f(x+dx, y);
+//			GL11.glVertex2f(posX+sizeX, posY);
+//			GL11.glTexCoord2f(x, y);
+//			GL11.glVertex2f(posX, posY);
+//			GL11.glEnd();
+			
+			GL11.glColor4f(red, green, blue, intensity);
+			GL11.glBegin(GL11.GL_QUADS);
+
+			GL11.glTexCoord2f(x, y+dy);
+			GL11.glVertex2f(posX, posY);
+			
+			GL11.glTexCoord2f(x+dx, y+dy);
+			GL11.glVertex2f(posX+sizeX, posY);
+			
+			GL11.glTexCoord2f(x+dx, y);
+			GL11.glVertex2f(posX+sizeX, posY+sizeY);
+
+			GL11.glTexCoord2f(x, y);
+			GL11.glVertex2f(posX, posY+sizeY);
+
+			GL11.glEnd();
+			
+			// TODO: uncomment
+//			GL11.glBegin(GL11.GL_QUADS);
+//			GL11.glTexCoord2f(x, y+dy); // bottom left
+//			GL11.glVertex2f(0.f, 0.f);
+//			GL11.glTexCoord2f(x+dx, y+dy); // bottom right
+//			GL11.glVertex2f(1.f, 0.f);
+//			GL11.glTexCoord2f(x+dx, y); // top right
+//			GL11.glVertex2f(1.f, 1.f);
+//			GL11.glTexCoord2f(x, y); // top left
+//			GL11.glVertex2f(0.f, 1.f);
+//			GL11.glEnd();
+		}
 	}
 	
 	public int getWidth() {

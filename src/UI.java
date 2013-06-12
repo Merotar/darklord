@@ -3,6 +3,8 @@
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.lwjgl.opengl.GL11;
+
 /**
  * representation of an ui
  * 
@@ -19,10 +21,19 @@ public class UI
 	TextureRegion background;
 	Vector<Button> buttons;
 	Vector<UIObject> UIObjects;
+	float aspectRatio;
 	
 	public UI(String fileName)
 	{
 		spriteSheet = new SpriteSheet(fileName);
+		buttons = new Vector<Button>();
+		UIObjects = new Vector<UIObject>();
+	}
+	
+	public UI(SpriteSheet s, float theRatio)
+	{
+		spriteSheet = s;
+		aspectRatio = theRatio;
 		buttons = new Vector<Button>();
 		UIObjects = new Vector<UIObject>();
 	}
@@ -49,30 +60,53 @@ public class UI
 	
 	public void draw()
 	{
+		GL11.glPushMatrix();
+		GL11.glTranslated(getPosition().getX(), getPosition().getY(), 0.);
+		GL11.glScaled(getSize().getX(), getSize().getY(), 1.);
 		spriteSheet.begin();
-		if (background != null) spriteSheet.draw(background, getPosition().getX(), getPosition().getY(), getSize().getX(), getSize().getY());
+		if (background != null) spriteSheet.draw(background);
 		for (Iterator<Button> object = buttons.iterator();object.hasNext();)
 		{
 			Button tmpButton = object.next();
 			spriteSheet.draw(tmpButton.getTextureRegion(), 
-					getPosition().getX()+tmpButton.getPosition().getX()*getSize().getX(), 
-					getPosition().getY()+tmpButton.getPosition().getY()*getSize().getY(), 
-					tmpButton.getSize().getX()*getSize().getX(), 
-					tmpButton.getSize().getY()*getSize().getY());
+					tmpButton.getPosition().getX(), 
+					tmpButton.getPosition().getY(), 
+					tmpButton.getSize().getX(), 
+					tmpButton.getSize().getY());
 		}
 		
 		for (Iterator<UIObject> object = UIObjects.iterator();object.hasNext();)
 		{
 			UIObject tmpUIObject = object.next();
 			spriteSheet.draw(tmpUIObject.getTextureRegion(), 
-					getPosition().getX()+tmpUIObject.getPosition().getX()*getSize().getX(), 
-					getPosition().getY()+tmpUIObject.getPosition().getY()*getSize().getY(), 
-					tmpUIObject.getSize().getX()*getSize().getX(), 
-					tmpUIObject.getSize().getY()*getSize().getY());
+					tmpUIObject.getPosition().getX(), 
+					tmpUIObject.getPosition().getY(), 
+					tmpUIObject.getSize().getX(), 
+					tmpUIObject.getSize().getY());
 		}
 		spriteSheet.end();
+		GL11.glPopMatrix();
 	}
 
+	public void update(Level world)
+	{
+		
+	}
+
+	public void mouseDownReaction(Vector2f globalPos, int button)
+	{
+		
+	}
+	
+	public Vector2f globalToLocal(Vector2f globalPos)
+	{
+		Vector2f localPos = globalPos.sub(getPosition());
+		localPos.setX(localPos.getX()/getSize().getX());
+		localPos.setY(localPos.getY()/getSize().getY());
+		
+		return localPos;
+	}
+	
 	public Vector2f getPosition() {
 		return position;
 	}
@@ -95,5 +129,13 @@ public class UI
 
 	public void setButtons(Vector<Button> buttons) {
 		this.buttons = buttons;
+	}
+
+	public float getAspectRatio() {
+		return aspectRatio;
+	}
+
+	public void setAspectRatio(float aspectRatio) {
+		this.aspectRatio = aspectRatio;
 	}
 }

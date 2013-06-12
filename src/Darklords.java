@@ -17,6 +17,7 @@ import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.opengl.ARBShaderObjects;
+import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -57,7 +58,7 @@ public class Darklords {
 	static SpriteSheet sprites01;
 	GameStatus gameStatus;
 	UI mainMenu;
-	IngameUI ingameUI;
+//	IngameUI ingameUI;
 	static SoundLoader sounds;
 	static TextDrawer textDrawer;
 	
@@ -88,7 +89,7 @@ public class Darklords {
 		sounds = new SoundLoader();
 		musicPosition = 0.f;
 		
-		// add levels 
+		// add levels
 		levelList = new Vector<String>();
 //		levelList.add(new String("defaultMap.map"));
 //		levelList.add(new String("defaultMap.map"));
@@ -98,110 +99,98 @@ public class Darklords {
 		
 	}
 	
-	public void initGameUI()
-	{
-        ingameUI = new IngameUI("./img/ui.png");
-        ingameUI.setPosition(new Vector2f(-1.f, -1.f));
-        ingameUI.setSize(new Vector2f(2.f, 2.f));
-        
-        UIObject panelLeft = new UIObject(new TextureRegion(0.f, 0.f, 3*128, 6*128), "panel left");
-        panelLeft.setSize(new Vector2f(0.25f, 2.f));
-        panelLeft.setPosition(new Vector2f(0.f, 0.f));
-        ingameUI.addUIObject(panelLeft);
-        
-        UIBar energyBarRed = new UIBar(new TextureRegion(0.f, 6*128+0*32, 2*128, 32), "energy bar red");
-        energyBarRed.setSize(new Vector2f(0.8f*0.25f, .02f));
-        energyBarRed.setPosition(new Vector2f(0.1f*0.25f, 0.2f));
-        ingameUI.setEnergyBarRed(energyBarRed);
-        
-        UIBar energyBarBlue = new UIBar(new TextureRegion(0.f, 6*128+1*32, 2*128, 32), "energy bar red");
-        energyBarBlue.setSize(new Vector2f(0.8f*0.25f, .02f));
-        energyBarBlue.setPosition(new Vector2f(0.1f*0.25f, 0.25f));
-        ingameUI.setEnergyBarBlue(energyBarBlue);
-        
-        UIBar energyBarGreen = new UIBar(new TextureRegion(0.f, 6*128+2*32, 2*128, 32), "energy bar red");
-        energyBarGreen.setSize(new Vector2f(0.8f*0.25f, .02f));
-        energyBarGreen.setPosition(new Vector2f(0.1f*0.25f, 0.3f));
-        ingameUI.setEnergyBarGreen(energyBarGreen);
-        
-        UIBar energyBarYellow = new UIBar(new TextureRegion(0.f, 6*128+3*32, 2*128, 32), "energy bar red");
-        energyBarYellow.setSize(new Vector2f(0.8f*0.25f, .02f));
-        energyBarYellow.setPosition(new Vector2f(0.1f*0.25f, 0.35f));
-        ingameUI.setEnergyBarYellow(energyBarYellow);
-        
-        // add UIObjects
-        
-        UIObject crystalRed = new UIObject(new TextureRegion(4*128, 3*128, 128, 128), "crystal red");
-        crystalRed.setSize(new Vector2f(0.05f, .05f*ratio));
-        crystalRed.setPosition(new Vector2f(0.01f, .45f));
-        ingameUI.addUIObjectIngame(crystalRed);
-        
-        UIObject crystalBlue = new UIObject(new TextureRegion(5*128, 3*128, 128, 128), "crystal red");
-        crystalBlue.setSize(new Vector2f(0.05f, .05f*ratio));
-        crystalBlue.setPosition(new Vector2f(0.07f, .45f));
-        ingameUI.addUIObjectIngame(crystalBlue);
-        
-        UIObject crystalGreen = new UIObject(new TextureRegion(3*128, 3*128, 128, 128), "crystal red");
-        crystalGreen.setSize(new Vector2f(0.05f, .05f*ratio));
-        crystalGreen.setPosition(new Vector2f(0.13f, .45f));
-        ingameUI.addUIObjectIngame(crystalGreen);
-        
-        UIObject crystalYellow = new UIObject(new TextureRegion(2*128, 3*128, 128, 128), "crystal red");
-        crystalYellow.setSize(new Vector2f(0.05f, .05f*ratio));
-        crystalYellow.setPosition(new Vector2f(0.19f, .45f));
-        ingameUI.addUIObjectIngame(crystalYellow);
-        
-        // add texts
-        
-        StaticText<Integer> numCrystalsRed = new StaticText<Integer>("$", world.mainPlayer.getCrystalsRed());
-        numCrystalsRed.setSize(new Vector2f(0.05f, 0.05f*ratio));
-        numCrystalsRed.setPosition(new Vector2f(0.033f, 0.455f));
-        ingameUI.setNumCrystalsRed(numCrystalsRed);
-        
-        StaticText<Integer> numCrystalsBlue = new StaticText<Integer>("$", world.mainPlayer.getCrystalsRed());
-        numCrystalsBlue.setSize(new Vector2f(0.05f, 0.05f*ratio));
-        numCrystalsBlue.setPosition(new Vector2f(0.091f, 0.455f));
-        ingameUI.setNumCrystalsBlue(numCrystalsBlue);
-        
-        StaticText<Integer> numCrystalsGreen = new StaticText<Integer>("$", world.mainPlayer.getCrystalsRed());
-        numCrystalsGreen.setSize(new Vector2f(0.05f, 0.05f*ratio));
-        numCrystalsGreen.setPosition(new Vector2f(0.148f, 0.455f));
-        ingameUI.setNumCrystalsGreen(numCrystalsGreen);
-        
-        StaticText<Integer> numCrystalsYellow = new StaticText<Integer>("$", world.mainPlayer.getCrystalsRed());
-        numCrystalsYellow.setSize(new Vector2f(0.05f, 0.05f*ratio));
-        numCrystalsYellow.setPosition(new Vector2f(0.205f, 0.455f));
-        ingameUI.setNumCrystalsYellow(numCrystalsYellow);
-        
-        StaticText<Integer> numPlayerHealth = new StaticText<Integer>("$HP", (int)world.mainPlayer.getHp());
-        numPlayerHealth.setSize(new Vector2f(0.05f, 0.05f*ratio));
-        numPlayerHealth.setPosition(new Vector2f(0.125f, 0.1f));
-        ingameUI.setNumPlayerHealth(numPlayerHealth);
-        
-        StaticText<Integer> numPlayerXp = new StaticText<Integer>("$XP", world.mainPlayer.getXp());
-        numPlayerXp.setSize(new Vector2f(0.05f, 0.05f*ratio));
-        numPlayerXp.setPosition(new Vector2f(0.125f, 0.8f));
-        ingameUI.setNumPlayerXp(numPlayerXp);
-        
-        StaticText<Integer> numPlayerLevel = new StaticText<Integer>("LEVEL:$", world.mainPlayer.getLevel());
-        numPlayerLevel.setSize(new Vector2f(0.05f, 0.05f*ratio));
-        numPlayerLevel.setPosition(new Vector2f(0.125f, 0.7f));
-        ingameUI.setNumPlayerLevel(numPlayerLevel);
-        
-//        // add start button
-//        Button startButton = new Button(new TextureRegion(0*64, 10*64, 3*64, 64),
-//        		new TextureRegion(3*64, 10*64, 3*64, 64),"start");
-//        startButton.setSize(new Vector2f(3.0f*0.1f, 0.1f*ratio));
-//        startButton.setPosition(new Vector2f(0.5f, 0.4f).sub(startButton.getSize().mul(0.5f)));
-//        mainMenu.addButton(startButton);
+//	public void initGameUI()
+//	{
+//        ingameUI = new IngameUI(ratio);
+//        ingameUI.init(world);
 //        
-//        // add quit button
-//        Button quitButton = new Button(new TextureRegion(0*64, 11*64, 3*64, 64), 
-//        		new TextureRegion(3*64, 11*64, 3*64, 64), "quit");
-//        quitButton.setSize(new Vector2f(3.0f*0.1f, 0.1f*ratio));
-//        quitButton.setPosition(new Vector2f(0.5f, 0.7f).sub(quitButton.getSize().mul(0.5f)));
-//        mainMenu.addButton(quitButton);
-	}
+////        ingameUI.setPosition(new Vector2f(-1.f, -1.f));
+////        ingameUI.setSize(new Vector2f(2.f, 2.f));
+////        
+////        UIObject panelLeft = new UIObject(new TextureRegion(0.f, 0.f, 3*128, 6*128), "panel left");
+////        panelLeft.setSize(new Vector2f(0.25f, 2.f));
+////        panelLeft.setPosition(new Vector2f(0.f, 0.f));
+////        ingameUI.addUIObject(panelLeft);
+////        
+////        UIBar energyBarRed = new UIBar(new TextureRegion(0.f, 6*128+0*32, 2*128, 32), "energy bar red");
+////        energyBarRed.setSize(new Vector2f(0.8f*0.25f, .02f));
+////        energyBarRed.setPosition(new Vector2f(0.1f*0.25f, 0.2f));
+////        ingameUI.setEnergyBarRed(energyBarRed);
+////        
+////        UIBar energyBarBlue = new UIBar(new TextureRegion(0.f, 6*128+1*32, 2*128, 32), "energy bar red");
+////        energyBarBlue.setSize(new Vector2f(0.8f*0.25f, .02f));
+////        energyBarBlue.setPosition(new Vector2f(0.1f*0.25f, 0.25f));
+////        ingameUI.setEnergyBarBlue(energyBarBlue);
+////        
+////        UIBar energyBarGreen = new UIBar(new TextureRegion(0.f, 6*128+2*32, 2*128, 32), "energy bar red");
+////        energyBarGreen.setSize(new Vector2f(0.8f*0.25f, .02f));
+////        energyBarGreen.setPosition(new Vector2f(0.1f*0.25f, 0.3f));
+////        ingameUI.setEnergyBarGreen(energyBarGreen);
+////        
+////        UIBar energyBarYellow = new UIBar(new TextureRegion(0.f, 6*128+3*32, 2*128, 32), "energy bar red");
+////        energyBarYellow.setSize(new Vector2f(0.8f*0.25f, .02f));
+////        energyBarYellow.setPosition(new Vector2f(0.1f*0.25f, 0.35f));
+////        ingameUI.setEnergyBarYellow(energyBarYellow);
+////        
+////        // add UIObjects
+////        
+////        UIObject crystalRed = new UIObject(new TextureRegion(4*128, 3*128, 128, 128), "crystal red");
+////        crystalRed.setSize(new Vector2f(0.05f, .05f*ratio));
+////        crystalRed.setPosition(new Vector2f(0.01f, .45f));
+////        ingameUI.addUIObjectIngame(crystalRed);
+////        
+////        UIObject crystalBlue = new UIObject(new TextureRegion(5*128, 3*128, 128, 128), "crystal red");
+////        crystalBlue.setSize(new Vector2f(0.05f, .05f*ratio));
+////        crystalBlue.setPosition(new Vector2f(0.07f, .45f));
+////        ingameUI.addUIObjectIngame(crystalBlue);
+////        
+////        UIObject crystalGreen = new UIObject(new TextureRegion(3*128, 3*128, 128, 128), "crystal red");
+////        crystalGreen.setSize(new Vector2f(0.05f, .05f*ratio));
+////        crystalGreen.setPosition(new Vector2f(0.13f, .45f));
+////        ingameUI.addUIObjectIngame(crystalGreen);
+////        
+////        UIObject crystalYellow = new UIObject(new TextureRegion(2*128, 3*128, 128, 128), "crystal red");
+////        crystalYellow.setSize(new Vector2f(0.05f, .05f*ratio));
+////        crystalYellow.setPosition(new Vector2f(0.19f, .45f));
+////        ingameUI.addUIObjectIngame(crystalYellow);
+////        
+////        // add texts
+////        
+////        StaticText<Integer> numCrystalsRed = new StaticText<Integer>("$", world.mainPlayer.getCrystalsRed());
+////        numCrystalsRed.setSize(new Vector2f(0.05f, 0.05f*ratio));
+////        numCrystalsRed.setPosition(new Vector2f(0.033f, 0.455f));
+////        ingameUI.setNumCrystalsRed(numCrystalsRed);
+////        
+////        StaticText<Integer> numCrystalsBlue = new StaticText<Integer>("$", world.mainPlayer.getCrystalsRed());
+////        numCrystalsBlue.setSize(new Vector2f(0.05f, 0.05f*ratio));
+////        numCrystalsBlue.setPosition(new Vector2f(0.091f, 0.455f));
+////        ingameUI.setNumCrystalsBlue(numCrystalsBlue);
+////        
+////        StaticText<Integer> numCrystalsGreen = new StaticText<Integer>("$", world.mainPlayer.getCrystalsRed());
+////        numCrystalsGreen.setSize(new Vector2f(0.05f, 0.05f*ratio));
+////        numCrystalsGreen.setPosition(new Vector2f(0.148f, 0.455f));
+////        ingameUI.setNumCrystalsGreen(numCrystalsGreen);
+////        
+////        StaticText<Integer> numCrystalsYellow = new StaticText<Integer>("$", world.mainPlayer.getCrystalsRed());
+////        numCrystalsYellow.setSize(new Vector2f(0.05f, 0.05f*ratio));
+////        numCrystalsYellow.setPosition(new Vector2f(0.205f, 0.455f));
+////        ingameUI.setNumCrystalsYellow(numCrystalsYellow);
+////        
+////        StaticText<Integer> numPlayerHealth = new StaticText<Integer>("$HP", (int)world.mainPlayer.getHp());
+////        numPlayerHealth.setSize(new Vector2f(0.05f, 0.05f*ratio));
+////        numPlayerHealth.setPosition(new Vector2f(0.125f, 0.1f));
+////        ingameUI.setNumPlayerHealth(numPlayerHealth);
+////        
+////        StaticText<Integer> numPlayerXp = new StaticText<Integer>("$XP", world.mainPlayer.getXp());
+////        numPlayerXp.setSize(new Vector2f(0.05f, 0.05f*ratio));
+////        numPlayerXp.setPosition(new Vector2f(0.125f, 0.8f));
+////        ingameUI.setNumPlayerXp(numPlayerXp);
+////        
+////        StaticText<Integer> numPlayerLevel = new StaticText<Integer>("LEVEL:$", world.mainPlayer.getLevel());
+////        numPlayerLevel.setSize(new Vector2f(0.05f, 0.05f*ratio));
+////        numPlayerLevel.setPosition(new Vector2f(0.125f, 0.7f));
+////        ingameUI.setNumPlayerLevel(numPlayerLevel);
+//	}
 	
 	public void initMainMenu()
 	{
@@ -214,14 +203,14 @@ public class Darklords {
         Button startButton = new Button(new TextureRegion(0*64, 10*64, 3*64, 64),
         		new TextureRegion(3*64, 10*64, 3*64, 64),"start");
         startButton.setSize(new Vector2f(3.0f*0.1f, 0.1f*ratio));
-        startButton.setPosition(new Vector2f(0.5f, 0.4f).sub(startButton.getSize().mul(0.5f)));
+        startButton.setPosition(new Vector2f(0.5f, 0.7f).sub(startButton.getSize().mul(0.5f)));
         mainMenu.addButton(startButton);
         
         // add quit button
         Button quitButton = new Button(new TextureRegion(0*64, 11*64, 3*64, 64), 
         		new TextureRegion(3*64, 11*64, 3*64, 64), "quit");
         quitButton.setSize(new Vector2f(3.0f*0.1f, 0.1f*ratio));
-        quitButton.setPosition(new Vector2f(0.5f, 0.7f).sub(quitButton.getSize().mul(0.5f)));
+        quitButton.setPosition(new Vector2f(0.5f, 0.4f).sub(quitButton.getSize().mul(0.5f)));
         mainMenu.addButton(quitButton);
 	}
 
@@ -231,6 +220,7 @@ public class Darklords {
 	public void start()
 	{	
 		int fragShader = 0;
+		int vertShader = 0;
 		
 		try {
 			if (fullscreen)
@@ -253,7 +243,8 @@ public class Darklords {
 		{
 			try {
 	            fragShader = createShader("shaders/screen.frag",ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
-	    	}
+	            vertShader = createShader("shaders/screen.vert",ARBVertexShader.GL_VERTEX_SHADER_ARB);
+			}
 	    	catch(Exception exc) {
 	    		exc.printStackTrace();
 	    		return;
@@ -270,7 +261,7 @@ public class Darklords {
 	    	
 	    	if(program == 0) return;
 			
-//	    	ARBShaderObjects.glAttachObjectARB(program, vertShader);
+	    	ARBShaderObjects.glAttachObjectARB(program, vertShader);
 	        ARBShaderObjects.glAttachObjectARB(program, fragShader);
 	        
 	        ARBShaderObjects.glLinkProgramARB(program);
@@ -325,7 +316,7 @@ public class Darklords {
 		textDrawer = new TextDrawer("./img/font.png");
         
         initMainMenu();
-        initGameUI();
+//        initGameUI();
         
 		worldTimer = new Timer();
 		rightMouseDelayTimer = new Timer();
@@ -418,7 +409,7 @@ public class Darklords {
 		GL11.glPushMatrix();
 		GL11.glLoadIdentity();
 //		GL11.glOrtho(0, resX, 0, resY, 1, -1);
-		GL11.glScalef(1.f, -1.f, 1.f);
+//		GL11.glScalef(1.f, -1.f, 1.f);
 //		GL11.glTranslatef(0.f, -resY, 0.f);
 		mainMenu.draw();
 		GL11.glPopMatrix();
@@ -455,7 +446,11 @@ public class Darklords {
 		{
 			posMouseDown.set(Mouse.getX(), Mouse.getY());
 //			if (isLeftMouseDown) System.out.println("left mouse down");
-			if (isLeftMouseDown) world.mouseDownReaction(globalToGamescreen(posMouseDown), 0);
+			if (isLeftMouseDown)
+			{
+				world.mouseDownReaction(globalToGamescreen(posMouseDown), 0);
+				world.mainUI.mouseDownReaction(screenToWorld(posMouseDown), 0);
+			}
 			if (isRightMouseDown)
 			{
 				if (rightMouseDelayTimer.getTimeDelta() == 0)
@@ -509,35 +504,22 @@ public class Darklords {
 		if (world.mainPlayer.moveUp())
 		{
 			boolean collide = false;
-			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
-			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
-			if (collide) world.mainPlayer.setPosY((float)Math.floor(playerPosOld_y));	
+			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			if (collide) world.mainPlayer.setPosY((float)Math.ceil(playerPosOld_y)-world.mainPlayer.getSizeY());	
 		}
 		
 		if (world.mainPlayer.moveDown())
 		{
 			boolean collide = false;
-			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-			if (collide) world.mainPlayer.setPosY((float)Math.ceil(playerPosOld_y)-world.mainPlayer.getSizeY());
+			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
+			if (collide) world.mainPlayer.setPosY((float)Math.floor(playerPosOld_y));
 		}
 		
 		// teleport
 		
 		if (world.mainPlayer.isTeleportUp())
-		{
-			boolean collide = false;
-			world.mainPlayer.setPosY(world.mainPlayer.getPosY()-world.mainPlayer.getTeleportStep());
-			if (world.mainPlayer.getPosY() < 0.f) collide = true;
-			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
-			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
-			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-			if (collide) world.mainPlayer.setPosY(playerPosOld_y);
-			world.mainPlayer.setTeleportUp(false);
-		}
-		
-		if (world.mainPlayer.isTeleportDown())
 		{
 			boolean collide = false;
 			world.mainPlayer.setPosY(world.mainPlayer.getPosY()+world.mainPlayer.getTeleportStep());
@@ -548,6 +530,19 @@ public class Darklords {
 			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
 			if (collide) world.mainPlayer.setPosY(playerPosOld_y);
 			world.mainPlayer.setTeleportDown(false);
+		}
+		
+		if (world.mainPlayer.isTeleportDown())
+		{
+			boolean collide = false;
+			world.mainPlayer.setPosY(world.mainPlayer.getPosY()-world.mainPlayer.getTeleportStep());
+			if (world.mainPlayer.getPosY() < 0.f) collide = true;
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+			if (collide) world.mainPlayer.setPosY(playerPosOld_y);
+			world.mainPlayer.setTeleportUp(false);
 		}
 		
 		if (world.mainPlayer.isTeleportLeft())
@@ -608,10 +603,10 @@ public class Darklords {
 			}
 		}
 		
-		ingameUI.update(world.mainPlayer);
+//		ingameUI.update(world, dt);
 		
 		drawIngame();
-		drawUI();
+//		drawUI();
 		
 		if (rightMouseDelayTimer.getTimeDelta() > rightMouseDelay)
 		{
@@ -720,6 +715,13 @@ public class Darklords {
     	return tmp;
     }
     
+    public Vector2f screenToWorld(Vector2f mousePos)
+    {
+    	Vector2f tmp = new Vector2f(mousePos.getX()*2.f/resX, mousePos.getY()*2.f/resY);
+    	tmp = tmp.add(new Vector2f(-1.f, -1.f));
+    	return tmp;
+    }
+    
     /**
      * checks mouse input
      */
@@ -784,7 +786,7 @@ public class Darklords {
 		{
 //			mousePos = globalToGamescreen(new Vector2f(Mouse.getX(),Mouse.getY()));
 			
-			mousePos = new Vector2f(1.f*Mouse.getX()/resX,1.f-1.f*Mouse.getY()/resY);
+			mousePos = new Vector2f(1.f*Mouse.getX()/resX,1.f*Mouse.getY()/resY);
 
 			if (Mouse.getEventButtonState())
 			{
@@ -831,11 +833,23 @@ public class Darklords {
 					gameStatus = GameStatus.MAIN_MENU;
 				}
 				
-//				if (Keyboard.isKeyDown(myKeyboard.KEY_F1))
-//				{
+				if (Keyboard.isKeyDown(myKeyboard.KEY_F1))
+				{
 //					System.out.println("edit mode on");
 //					devMode = true;
-//				}
+					world.mainUI.switchActiveUI();
+					
+					switch (world.ingameStatus)
+					{
+					case DEFAULT:
+						world.ingameStatus = IngameStatus.BUILDING;
+						break;
+					case BUILDING:
+						world.ingameStatus = IngameStatus.DEFAULT;
+					default:
+						world.ingameStatus = IngameStatus.DEFAULT;
+					}
+				}
 //				
 //				if (Keyboard.isKeyDown(Keyboard.KEY_F))
 //				{
@@ -1073,18 +1087,18 @@ public class Darklords {
 	/**
 	 * draws the UI
 	 */
-	public void drawUI()
-	{
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-		GL11.glScaled(1., -1., 1.);
-		ingameUI.draw();
-		GL11.glPopMatrix();
-		
-//		spritesUI.begin();
-//		spritesUI.draw(UILeft);
-//		spritesUI.end();
-	}
+//	public void drawUI()
+//	{
+//		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+//		GL11.glLoadIdentity();
+////		GL11.glScaled(1., -1., 1.);
+//		ingameUI.draw();
+//		GL11.glPopMatrix();
+//		
+////		spritesUI.begin();
+////		spritesUI.draw(UILeft);
+////		spritesUI.end();
+//	}
 	
 	/**
 	 * draws the whole scene
