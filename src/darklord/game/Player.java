@@ -459,7 +459,6 @@ public class Player extends Collidable implements Serializable
 		{
 			setPosX(getPosX() + speed*speedMultiplier*Darklord.dt);
 		}
-		getPos().print();
 	}
 	
 	public void draw()

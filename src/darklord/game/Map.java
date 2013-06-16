@@ -110,7 +110,6 @@ public class Map implements Serializable
 		if (isNewMap)
 		{
 			levelStructure = new LevelStructure(x, y);
-			levelStructure.addGridTop();
 //			levelStructure.addGridTop();
 			initDungeon(levelStructure.getActiveGrid(), 0, 0);
 //			Print.outln(levelStructure.getBlockAt(3, 3).toString());

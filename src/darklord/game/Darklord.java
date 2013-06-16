@@ -974,6 +974,8 @@ public class Darklord {
 	 */
 	public void checkMouseDev()
 	{		
+	    checkMouseWheel();
+		
 		while (Mouse.next())
 		{
 			mousePos.set(Mouse.getX(), Mouse.getY());
@@ -1049,6 +1051,26 @@ public class Darklord {
 					{
 						world.map.getEnemies().removeElementAt(world.map.getEnemies().size()-1);
 					}
+				}
+				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_NUMPAD2))
+				{
+					world.map.levelStructure.addGridBottom();
+				}
+				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_NUMPAD8))
+				{
+					world.map.levelStructure.addGridTop();
+				}
+				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_NUMPAD4))
+				{
+					world.map.levelStructure.addGridLeft();
+				}
+				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_NUMPAD6))
+				{
+					world.map.levelStructure.addGridRight();
 				}
 				
 //				if (Keyboard.isKeyDown(myKeyboard.KEY_LCONTROL) && Keyboard.isKeyDown(myKeyboard.KEY_S))

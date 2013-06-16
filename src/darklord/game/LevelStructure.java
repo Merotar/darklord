@@ -11,7 +11,8 @@ public class LevelStructure implements Serializable
 	private int gridSizeX, gridSizeY;
 //	private final int levelStructureSize = 20;
 //	private int posX, posY;
-//	Grid[][] grids;
+	private int gridMapSize, centerX, centerY;
+	Grid[][] gridMap;
 //	boolean[][] isDiscovered;
 	
 	public LevelStructure(int sizeX, int sizeY)
@@ -20,6 +21,13 @@ public class LevelStructure implements Serializable
 		setGridSizeY(sizeY);
 		gridCenter = new Grid(sizeX, sizeY, 0, 0, BlockType.BLOCK_DIRT);
 		activeGrid = gridCenter;
+		
+		gridMapSize = 20;
+		centerX = gridMapSize / 2;
+		centerY = gridMapSize / 2;
+		gridMap = new Grid[gridMapSize][gridMapSize];
+		gridMap[centerX][centerY] = gridCenter;
+		
 //		grids = new Grid[levelStructureSize][levelStructureSize];
 //		isDiscovered = new boolean[levelStructureSize][levelStructureSize];
 //		for (int i=0;i<levelStructureSize;i++)
@@ -67,8 +75,17 @@ public class LevelStructure implements Serializable
 	{
 		if (activeGrid.getGridTop() == null)
 		{
-			Grid tmpGrid = new Grid(gridSizeX, gridSizeY, activeGrid.getPosX(), activeGrid.getPosY()+1, BlockType.BLOCK_DIRT);
-			tmpGrid.setGridBottom(activeGrid);
+			int newPosX = activeGrid.getPosX();
+			int newPosY = activeGrid.getPosY()+1;
+			Grid tmpGrid = new Grid(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_DIRT);
+			
+			if (newPosX-1 > 0 || newPosX+1 >= gridMapSize || newPosY-1 > 0 || newPosY+1 >= gridMapSize)
+			{
+				increaseGridMapSize();
+				newPosX = activeGrid.getPosX();
+				newPosY = activeGrid.getPosY()+1;
+			}
+			setGridLinks(tmpGrid);
 			activeGrid.setGridTop(tmpGrid);
 			return true;
 		}
@@ -83,8 +100,17 @@ public class LevelStructure implements Serializable
 	{
 		if (activeGrid.getGridBottom() == null)
 		{
-			Grid tmpGrid = new Grid(gridSizeX, gridSizeY, activeGrid.getPosX(), activeGrid.getPosY()-1, BlockType.BLOCK_DIRT);
-			tmpGrid.setGridTop(activeGrid);
+			int newPosX = activeGrid.getPosX();
+			int newPosY = activeGrid.getPosY()-1;
+			Grid tmpGrid = new Grid(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_DIRT);
+			
+			if (newPosX-1 > 0 || newPosX+1 >= gridMapSize || newPosY-1 > 0 || newPosY+1 >= gridMapSize)
+			{
+				increaseGridMapSize();
+				newPosX = activeGrid.getPosX();
+				newPosY = activeGrid.getPosY()-1;
+			}
+			setGridLinks(tmpGrid);
 			activeGrid.setGridBottom(tmpGrid);
 			return true;
 		}
@@ -99,8 +125,17 @@ public class LevelStructure implements Serializable
 	{
 		if (activeGrid.getGridLeft() == null)
 		{
-			Grid tmpGrid = new Grid(gridSizeX, gridSizeY, activeGrid.getPosX()-1, activeGrid.getPosY(), BlockType.BLOCK_DIRT);
-			tmpGrid.setGridRight(activeGrid);
+			int newPosX = activeGrid.getPosX()-1;
+			int newPosY = activeGrid.getPosY();
+			Grid tmpGrid = new Grid(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_DIRT);
+			
+			if (newPosX-1 > 0 || newPosX+1 >= gridMapSize || newPosY-1 > 0 || newPosY+1 >= gridMapSize)
+			{
+				increaseGridMapSize();
+				newPosX = activeGrid.getPosX()-1;
+				newPosY = activeGrid.getPosY();
+			}
+			setGridLinks(tmpGrid);
 			activeGrid.setGridLeft(tmpGrid);
 			return true;
 		}
@@ -115,8 +150,18 @@ public class LevelStructure implements Serializable
 	{
 		if (activeGrid.getGridRight() == null)
 		{
-			Grid tmpGrid = new Grid(gridSizeX, gridSizeY, activeGrid.getPosX()+1, activeGrid.getPosY(), BlockType.BLOCK_DIRT);
-			tmpGrid.setGridLeft(activeGrid);
+			int newPosX = activeGrid.getPosX()+1;
+			int newPosY = activeGrid.getPosY();
+			Grid tmpGrid = new Grid(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_DIRT);
+			
+			if (newPosX-1 > 0 || newPosX+1 >= gridMapSize || newPosY-1 > 0 || newPosY+1 >= gridMapSize)
+			{
+				increaseGridMapSize();
+				newPosX = activeGrid.getPosX()+1;
+				newPosY = activeGrid.getPosY();
+			}
+			setGridLinks(tmpGrid);
+			
 			activeGrid.setGridRight(tmpGrid);
 			return true;
 		}
@@ -125,6 +170,52 @@ public class LevelStructure implements Serializable
 //		grids[posX+1][posY] = new Grid(gridSizeX, gridSizeY, posX+1, posY, BlockType.BLOCK_DIRT);	
 //		isDiscovered[posX+1][posY] = true;
 //		return true;
+	}
+	
+	public void increaseGridMapSize()
+	{
+		Grid[][] oldMap = gridMap;
+		int oldSize = gridMapSize;
+		gridMapSize *=2;
+		centerX = gridMapSize / 2;
+		centerY = gridMapSize / 2;
+		
+		gridMap = new Grid[gridMapSize][gridMapSize];
+		gridMap[centerX][centerY] = gridCenter;
+		
+		for (int i=0;i<oldSize;i++)
+		{
+			for (int j=0;j<oldSize;j++)
+			{
+				gridMap[oldSize/2+i][oldSize/2+j] = oldMap[i][j];
+			}
+		}
+	}
+	
+	public void setGridLinks(Grid theGrid)
+	{
+		theGrid.setGridTop(gridMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY+1]);
+		theGrid.setGridBottom(gridMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY-1]);
+		theGrid.setGridLeft(gridMap[theGrid.getPosX()+centerX-1][theGrid.getPosY()+centerY]);
+		theGrid.setGridRight(gridMap[theGrid.getPosX()+centerX+1][theGrid.getPosY()+centerY]);
+		
+		if (gridMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY+1] != null)
+		{
+			gridMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY+1].setGridBottom(theGrid);
+
+		}
+		if (gridMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY-1] != null)
+		{
+			gridMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY-1].setGridTop(theGrid);
+		}
+		if (gridMap[theGrid.getPosX()+centerX-1][theGrid.getPosY()+centerY] != null)
+		{
+			gridMap[theGrid.getPosX()+centerX-1][theGrid.getPosY()+centerY].setGridRight(theGrid);
+		}
+		if (gridMap[theGrid.getPosX()+centerX+1][theGrid.getPosY()+centerY] != null)
+		{
+			gridMap[theGrid.getPosX()+centerX+1][theGrid.getPosY()+centerY].setGridLeft(theGrid);
+		}
 	}
 	
 	public Grid getGridTop(Grid theGrid)
