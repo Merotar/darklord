@@ -6,7 +6,7 @@ import java.util.Vector;
 
 import org.lwjgl.opengl.GL11;
 
-import darklord.game.Level;
+import darklord.game.GameEngine;
 import darklord.media.SpriteSheet;
 import darklord.media.TextureRegion;
 import darklord.math.Vector2f;
@@ -94,7 +94,7 @@ public class UI
 		GL11.glPopMatrix();
 	}
 
-	public void update(Level world)
+	public void update(GameEngine world)
 	{
 		
 	}

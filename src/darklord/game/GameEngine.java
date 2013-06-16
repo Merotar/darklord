@@ -28,7 +28,7 @@ import darklord.math.Vector2f;
  * @since 12-05-2013
  * 
  */
-public class Level
+public class GameEngine
 {	
 //	private int dimX, dimY;
 	private static float playerBorderX = 0.3f;
@@ -45,15 +45,18 @@ public class Level
 	public Vector<Projectile> projectiles;
 	public Vector<Projectile> hostileProjectiles;
 	public Vector<MovingSprite> bubbles;
-	public static final int drawSize = 9;
+	public static final int drawSize = 13;
 	private Vector<MovingText> movingTexts;
 	IngameStatus ingameStatus;
 	IngameUI mainUI;
 	private CountdownTimer buildTimer;
 	public final float maxUpdateDistance = 12.f;
 	public final float highwaySpeedMultiplyer = 1.7f;
+	public float zoom;
+	public final float zoomMin = 0.1f;
+	public final float zoomMax = 1.2f;
 
-	public Level()
+	public GameEngine()
 	{
 //		this.dimX = 20;
 //		this.dimY = 20;
@@ -97,10 +100,12 @@ public class Level
 ////		initTest();
 //}
 	
-	public Level(String name)
+	public GameEngine(String name)
 	{
 		posX = 1.f;
 		posY = 1.f;
+		
+		zoom = 1.f;
 		
 		resX = Darklord.resX;
 		resY = Darklord.resY;
@@ -110,9 +115,9 @@ public class Level
 		ingameStatus = IngameStatus.DEFAULT;
 		
 		File dir = new File("./"+name);
-		boolean isNewMap = !dir.exists();
+		boolean isNewMap = true;//!dir.exists();
 		
-		map = new Map(50, 50, name, isNewMap);
+		map = new Map(10, 10, name, isNewMap);
 		
 		if (isNewMap)
 		{
@@ -136,7 +141,7 @@ public class Level
 	}
 	
 	// copy constructor
-	public Level(Level orig)
+	public GameEngine(GameEngine orig)
 	{
 		posX = orig.posX;
 		posY = orig.posY;
@@ -210,7 +215,10 @@ public class Level
 	public boolean isBlockSolid(int x, int y)
 	{
 //		if ((x < 0) || (y < 0) || (x >= map.getMapSizeX()) || (y >= map.getMapSizeY())) return false;
-		return map.getBlockAt(x, y).isSolid();
+		Block tmpBlock = map.getBlockAt(x, y);
+		if (tmpBlock != null) return tmpBlock.isSolid();
+		
+		return false;
 	}
 
 	public boolean collideWithBlock(int x, int y)
@@ -257,24 +265,27 @@ public class Level
 		{
 //			BlockType type = map.getBlockAt(x, y).getType();
 			Block tmpBlock = map.getBlockAt(x, y);
-			CollectableType tmpCollectableType = tmpBlock.dropOnDestroy();
-			
-			if (tmpBlock.isDestroyable() && tmpBlock.attack())
+			if (tmpBlock != null)
 			{
-				//destroyed
-//				System.out.println("Block destroyed!");
-//				if (type == BlockType.BLOCK_ROCK) mainPlayer.decreaseDiggingCount();
-				Random rnd = new Random();
-				float rndX = 0.10f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
-				float rndY = 0.10f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
-//				System.out.println(rndX);
+				CollectableType tmpCollectableType = tmpBlock.dropOnDestroy();
 				
-				if (tmpCollectableType != CollectableType.NONE)
+				if (tmpBlock.isDestroyable() && tmpBlock.attack())
 				{
-					map.getCollectableObjects().add(new Collectable(tmpCollectableType, x+0.1f+rndX, y+0.1f+rndY));
+					//destroyed
+//					System.out.println("Block destroyed!");
+//					if (type == BlockType.BLOCK_ROCK) mainPlayer.decreaseDiggingCount();
+					Random rnd = new Random();
+					float rndX = 0.10f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
+					float rndY = 0.10f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
+//					System.out.println(rndX);
+					
+					if (tmpCollectableType != CollectableType.NONE)
+					{
+						map.getCollectableObjects().add(new Collectable(tmpCollectableType, x+0.1f+rndX, y+0.1f+rndY));
+					}
 				}
+				mainPlayer.startAttackBlockTimer();
 			}
-			mainPlayer.startAttackBlockTimer();
 		}
 	}
 	
@@ -296,7 +307,7 @@ public class Level
 		return isBlockSolid((int)Math.round(mainPlayer.getPosX()+0.5), (int)Math.round(mainPlayer.getPosY()+0.5));
 	}
 
-	public void draw()
+	public void draw(boolean showMap)
 	{
 		GL11.glPushMatrix();
 		
@@ -308,22 +319,29 @@ public class Level
 //		GL11.glScaled(1., -1., 1.);
 		GL11.glTranslated(-1., -1., 0.);
 //		GL11.glTranslated(-2.f*posX/(Darklords.resX), -2.f*posY/(Darklords.resY), 0.);
+		
 		GL11.glScaled(2.f*gridSize/(Darklord.resX), 2.f*gridSize/(Darklord.resY), 1.);
+
+		GL11.glTranslated(mainPlayer.getPosX(), mainPlayer.getPosY(), 0.);
+		GL11.glScaled(zoom,  zoom, 1.);
+		GL11.glTranslated(-mainPlayer.getPosX(), -mainPlayer.getPosY(), 0.);
 		
 		// draw blocks
 		
 		Block backgroundBlock = new Block(BlockType.BLOCK_NONE);
 		
-//		int minX = Math.max(0, (int)mainPlayer.getPosX()-drawSize);
-//		int maxX = Math.min(map.getMapSizeX(), (int)mainPlayer.getPosX()+drawSize);
-//		int minY = Math.max(0, (int)mainPlayer.getPosY()-drawSize);
-//		int maxY = Math.min(map.getMapSizeY(), (int)mainPlayer.getPosY()+drawSize);
 		
-		int minX = (int)mainPlayer.getPosX()-drawSize;
-		int maxX = (int)mainPlayer.getPosX()+drawSize;
-		int minY =(int)mainPlayer.getPosY()-drawSize;
-		int maxY =(int)mainPlayer.getPosY()+drawSize;
+//		int minX = (int)mainPlayer.getPosX()-drawSize;
+//		int maxX = (int)mainPlayer.getPosX()+drawSize;
+//		int minY =(int)mainPlayer.getPosY()-drawSize;
+//		int maxY =(int)mainPlayer.getPosY()+drawSize;
 
+		int tmpDrawSize = (int)Math.ceil(drawSize / zoom);
+		
+		int minX = (int)-posX-tmpDrawSize/2;
+		int maxX = (int)-posX+tmpDrawSize;
+		int minY =(int)-posY-tmpDrawSize/2;
+		int maxY =(int)-posY+tmpDrawSize;
 		
 		Darklord.sprites01.begin();
 		
@@ -346,8 +364,10 @@ public class Level
 //				pos.print();
 //				GL11.glTranslatef(pos.getX(), pos.getY(), 0.f);
 
-				backgroundBlock.draw();
-				map.getBlockAt(i, j).draw();
+//				backgroundBlock.draw();
+				Block tmpBlock = map.getBlockAt(i, j);
+				if (tmpBlock != null) tmpBlock.draw();
+//				map.getBlockAt(i, j).draw();
 				GL11.glPopMatrix();
 			}
 		}
@@ -483,6 +503,11 @@ public class Level
 		{
 			MovingText tmpText = object.next();
 			tmpText.draw(Darklord.textDrawer);
+		}
+		
+		if (showMap)
+		{
+			map.drawMap();
 		}
 		
 		// draw ui
@@ -854,6 +879,18 @@ public class Level
 		}
 	}
 	
+	public void zoomIn()
+	{
+		zoom *= 1.2;
+		if (zoom > zoomMax) zoom = zoomMax;
+	}
+	
+	public void zoomOut()
+	{
+		zoom /= 1.2;
+		if (zoom < zoomMin) zoom = zoomMin;
+	}
+	
 	public Player readPlayerFromFile()
 	{
 		Player tmpPlayer = null;
@@ -1195,7 +1232,11 @@ public class Level
 		{
 			for (int j=minY;j<maxY;j++)
 			{
-				map.getBlockAt(i, j).update();
+				Block tmpBlock = map.getBlockAt(i, j);
+				if (tmpBlock != null)
+				{
+					tmpBlock.update();
+				}
 			}
 		}
 	}
@@ -1253,27 +1294,47 @@ public class Level
 		boolean noHighway;
 		
 		// left/right highway
-		noHighway = !(map.getBlockAt(posX, posY).getOverlay() instanceof FloorCrystalRed);
-		if (noHighway) return false;
-		 
-		noHighway = !(map.getBlockAt(posX, posY).getBackground() instanceof FloorStone);
-		if (noHighway) return false;
+		Block tmpBlock = map.getBlockAt(posX, posY);
+		if (tmpBlock != null)
+		{
+			noHighway = !(tmpBlock.getOverlay() instanceof FloorCrystalRed);
+			if (noHighway) return false;
+			 
+			noHighway = !(tmpBlock.getBackground() instanceof FloorStone);
+			if (noHighway) return false;
+		}
+
+		tmpBlock = map.getBlockAt(posX, posY-1);
+		if (tmpBlock != null)
+		{
+			noHighway = !(tmpBlock.getBackground() instanceof FloorStone);
+			if (noHighway) return false;
+		}
 		
-		noHighway = !(map.getBlockAt(posX, posY-1).getBackground() instanceof FloorStone);
-		if (noHighway) return false;
+		tmpBlock = map.getBlockAt(posX, posY+1);
+		if (tmpBlock != null)
+		{
+			noHighway = !(tmpBlock.getBackground() instanceof FloorStone);
+			if (noHighway) return false;
+		}
 		
-		noHighway = !(map.getBlockAt(posX, posY+1).getBackground() instanceof FloorStone);
-		if (noHighway) return false;
+		tmpBlock = map.getBlockAt(posX, posY-2);
+		if (tmpBlock != null)
+		{
+			noHighway = !(tmpBlock.getOverlay() instanceof Wall);
+			if (noHighway) return false;
+			noHighway = !((Wall)tmpBlock.getOverlay()).isTop();
+			if (noHighway) return false;
+		}
 		
-		noHighway = !(map.getBlockAt(posX, posY-2).getOverlay() instanceof Wall);
-		if (noHighway) return false;
-		noHighway = !((Wall)map.getBlockAt(posX, posY-2).getOverlay()).isTop();
-		if (noHighway) return false;
-		
-		noHighway = !(map.getBlockAt(posX, posY+2).getOverlay() instanceof Wall);
-		if (noHighway) return false;
-		noHighway = !((Wall)map.getBlockAt(posX, posY+2).getOverlay()).isBottom();
-		if (noHighway) return false;
+		tmpBlock = map.getBlockAt(posX, posY+2);
+		if (tmpBlock != null)
+		{
+			noHighway = !(tmpBlock.getOverlay() instanceof Wall);
+			if (noHighway) return false;
+			noHighway = !((Wall)tmpBlock.getOverlay()).isBottom();
+			if (noHighway) return false;
+		}
 		
 		return true;
 	}
@@ -1321,8 +1382,7 @@ public class Level
 	
 	public void update(float dt)
 	{
-		// update click timer
-		
+		// update mouse click timer
 		buildTimer.update(dt);
 		
 		
@@ -1361,35 +1421,36 @@ public class Level
 		
 		mainPlayer.update(dt);
 		
-		if (checkHighway())
-		{
-			mainPlayer.setSpeedMultiplier(highwaySpeedMultiplyer);
-		} else
-		{
-			mainPlayer.setSpeedMultiplier(1.f);
-		}
+		// TODO: reintegrate
+//		if (checkHighway())
+//		{
+//			mainPlayer.setSpeedMultiplier(highwaySpeedMultiplyer);
+//		} else
+//		{
+//			mainPlayer.setSpeedMultiplier(1.f);
+//		}
 		
-		if (mainPlayer.getPosX() < map.getCurrentGridX()*map.getGridSizeX())
-		{
-			map.decreaseCurrentGridX();
-		} else
-		{
-			if (mainPlayer.getPosX() > (map.getCurrentGridX()+1)*map.getGridSizeX())
-			{
-				map.increaseCurrentGridX();
-			}
-		}
-		
-		if (mainPlayer.getPosY() < map.getCurrentGridY()*map.getGridSizeY())
-		{
-			map.decreaseCurrentGridY();
-		} else
-		{
-			if (mainPlayer.getPosY() > (map.getCurrentGridY()+1)*map.getGridSizeY())
-			{
-				map.increaseCurrentGridY();
-			}
-		}
+//		if (mainPlayer.getPosX() < map.getCurrentGridX()*map.getGridSizeX())
+//		{
+//			map.decreaseCurrentGridX();
+//		} else
+//		{
+//			if (mainPlayer.getPosX() > (map.getCurrentGridX()+1)*map.getGridSizeX())
+//			{
+//				map.increaseCurrentGridX();
+//			}
+//		}
+//		
+//		if (mainPlayer.getPosY() < map.getCurrentGridY()*map.getGridSizeY())
+//		{
+//			map.decreaseCurrentGridY();
+//		} else
+//		{
+//			if (mainPlayer.getPosY() > (map.getCurrentGridY()+1)*map.getGridSizeY())
+//			{
+//				map.increaseCurrentGridY();
+//			}
+//		}
 
 		updateCollectibles();
 		
@@ -1426,7 +1487,7 @@ public class Level
 		}
 		
 		// update map
-		map.update();
+		map.update(this);
 		
 		// update moving texts
 		for (Iterator<MovingText> object = movingTexts.iterator();object.hasNext();)

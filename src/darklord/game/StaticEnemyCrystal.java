@@ -22,7 +22,7 @@ public class StaticEnemyCrystal extends Enemy
 	{
 		super();
 		time = new TimeStore(2.f);
-		setHp(5.f);
+		setHp(2.f);
 		setXp(2);
 		setType(2);
 		appearance = new Animation();
@@ -38,7 +38,7 @@ public class StaticEnemyCrystal extends Enemy
 		this.setPosY(y);
 	}
 	
-	public void update(float dt, Level level)
+	public void update(float dt, GameEngine level)
 	{
 		if (time.add(dt))
 		{

@@ -2,7 +2,7 @@ package darklord.ui;
 import org.lwjgl.opengl.GL11;
 
 import darklord.game.CountdownTimer;
-import darklord.game.Level;
+import darklord.game.GameEngine;
 import darklord.media.SpriteSheet;
 import darklord.math.Vector2f;
 
@@ -36,7 +36,7 @@ public class IngameUI
 		activeUI = buildUI;
 	}
 	
-	public void init(Level world)
+	public void init(GameEngine world)
 	{
 		statusUI.init(world);
 		buildUI.init(world);
@@ -65,7 +65,7 @@ public class IngameUI
 		}
 	}
 	
-	public void update(Level world, float dt)
+	public void update(GameEngine world, float dt)
 	{
 		activeUI.update(world);
 		clickTimer.update(dt);

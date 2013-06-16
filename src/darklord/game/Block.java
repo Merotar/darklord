@@ -29,6 +29,7 @@ public class Block implements Serializable
 	private static Drawable crack = new Sprite();
 	private BlockType type;
 	private Buildable overlay;
+	private float fogValue;
 	
 	
 	public Block()
@@ -44,8 +45,30 @@ public class Block implements Serializable
 		appearance = new Sprite();
 		((Sprite)crack).setTextureRegion(new TextureRegion(5, 1, 128));
 		setType(t);
+		fogValue = 1.f;
 	}
+	
+	public void drawFog(int x, int y)
+	{
+		GL11.glBegin(GL11.GL_QUADS);
+		
+		float posX = 0.f;
+		float posY = 0.f;
+		float sizeX = 1.f;
+		float sizeY = 1.f;
+				
+		GL11.glColor4f(0.f, 0.f, 0.f, fogValue);
 
+//		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x, y+1));
+		GL11.glVertex2f(posX, posY+sizeY);
+//		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x+1, y+1));
+		GL11.glVertex2f(posX+sizeX, posY+sizeY);
+//		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x+1, y));
+		GL11.glVertex2f(posX+sizeX, posY);
+//		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x, y));
+		GL11.glVertex2f(posX, posY);
+		GL11.glEnd();
+	}
 
 	public boolean isVisible() {
 		return visible;
@@ -366,5 +389,13 @@ public class Block implements Serializable
 
 	public void setTransparent(boolean transparent) {
 		this.transparent = transparent;
+	}
+
+	public float getFogValue() {
+		return fogValue;
+	}
+
+	public void setFogValue(float fogValue) {
+		this.fogValue = fogValue;
 	}
 }

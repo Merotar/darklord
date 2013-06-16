@@ -23,10 +23,11 @@ public class Grid implements Serializable
 	private Block[][] theGrid;
 	private Vector<Enemy> enemies;
 	public int gridSizeX, gridSizeY;
-	private float[][] fogMap;
+//	private float[][] fogMap;
 	private int fogDensity, posX, posY;
 	public Vector<Collectable> collectableObjects;
 	public Vector<Chest> chests;
+	private Grid gridTop, gridBottom, gridLeft, gridRight;
 	
 	public Grid()
 	{
@@ -41,17 +42,19 @@ public class Grid implements Serializable
 		posX = thePosX;
 		posY = thePosY;
 		
+		gridTop = gridBottom = gridLeft = gridRight = null;
+		
 		theGrid = new Block[gridSizeX][gridSizeY];
 		
 		this.setFogDensity(1);
-		fogMap = new float[getGridSizeX()*getFogDensity()][getGridSizeY()*getFogDensity()];
-		for (int i=0;i<getGridSizeX()*getFogDensity();i++)
-		{
-			for (int j=0;j<getGridSizeY()*getFogDensity();j++)
-			{
-				fogMap[i][j] = 1.f;
-			}
-		}
+//		fogMap = new float[getGridSizeX()*getFogDensity()][getGridSizeY()*getFogDensity()];
+//		for (int i=0;i<getGridSizeX()*getFogDensity();i++)
+//		{
+//			for (int j=0;j<getGridSizeY()*getFogDensity();j++)
+//			{
+//				fogMap[i][j] = 1.f;
+//			}
+//		}
 		
 		enemies = new Vector<Enemy>();
 		collectableObjects = new Vector<Collectable>();
@@ -88,11 +91,15 @@ public class Grid implements Serializable
 			{
 				if ((i==0) || (j==0) || (i==gridSizeX-1) || (j==gridSizeY-1))
 				{
-					theGrid[i][j] = new Block(BlockType.BLOCK_YELLOW);
+					theGrid[i][j] = new Block(BlockType.BLOCK_ROCK);
 				} else // inner level
 				{
 					theGrid[i][j] = new Block(t);
 				}
+				if (i == 0 && j == gridSizeY/2) theGrid[i][j].setType(BlockType.BLOCK_NONE);
+				if (i == gridSizeX-1 && j == gridSizeY/2) theGrid[i][j].setType(BlockType.BLOCK_NONE);
+				if (i == gridSizeX/2 && j == 0) theGrid[i][j].setType(BlockType.BLOCK_NONE);
+				if (i == gridSizeX/2 && j == gridSizeY-1) theGrid[i][j].setType(BlockType.BLOCK_NONE);
 			}
 		}
 	}
@@ -202,7 +209,7 @@ public class Grid implements Serializable
 	{
 		if (x >= 0 && x < getGridSizeX()*getFogDensity() && y >= 0 && y < getGridSizeY()*getFogDensity())
 		{
-			return fogMap[x][y];
+			return theGrid[x][y].getFogValue();
 		}
 		return 0.f;
 	}
@@ -211,7 +218,7 @@ public class Grid implements Serializable
 	{
 		if (value >= 1.f) value = 1.f;
 		if (value < 0.f) value = 0.f;
-		this.fogMap[x][y] = value;
+		this.theGrid[x][y].setFogValue(value);
 	}
 	
 	public void setBlockAt(int x, int y, Block theBlock)
@@ -219,27 +226,27 @@ public class Grid implements Serializable
 		theGrid[x][y] = theBlock;
 	}
 	
-	public void drawFog(int x, int y)
-	{
-		GL11.glBegin(GL11.GL_QUADS);
-		
-		float posX = 0.f;
-		float posY = 0.f;
-		float sizeX = 1.f/getFogDensity();
-		float sizeY = 1.f/getFogDensity();
-				
-		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x, y));
-
-//		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x, y+1));
-		GL11.glVertex2f(posX, posY+sizeY);
-//		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x+1, y+1));
-		GL11.glVertex2f(posX+sizeX, posY+sizeY);
-//		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x+1, y));
-		GL11.glVertex2f(posX+sizeX, posY);
+//	public void drawFog(int x, int y)
+//	{
+//		GL11.glBegin(GL11.GL_QUADS);
+//		
+//		float posX = 0.f;
+//		float posY = 0.f;
+//		float sizeX = 1.f/getFogDensity();
+//		float sizeY = 1.f/getFogDensity();
+//				
 //		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x, y));
-		GL11.glVertex2f(posX, posY);
-		GL11.glEnd();
-	}
+//
+////		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x, y+1));
+//		GL11.glVertex2f(posX, posY+sizeY);
+////		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x+1, y+1));
+//		GL11.glVertex2f(posX+sizeX, posY+sizeY);
+////		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x+1, y));
+//		GL11.glVertex2f(posX+sizeX, posY);
+////		GL11.glColor4f(0.f, 0.f, 0.f, getFogAt(x, y));
+//		GL11.glVertex2f(posX, posY);
+//		GL11.glEnd();
+//	}
 
 	public Vector<Collectable> getCollectableObjects() {
 		return collectableObjects;
@@ -275,5 +282,37 @@ public class Grid implements Serializable
 
 	public void setEnemies(Vector<Enemy> enemies) {
 		this.enemies = enemies;
+	}
+
+	public Grid getGridTop() {
+		return gridTop;
+	}
+
+	public void setGridTop(Grid gridTop) {
+		this.gridTop = gridTop;
+	}
+
+	public Grid getGridBottom() {
+		return gridBottom;
+	}
+
+	public void setGridBottom(Grid gridBottom) {
+		this.gridBottom = gridBottom;
+	}
+
+	public Grid getGridLeft() {
+		return gridLeft;
+	}
+
+	public void setGridLeft(Grid gridLeft) {
+		this.gridLeft = gridLeft;
+	}
+
+	public Grid getGridRight() {
+		return gridRight;
+	}
+
+	public void setGridRight(Grid gridRight) {
+		this.gridRight = gridRight;
 	}
 }

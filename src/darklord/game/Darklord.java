@@ -47,7 +47,7 @@ public class Darklord {
 	static boolean fullscreen;
 	static int maxFPS;
 	static float ratio;
-	Level world;
+	GameEngine world;
 	Vector<String> levelList;
 //	Vector<Level> worldLife;
 	boolean isLeftMouseDown, isRightMouseDown, isLeftMouseReleased;
@@ -72,6 +72,7 @@ public class Darklord {
 //	IngameUI ingameUI;
 	static SoundLoader sounds;
 	public static TextDrawer textDrawer;
+	boolean showMap;
 	
 	/**
 	 * initializes global variables
@@ -84,6 +85,7 @@ public class Darklord {
 		gameScreenPos = new Vector2f(0.5f, 0.f);
 		fullscreen = false;
 		useShader = false;
+		showMap = false;
 		maxFPS = 30;
 		gameMode = 1;
 		devMode = false;
@@ -237,6 +239,8 @@ public class Darklord {
 			if (fullscreen)
 			{
 				Display.setDisplayMode(Display.getDesktopDisplayMode());
+				resX = Display.getDisplayMode().getWidth();
+				resY = Display.getDisplayMode().getHeight();
 				Display.setFullscreen(true);
 			} else 
 			{
@@ -317,7 +321,7 @@ public class Darklord {
         
         // init other stuff
         
-        world = new Level(levelList.firstElement());
+        world = new GameEngine(levelList.firstElement());
         
 //        world.setResX((int)(resX-(gameScreenPos.getX()*resX/2.f)));
 //        world.setResX((int)(resY-(gameScreenPos.getY()*resY/2.f)));
@@ -597,7 +601,7 @@ public class Darklord {
 		if (world.mainPlayer.getHp()<=0)
 		{
 			Print.outln("You died, try again!");
-			world = new Level(levelList.firstElement());
+			world = new GameEngine(levelList.firstElement());
 		}
 		
 //		Block tmpBlock = world.map.getBlockAt((int)tmpX, (int) tmpY);
@@ -734,11 +738,26 @@ public class Darklord {
     	return tmp;
     }
     
+    public void checkMouseWheel()
+    {
+    	int wheel = Mouse.getDWheel();
+    	if (wheel < 0)
+    	{
+    		world.zoomOut();
+    	} else if (wheel > 0)
+    	{
+    		world.zoomIn();
+    	}
+        if(Mouse.isButtonDown(2)) world.zoom = 1.f;
+    }
+    
     /**
      * checks mouse input
      */
 	public void checkMouse()
 	{
+		checkMouseWheel();
+		
 		while (Mouse.next())
 		{
 			mousePos.set(Mouse.getX(), Mouse.getY());
@@ -875,6 +894,11 @@ public class Darklord {
 				{
 					world.mainUI.setBuild();
 					world.ingameStatus = IngameStatus.BUILDING;
+				}
+				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_TAB))
+				{
+					showMap = !showMap;
 				}
 				
 //				
@@ -1145,7 +1169,7 @@ public class Darklord {
 		GL11.glTranslatef(gameScreenPos.getX(), gameScreenPos.getY(), 0.f);
 //		GL11.glClearColor(0.f, 0.f, 0.f, 1.f);
 //		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-		world.draw();
+		world.draw(showMap);
 		GL11.glPopMatrix();
 		
 //		float ratio = 1.f*resX/resY;

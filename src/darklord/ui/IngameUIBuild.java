@@ -1,7 +1,7 @@
 package darklord.ui;
 import org.lwjgl.opengl.GL11;
 
-import darklord.game.Level;
+import darklord.game.GameEngine;
 import darklord.media.SpriteSheet;
 import darklord.media.TextureRegion;
 import darklord.math.Vector2f;
@@ -20,7 +20,7 @@ public class IngameUIBuild extends UI
 		buildOptions = new UISelectionList();
 	}
 	
-	public void update(Vector2f mousePos, Level world)
+	public void update(Vector2f mousePos, GameEngine world)
 	{
 		buildOptions.update(world);
 	}
@@ -45,7 +45,7 @@ public class IngameUIBuild extends UI
 		GL11.glPopMatrix();
 	}
 	
-	public void init(Level world)
+	public void init(GameEngine world)
 	{       
         UIObject panelLeft = new UIObject(new TextureRegion(0.f, 0.f, 3*128, 6*128), "panel left");
         panelLeft.setSize(new Vector2f(0.25f, 2.f));

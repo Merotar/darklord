@@ -3,6 +3,8 @@ package darklord.game;
 
 //import java.awt.List;
 import darklord.math.Vector2f;
+
+import java.sql.Savepoint;
 import java.util.List;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,6 +25,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.Iterator;
 
+import org.lwjgl.opengl.GL11;
+
 /**
  * describes the active grids (3x3)
  * 
@@ -38,17 +42,18 @@ public class Map implements Serializable
 	Vector2f start, exit;
 	private int gridSizeX, gridSizeY;
 //	private Grid worldGrid;
-	private int startDim = 3;
-	private int currentGridX, currentGridY;
-	private final int currentGridSize = 3;
-	private Grid currentGrid[][];
+//	private int startDim = 3;
+//	private int currentGridX, currentGridY;
+//	private final int currentGridSize = 3;
+//	private Grid currentGrid[][];
 	Vector<Enemy> currentEnemies;
 	Vector<Chest> currentChests;
 	Vector<Collectable> currentCollectables;
-	Vector<GridLoader> gridLoaders;
-	ExecutorService executor;
-	Vector<Future<Boolean>> savedGridFutures;
+//	Vector<GridLoader> gridLoaders;
+//	ExecutorService executor;
+//	Vector<Future<Boolean>> savedGridFutures;
 	String name;
+	LevelStructure levelStructure;
 //	private Grid gridBottomRight[][];
 //	private Grid gridBottomLeft[][];
 //	private Grid gridTopRight[][];
@@ -74,13 +79,12 @@ public class Map implements Serializable
 	public Map(int x, int y, String theName, boolean isNewMap)
 	{
 		setName(theName);
-		start = new Vector2f(2.f, 2.f);
-		exit = new Vector2f();
+//		exit = new Vector2f();
 //		dimX = x;
 //		dimY = y;
 //		worldGrid = new Grid(x, y, BlockType.BLOCK_DIRT);
 		
-		currentGrid = new Grid[currentGridSize][currentGridSize];
+//		currentGrid = new Grid[currentGridSize][currentGridSize];
 //		gridBottomRight = new Grid[startDim][startDim];
 //		gridBottomLeft = new Grid[startDim][startDim];
 //		gridTopRight = new Grid[startDim][startDim];
@@ -89,41 +93,56 @@ public class Map implements Serializable
 		gridSizeX = x;
 		gridSizeY = y;
 		
-		currentGridX = ((int)Math.floor(start.getX())) / gridSizeX;
-		currentGridY = ((int)Math.floor(start.getY())) / gridSizeY;
+//		currentGridX = ((int)Math.floor(start.getX())) / gridSizeX;
+//		currentGridY = ((int)Math.floor(start.getY())) / gridSizeY;
 //		Print.outln("currentGrid: "+currentGridX+" "+currentGridX);
 		
 		currentEnemies = new Vector<Enemy>();
 		currentChests = new Vector<Chest>();
 		currentCollectables = new Vector<Collectable>();
 		
-		gridLoaders = new Vector<GridLoader>();
-		executor = Executors.newCachedThreadPool();
-		savedGridFutures = new Vector<Future<Boolean>>();
+//		gridLoaders = new Vector<GridLoader>();
+//		executor = Executors.newCachedThreadPool();
+//		savedGridFutures = new Vector<Future<Boolean>>();
 		
-		ExecutorService executor = Executors.newCachedThreadPool();
-			
-		for (int i=-1;i<2;i++)
-		{
-			for (int j=-1;j<2;j++)
-			{
-//				loadGridAt(1+i, 1+j, currentGridX+i, currentGridY+j);
-				currentGrid[1+i][1+j] = getGridAtInstant(currentGridX+i, currentGridY+j);
-				addAllToCurrent(currentGrid[1+i][1+j]);
-			}
-		}
+//		ExecutorService executor = Executors.newCachedThreadPool();
 		
 		if (isNewMap)
 		{
-			for (int i=-1;i<2;i++)
-			{
-				for (int j=-1;j<2;j++)
-				{
-					saveGrid(currentGrid[1+i][1+j], getFileName(currentGridX+i, currentGridY+j));
-//					writeGridToFile(currentGrid[1+i][1+j], getFileName(currentGridX+i, currentGridY+j));
-				}
-			}
+			levelStructure = new LevelStructure(x, y);
+			levelStructure.addGridTop();
+//			levelStructure.addGridTop();
+			initDungeon(levelStructure.getActiveGrid(), 0, 0);
+//			Print.outln(levelStructure.getBlockAt(3, 3).toString());
+//			Print.outln(levelStructure.getBlockAt(3, 33).toString());
+			start = levelStructure.generateStartPosition();
+//			Print.outln(levelStructure.getGridTop(levelStructure.getActiveGrid()).toString());
+		} else
+		{
+			levelStructure = readLevelStructureFromFile(getFileName());
 		}
+			
+//		for (int i=-1;i<2;i++)
+//		{
+//			for (int j=-1;j<2;j++)
+//			{
+////				loadGridAt(1+i, 1+j, currentGridX+i, currentGridY+j);
+//				currentGrid[1+i][1+j] = getGridAtInstant(currentGridX+i, currentGridY+j);
+//				addAllToCurrent(currentGrid[1+i][1+j]);
+//			}
+//		}
+//		
+//		if (isNewMap)
+//		{
+//			for (int i=-1;i<2;i++)
+//			{
+//				for (int j=-1;j<2;j++)
+//				{
+//					saveGrid(currentGrid[1+i][1+j], getFileName(currentGridX+i, currentGridY+j));
+////					writeGridToFile(currentGrid[1+i][1+j], getFileName(currentGridX+i, currentGridY+j));
+//				}
+//			}
+//		}
 		
 		// init current grid
 //		currentGrid[0][0] = getGridAt(currentGridX-1, currentGridY-1);
@@ -143,7 +162,7 @@ public class Map implements Serializable
 //		initDungeon(currentGrid[1][1]);
 //		initDungeon(currentGrid[currentGridX-1][currentGridY-1]);
 		
-		currentGrid[currentGridX][currentGridY].setTypeAt((int)start.getX(), (int)start.getY(), BlockType.BLOCK_NONE);
+//		currentGrid[currentGridX][currentGridY].setTypeAt((int)start.getX(), (int)start.getY(), BlockType.BLOCK_NONE);
 
 //		enemies = new Vector<Enemy>();
 		
@@ -422,12 +441,12 @@ public class Map implements Serializable
 	
 	public int getMapSizeX()
 	{
-		return currentGrid[1][1].getGridSizeX();
+		return levelStructure.getGridSizeX();
 	}
 	
 	public int getMapSizeY()
 	{
-		return currentGrid[1][1].getGridSizeY();
+		return levelStructure.getGridSizeY();
 	}
 	
 	public Map(Map orig)
@@ -516,170 +535,201 @@ public class Map implements Serializable
 		return "./"+getName()+"/"+"gridx"+x+"y"+y+".ser";
 	}
 	
-	public Grid getGridAtInstant(int x, int y)
-	{
-		Grid tmpGrid;
-
-		String fileName = getFileName(x, y);
-		File file = new File(fileName);
-		
-		if (file.exists())
-		{
-			tmpGrid = readGridFromFile(fileName);
-		} else
-		{
-			tmpGrid = new Grid(getGridSizeX(), getGridSizeY(), x, y, BlockType.BLOCK_DIRT);
-			initDungeon(tmpGrid, x, y);
-		}
-		
-		return tmpGrid;
-	}
-	
-	public void loadGridAt(int x, int y, int currentX, int currentY)
-	{
-		String fileName = getFileName(currentX, currentY);
-		File file = new File(fileName);
-		
-		if (file.exists())
-		{
+//	public Grid getGridAtInstant(int x, int y)
+//	{
+//		Grid tmpGrid;
+//
+//		String fileName = getFileName(x, y);
+//		File file = new File(fileName);
+//		
+//		if (file.exists())
+//		{
 //			tmpGrid = readGridFromFile(fileName);
-			gridLoaders.add(new GridLoader(fileName, x, y, currentX, currentY, executor));
-		} else
-		{
-			currentGrid[x][y] = new Grid(getGridSizeX(), getGridSizeY(), currentX, currentY, BlockType.BLOCK_DIRT);
-			initDungeon(currentGrid[x][y], currentX, currentY);
-			currentEnemies.addAll(currentGrid[x][y].getEnemies());
-		}
-		
-	}
+//		} else
+//		{
+//			tmpGrid = new Grid(getGridSizeX(), getGridSizeY(), x, y, BlockType.BLOCK_DIRT);
+//			initDungeon(tmpGrid, x, y);
+//		}
+//		
+//		return tmpGrid;
+//	}
+	
+//	public void loadGridAt(int x, int y, int currentX, int currentY)
+//	{
+//		String fileName = getFileName(currentX, currentY);
+//		File file = new File(fileName);
+//		
+//		if (file.exists())
+//		{
+////			tmpGrid = readGridFromFile(fileName);
+//			gridLoaders.add(new GridLoader(fileName, x, y, currentX, currentY, executor));
+//		} else
+//		{
+//			currentGrid[x][y] = new Grid(getGridSizeX(), getGridSizeY(), currentX, currentY, BlockType.BLOCK_DIRT);
+//			initDungeon(currentGrid[x][y], currentX, currentY);
+//			currentEnemies.addAll(currentGrid[x][y].getEnemies());
+//		}
+//		
+//	}
 	
 	public Block getBlockAt(int x, int y)
 	{
-//		if (x >= 0 && y >= 0 && x < worldGrid.getGridSizeX() && y < worldGrid.getGridSizeY())
+		return levelStructure.getBlockAt(x, y);
+	}
+	
+//	public Block getBlockAt(int x, int y)
+//	{
+////		if (x >= 0 && y >= 0 && x < worldGrid.getGridSizeX() && y < worldGrid.getGridSizeY())
+////		{
+////			return worldGrid.getBlockAt(x, y);
+////		}
+////		return null;
+//		
+//		int gridX = (int)Math.floor(1.f * x / getGridSizeX());
+//		int gridY = (int)Math.floor(1.f * y / getGridSizeY());
+//		
+//		int localX =  x - gridX*getGridSizeX();
+//		int localY =  y - gridY*getGridSizeY();
+//		
+//		if (localX < 0) localX += getGridSizeX();
+//		if (localY < 0) localY += getGridSizeY();
+//		
+//		gridX = gridX - currentGridX + 1;
+//		gridY = gridY - currentGridY + 1;
+//		
+////		Print.outln("x: "+x+ ", y: "+y);
+////		Print.outln("gridX: "+gridX+ ", gridY: "+gridY);
+////		Print.outln("localX: "+localX+ ", localY: "+localY);
+//		
+//		if (gridX >=0 && gridX < currentGridSize && gridY >= 0 && gridY < currentGridSize)
 //		{
-//			return worldGrid.getBlockAt(x, y);
+////			if (currentGrid[gridX][gridY] == null)
+////			{
+//////				Print.outln("grid not initialized: ("+gridX+", "+gridY+")");
+////				currentGrid[gridX][gridY] = new Grid(getMapSizeX(), getMapSizeY(), BlockType.BLOCK_DIRT);
+////			}
+////			if (localX == 5 && localY == 5) return null;
+//			return currentGrid[gridX][gridY].getBlockAt(localX, localY);
 //		}
 //		return null;
-		
-		int gridX = (int)Math.floor(1.f * x / getGridSizeX());
-		int gridY = (int)Math.floor(1.f * y / getGridSizeY());
-		
-		int localX =  x - gridX*getGridSizeX();
-		int localY =  y - gridY*getGridSizeY();
-		
-		if (localX < 0) localX += getGridSizeX();
-		if (localY < 0) localY += getGridSizeY();
-		
-		gridX = gridX - currentGridX + 1;
-		gridY = gridY - currentGridY + 1;
-		
-//		Print.outln("x: "+x+ ", y: "+y);
-//		Print.outln("gridX: "+gridX+ ", gridY: "+gridY);
-//		Print.outln("localX: "+localX+ ", localY: "+localY);
-		
-		if (gridX >=0 && gridX < currentGridSize && gridY >= 0 && gridY < currentGridSize)
-		{
-//			if (currentGrid[gridX][gridY] == null)
-//			{
-////				Print.outln("grid not initialized: ("+gridX+", "+gridY+")");
-//				currentGrid[gridX][gridY] = new Grid(getMapSizeX(), getMapSizeY(), BlockType.BLOCK_DIRT);
-//			}
-			return currentGrid[gridX][gridY].getBlockAt(localX, localY);
-		}
-		return null;
-	}
+//	}
 	
 	public float getFogAt(int x, int y)
 	{
-		int gridX = (int)Math.floor(1.f * x / (getGridSizeX()*getFogDensity()));
-		int gridY = (int)Math.floor(1.f * y / (getGridSizeY()*getFogDensity()));
-		
-		int localX =  x - gridX*(getGridSizeX()*getFogDensity());
-		int localY =  y - gridY*(getGridSizeY()*getFogDensity());
-		
-		if (localX < 0) localX += getGridSizeX()*getFogDensity();
-		if (localY < 0) localY += getGridSizeY()*getFogDensity();
-		
-		gridX = gridX - currentGridX + 1;
-		gridY = gridY - currentGridY + 1;
-		
-//		Print.outln("x: "+x+ ", y: "+y);
-//		Print.outln("gridX: "+gridX+ ", gridY: "+gridY);
-//		Print.outln("localX: "+localX+ ", localY: "+localY);
-		
-		if (gridX >=0 && gridX < currentGridSize && gridY >= 0 && gridY < currentGridSize)
-		{
-//			if (currentGrid[gridX][gridY] == null)
-//			{
-////				Print.outln("grid not initialized: ("+gridX+", "+gridY+")");
-//				currentGrid[gridX][gridY] = new Grid(getMapSizeX(), getMapSizeY(), BlockType.BLOCK_DIRT);
-//			}
-			return currentGrid[gridX][gridY].getFogAt(localX, localY);
-		}
-		return 0.f;
+		return levelStructure.getFogAt(x, y);
 	}
 	
-	public void setFogAt(int x, int y, float value)
+	public void setFogAt(int x, int y, float f)
 	{
-		int gridX = (int)Math.floor(1.f * x / (getGridSizeX()*getFogDensity()));
-		int gridY = (int)Math.floor(1.f * y / (getGridSizeY()*getFogDensity()));
+		levelStructure.setFogAt(x, y, f);
+	}
+	
+//	public float getFogAt(int x, int y)
+//	{
+//		int gridX = (int)Math.floor(1.f * x / (getGridSizeX()*getFogDensity()));
+//		int gridY = (int)Math.floor(1.f * y / (getGridSizeY()*getFogDensity()));
+//		
+//		int localX =  x - gridX*(getGridSizeX()*getFogDensity());
+//		int localY =  y - gridY*(getGridSizeY()*getFogDensity());
+//		
+//		if (localX < 0) localX += getGridSizeX()*getFogDensity();
+//		if (localY < 0) localY += getGridSizeY()*getFogDensity();
+//		
+//		gridX = gridX - currentGridX + 1;
+//		gridY = gridY - currentGridY + 1;
+//		
+////		Print.outln("x: "+x+ ", y: "+y);
+////		Print.outln("gridX: "+gridX+ ", gridY: "+gridY);
+////		Print.outln("localX: "+localX+ ", localY: "+localY);
+//		
+//		if (gridX >=0 && gridX < currentGridSize && gridY >= 0 && gridY < currentGridSize)
+//		{
+////			if (currentGrid[gridX][gridY] == null)
+////			{
+//////				Print.outln("grid not initialized: ("+gridX+", "+gridY+")");
+////				currentGrid[gridX][gridY] = new Grid(getMapSizeX(), getMapSizeY(), BlockType.BLOCK_DIRT);
+////			}
+//			return currentGrid[gridX][gridY].getFogAt(localX, localY);
+//		}
+//		return 0.f;
+//	}
+	
+//	public void setFogAt(int x, int y, float value)
+//	{
+//		int gridX = (int)Math.floor(1.f * x / (getGridSizeX()*getFogDensity()));
+//		int gridY = (int)Math.floor(1.f * y / (getGridSizeY()*getFogDensity()));
+//		
+//		int localX =  x - gridX*(getGridSizeX()*getFogDensity());
+//		int localY =  y - gridY*(getGridSizeY()*getFogDensity());
+//		
+//		if (localX < 0) localX += getGridSizeX()*getFogDensity();
+//		if (localY < 0) localY += getGridSizeY()*getFogDensity();
+//		
+//		gridX = gridX - currentGridX + 1;
+//		gridY = gridY - currentGridY + 1;
+//		
+////		Print.outln("x: "+x+ ", y: "+y);
+////		Print.outln("gridX: "+gridX+ ", gridY: "+gridY);
+////		Print.outln("localX: "+localX+ ", localY: "+localY);
+//		
+//		if (gridX >=0 && gridX < currentGridSize && gridY >= 0 && gridY < currentGridSize)
+//		{
+////			if (currentGrid[gridX][gridY] == null)
+////			{
+//////				Print.outln("grid not initialized: ("+gridX+", "+gridY+")");
+////				currentGrid[gridX][gridY] = new Grid(getMapSizeX(), getMapSizeY(), BlockType.BLOCK_DIRT);
+////			}
+//			currentGrid[gridX][gridY].setFogAt(localX, localY, value);
+//		}
+//	}
+	
+	public void draw()
+	{
 		
-		int localX =  x - gridX*(getGridSizeX()*getFogDensity());
-		int localY =  y - gridY*(getGridSizeY()*getFogDensity());
+	}
+	
+	public void drawMap()
+	{
 		
-		if (localX < 0) localX += getGridSizeX()*getFogDensity();
-		if (localY < 0) localY += getGridSizeY()*getFogDensity();
-		
-		gridX = gridX - currentGridX + 1;
-		gridY = gridY - currentGridY + 1;
-		
-//		Print.outln("x: "+x+ ", y: "+y);
-//		Print.outln("gridX: "+gridX+ ", gridY: "+gridY);
-//		Print.outln("localX: "+localX+ ", localY: "+localY);
-		
-		if (gridX >=0 && gridX < currentGridSize && gridY >= 0 && gridY < currentGridSize)
-		{
-//			if (currentGrid[gridX][gridY] == null)
-//			{
-////				Print.outln("grid not initialized: ("+gridX+", "+gridY+")");
-//				currentGrid[gridX][gridY] = new Grid(getMapSizeX(), getMapSizeY(), BlockType.BLOCK_DIRT);
-//			}
-			currentGrid[gridX][gridY].setFogAt(localX, localY, value);
-		}
 	}
 	
 	public void drawFog(int x, int y)
 	{
-		int gridX = (int)Math.floor(1.f * x / (getGridSizeX()*getFogDensity()));
-		int gridY = (int)Math.floor(1.f * y / (getGridSizeY()*getFogDensity()));
-		
-		int localX =  x - gridX*(getGridSizeX()*getFogDensity());
-		int localY =  y - gridY*(getGridSizeY()*getFogDensity());
-		
-		if (localX < 0) localX += getGridSizeX()*getFogDensity();
-		if (localY < 0) localY += getGridSizeY()*getFogDensity();
-		
-		gridX = gridX - currentGridX + 1;
-		gridY = gridY - currentGridY + 1;
-		
-//		Print.outln("x: "+x+ ", y: "+y);
-//		Print.outln("gridX: "+gridX+ ", gridY: "+gridY);
-//		Print.outln("localX: "+localX+ ", localY: "+localY);
-		
-		if (gridX >=0 && gridX < currentGridSize && gridY >= 0 && gridY < currentGridSize)
-		{
-//			if (currentGrid[gridX][gridY] == null)
-//			{
-////				Print.outln("grid not initialized: ("+gridX+", "+gridY+")");
-//				currentGrid[gridX][gridY] = new Grid(getMapSizeX(), getMapSizeY(), BlockType.BLOCK_DIRT);
-//			}
-			currentGrid[gridX][gridY].drawFog(localX, localY);
-		}
+		levelStructure.drawFog(x, y);
 	}
+	
+//	public void drawFog(int x, int y)
+//	{
+//		int gridX = (int)Math.floor(1.f * x / (getGridSizeX()*getFogDensity()));
+//		int gridY = (int)Math.floor(1.f * y / (getGridSizeY()*getFogDensity()));
+//		
+//		int localX =  x - gridX*(getGridSizeX()*getFogDensity());
+//		int localY =  y - gridY*(getGridSizeY()*getFogDensity());
+//		
+//		if (localX < 0) localX += getGridSizeX()*getFogDensity();
+//		if (localY < 0) localY += getGridSizeY()*getFogDensity();
+//		
+//		gridX = gridX - currentGridX + 1;
+//		gridY = gridY - currentGridY + 1;
+//		
+////		Print.outln("x: "+x+ ", y: "+y);
+////		Print.outln("gridX: "+gridX+ ", gridY: "+gridY);
+////		Print.outln("localX: "+localX+ ", localY: "+localY);
+//		
+//		if (gridX >=0 && gridX < currentGridSize && gridY >= 0 && gridY < currentGridSize)
+//		{
+////			if (currentGrid[gridX][gridY] == null)
+////			{
+//////				Print.outln("grid not initialized: ("+gridX+", "+gridY+")");
+////				currentGrid[gridX][gridY] = new Grid(getMapSizeX(), getMapSizeY(), BlockType.BLOCK_DIRT);
+////			}
+//			currentGrid[gridX][gridY].drawFog(localX, localY);
+//		}
+//	}
 	
 	public int getFogDensity()
 	{
-		return currentGrid[1][1].getFogDensity();
+		return levelStructure.getActiveGrid().getFogDensity();
 	}
 	
 //	public void writeToFile(String fileName, Vector2f startPos)
@@ -992,12 +1042,12 @@ public class Map implements Serializable
 //		writeToFile("defaultMap.map", start);
 	}
 	
-	public void saveGrid(Grid theGrid, String fileName)
-	{
-//		saveGridThreads.add(new Thread(new GridStoreRunnable(theGrid, fileName)));
-//		saveGridThreads.lastElement().start();
-		savedGridFutures.add(executor.submit(new GridStoreCallable(theGrid, fileName)));
-	}
+//	public void saveGrid(Grid theGrid, String fileName)
+//	{
+////		saveGridThreads.add(new Thread(new GridStoreRunnable(theGrid, fileName)));
+////		saveGridThreads.lastElement().start();
+//		savedGridFutures.add(executor.submit(new GridStoreCallable(theGrid, fileName)));
+//	}
 	
 //	public Grid loadGrid()
 //	{
@@ -1035,34 +1085,39 @@ public class Map implements Serializable
 	
 	public void finalize()
 	{
-		saveCurrentGrid();
-		
-		while(savedGridFutures.size() != 0)
-		{
-			update();
-//			try {
-//				Thread.sleep(10);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-		}
+		writeLevelStructureToFile(levelStructure, this.getFileName());
 	}
 	
-	void saveCurrentGrid()
-	{
-		for (int i=-1;i<2;i++)
-		{
-			for (int j=-1;j<2;j++)
-			{
-				saveAllToGrid(currentGrid[1+i][1+j]);
-				saveGrid(currentGrid[1+i][1+j], getFileName(currentGridX+i, currentGridY+j));
-//				Thread tmpThread = new Thread(new GridStoreRunnable(currentGrid[1+i][1+j], getFileName(currentGridX+i, currentGridY+j)));
-//				tmpThread.start();
-//				writeGridToFile(currentGrid[1+i][1+j], getFileName(currentGridX+i, currentGridY+j));
-			}
-		}
-	}
+//	public void finalize()
+//	{
+//		saveCurrentGrid();
+//		
+//		while(savedGridFutures.size() != 0)
+//		{
+//			update();
+////			try {
+////				Thread.sleep(10);
+////			} catch (InterruptedException e) {
+////				// TODO Auto-generated catch block
+////				e.printStackTrace();
+////			}
+//		}
+//	}
+	
+//	void saveCurrentGrid()
+//	{
+//		for (int i=-1;i<2;i++)
+//		{
+//			for (int j=-1;j<2;j++)
+//			{
+//				saveAllToGrid(currentGrid[1+i][1+j]);
+//				saveGrid(currentGrid[1+i][1+j], getFileName(currentGridX+i, currentGridY+j));
+////				Thread tmpThread = new Thread(new GridStoreRunnable(currentGrid[1+i][1+j], getFileName(currentGridX+i, currentGridY+j)));
+////				tmpThread.start();
+////				writeGridToFile(currentGrid[1+i][1+j], getFileName(currentGridX+i, currentGridY+j));
+//			}
+//		}
+//	}
 	
 	public void readFile()
 	{
@@ -1071,142 +1126,143 @@ public class Map implements Serializable
 
 	public void setBlock(int x_int, int y_int, BlockType t)
 	{
-		if ((x_int > 0) && (x_int < currentGrid[currentGridX][currentGridY].gridSizeX) && (y_int > 0) && (y_int < currentGrid[currentGridX][currentGridY].gridSizeY))
-		{
-			currentGrid[currentGridX][currentGridY].setTypeAt(x_int, y_int, t);
-		}
+		levelStructure.getBlockAt(x_int, y_int).setType(t);
+//		if ((x_int > 0) && (x_int < currentGrid[currentGridX][currentGridY].gridSizeX) && (y_int > 0) && (y_int < currentGrid[currentGridX][currentGridY].gridSizeY))
+//		{
+//			currentGrid[currentGridX][currentGridY].setTypeAt(x_int, y_int, t);
+//		}
 	}
 	
-	public void increaseCurrentGridX()
-	{
-		saveAllToGrid(currentGrid[0][0]);
-		saveAllToGrid(currentGrid[0][1]);
-		saveAllToGrid(currentGrid[0][2]);
-		
-		saveGrid(currentGrid[0][0], getFileName(currentGridX-1, currentGridY-1));
-		saveGrid(currentGrid[0][1], getFileName(currentGridX-1, currentGridY));
-		saveGrid(currentGrid[0][2], getFileName(currentGridX-1, currentGridY+1));
-		
-		currentGridX += 1;
-		
-		currentGrid[0][0] = currentGrid[1][0];
-		currentGrid[0][1] = currentGrid[1][1];
-		currentGrid[0][2] = currentGrid[1][2];
-		
-		currentGrid[1][0] = currentGrid[2][0];
-		currentGrid[1][1] = currentGrid[2][1];
-		currentGrid[1][2] = currentGrid[2][2];
-		
-		loadGridAt(2, 0, currentGridX+1, currentGridY-1);
-		loadGridAt(2, 1, currentGridX+1, currentGridY);
-		loadGridAt(2, 2, currentGridX+1, currentGridY+1);
-		
-//		currentGrid[2][0] = getGridAt(currentGridX+1, currentGridY-1);
-//		currentGrid[2][1] = getGridAt(currentGridX+1, currentGridY);
-//		currentGrid[2][2] = getGridAt(currentGridX+1, currentGridY+1);
-	}
+//	public void increaseCurrentGridX()
+//	{
+//		saveAllToGrid(currentGrid[0][0]);
+//		saveAllToGrid(currentGrid[0][1]);
+//		saveAllToGrid(currentGrid[0][2]);
+//		
+//		saveGrid(currentGrid[0][0], getFileName(currentGridX-1, currentGridY-1));
+//		saveGrid(currentGrid[0][1], getFileName(currentGridX-1, currentGridY));
+//		saveGrid(currentGrid[0][2], getFileName(currentGridX-1, currentGridY+1));
+//		
+//		currentGridX += 1;
+//		
+//		currentGrid[0][0] = currentGrid[1][0];
+//		currentGrid[0][1] = currentGrid[1][1];
+//		currentGrid[0][2] = currentGrid[1][2];
+//		
+//		currentGrid[1][0] = currentGrid[2][0];
+//		currentGrid[1][1] = currentGrid[2][1];
+//		currentGrid[1][2] = currentGrid[2][2];
+//		
+//		loadGridAt(2, 0, currentGridX+1, currentGridY-1);
+//		loadGridAt(2, 1, currentGridX+1, currentGridY);
+//		loadGridAt(2, 2, currentGridX+1, currentGridY+1);
+//		
+////		currentGrid[2][0] = getGridAt(currentGridX+1, currentGridY-1);
+////		currentGrid[2][1] = getGridAt(currentGridX+1, currentGridY);
+////		currentGrid[2][2] = getGridAt(currentGridX+1, currentGridY+1);
+//	}
+//	
+//	public void decreaseCurrentGridX()
+//	{
+////		Print.outln("numEnemies 1: "+currentEnemies.size());
+//		saveAllToGrid(currentGrid[2][0]);
+//		saveAllToGrid(currentGrid[2][1]);
+//		saveAllToGrid(currentGrid[2][2]);
+////		Print.outln("numEnemies 2: "+currentEnemies.size());
+//		
+//		saveGrid(currentGrid[2][0], getFileName(currentGridX+1, currentGridY-1));
+//		saveGrid(currentGrid[2][1], getFileName(currentGridX+1, currentGridY));
+//		saveGrid(currentGrid[2][2], getFileName(currentGridX+1, currentGridY+1));
+//
+//		currentEnemies.removeAll(currentGrid[2][0].getEnemies());
+//		currentEnemies.removeAll(currentGrid[2][1].getEnemies());
+//		currentEnemies.removeAll(currentGrid[2][2].getEnemies());
+//		
+//		currentGridX -= 1;
+//		
+//		currentGrid[2][0] = currentGrid[1][0];
+//		currentGrid[2][1] = currentGrid[1][1];
+//		currentGrid[2][2] = currentGrid[1][2];
+//		
+//		currentGrid[1][0] = currentGrid[0][0];
+//		currentGrid[1][1] = currentGrid[0][1];
+//		currentGrid[1][2] = currentGrid[0][2];
+//		
+//		loadGridAt(0, 0, currentGridX-1, currentGridY-1);
+//		loadGridAt(0, 1, currentGridX-1, currentGridY);
+//		loadGridAt(0, 2, currentGridX-1, currentGridY+1);
+//		
+////		currentGrid[0][0] = getGridAt(currentGridX-1, currentGridY-1);
+////		currentGrid[0][1] = getGridAt(currentGridX-1, currentGridY);
+////		currentGrid[0][2] = getGridAt(currentGridX-1, currentGridY+1);
+//
+//	}
 	
-	public void decreaseCurrentGridX()
-	{
-//		Print.outln("numEnemies 1: "+currentEnemies.size());
-		saveAllToGrid(currentGrid[2][0]);
-		saveAllToGrid(currentGrid[2][1]);
-		saveAllToGrid(currentGrid[2][2]);
-//		Print.outln("numEnemies 2: "+currentEnemies.size());
-		
-		saveGrid(currentGrid[2][0], getFileName(currentGridX+1, currentGridY-1));
-		saveGrid(currentGrid[2][1], getFileName(currentGridX+1, currentGridY));
-		saveGrid(currentGrid[2][2], getFileName(currentGridX+1, currentGridY+1));
-
-		currentEnemies.removeAll(currentGrid[2][0].getEnemies());
-		currentEnemies.removeAll(currentGrid[2][1].getEnemies());
-		currentEnemies.removeAll(currentGrid[2][2].getEnemies());
-		
-		currentGridX -= 1;
-		
-		currentGrid[2][0] = currentGrid[1][0];
-		currentGrid[2][1] = currentGrid[1][1];
-		currentGrid[2][2] = currentGrid[1][2];
-		
-		currentGrid[1][0] = currentGrid[0][0];
-		currentGrid[1][1] = currentGrid[0][1];
-		currentGrid[1][2] = currentGrid[0][2];
-		
-		loadGridAt(0, 0, currentGridX-1, currentGridY-1);
-		loadGridAt(0, 1, currentGridX-1, currentGridY);
-		loadGridAt(0, 2, currentGridX-1, currentGridY+1);
-		
-//		currentGrid[0][0] = getGridAt(currentGridX-1, currentGridY-1);
-//		currentGrid[0][1] = getGridAt(currentGridX-1, currentGridY);
-//		currentGrid[0][2] = getGridAt(currentGridX-1, currentGridY+1);
-
-	}
+//	public void increaseCurrentGridY()
+//	{
+//		saveAllToGrid(currentGrid[0][0]);
+//		saveAllToGrid(currentGrid[1][0]);
+//		saveAllToGrid(currentGrid[2][0]);
+//		
+//		saveGrid(currentGrid[0][0], getFileName(currentGridX-1, currentGridY-1));
+//		saveGrid(currentGrid[1][0], getFileName(currentGridX, currentGridY-1));
+//		saveGrid(currentGrid[2][0], getFileName(currentGridX+1, currentGridY-1));
+//
+//		
+//		currentGridY += 1;
+//		
+//		currentGrid[0][0] = currentGrid[0][1];
+//		currentGrid[1][0] = currentGrid[1][1];
+//		currentGrid[2][0] = currentGrid[2][1];
+//		
+//		currentGrid[0][1] = currentGrid[0][2];
+//		currentGrid[1][1] = currentGrid[1][2];
+//		currentGrid[2][1] = currentGrid[2][2];
+//		
+//		loadGridAt(0, 2, currentGridX-1, currentGridY+1);
+//		loadGridAt(1, 2, currentGridX, currentGridY+1);
+//		loadGridAt(2, 2, currentGridX+1, currentGridY+1);
+//		
+////		currentGrid[0][2] = getGridAt(currentGridX-1, currentGridY+1);
+////		currentGrid[1][2] = getGridAt(currentGridX, currentGridY+1);
+////		currentGrid[2][2] = getGridAt(currentGridX+1, currentGridY+1);
+//	}
+//	
+//	public void decreaseCurrentGridY()
+//	{
+//		saveAllToGrid(currentGrid[0][2]);
+//		saveAllToGrid(currentGrid[1][2]);
+//		saveAllToGrid(currentGrid[2][2]);
+//		
+//		saveGrid(currentGrid[0][2], getFileName(currentGridX-1, currentGridY+1));
+//		saveGrid(currentGrid[1][2], getFileName(currentGridX, currentGridY+1));
+//		saveGrid(currentGrid[2][2], getFileName(currentGridX+1, currentGridY+1));
+//		
+//		currentGridY -= 1;
+//		
+//		currentGrid[0][2] = currentGrid[0][1];
+//		currentGrid[1][2] = currentGrid[1][1];
+//		currentGrid[2][2] = currentGrid[2][1];
+//		
+//		currentGrid[0][1] = currentGrid[0][0];
+//		currentGrid[1][1] = currentGrid[1][0];
+//		currentGrid[2][1] = currentGrid[2][0];
+//		
+//		loadGridAt(0, 0, currentGridX-1, currentGridY-1);
+//		loadGridAt(1, 0, currentGridX, currentGridY-1);
+//		loadGridAt(2, 0, currentGridX+1, currentGridY-1);
+//		
+////		currentGrid[0][0] = getGridAt(currentGridX-1, currentGridY-1);
+////		currentGrid[1][0] = getGridAt(currentGridX, currentGridY-1);
+////		currentGrid[2][0] = getGridAt(currentGridX+1, currentGridY-1);
+//	}
 	
-	public void increaseCurrentGridY()
-	{
-		saveAllToGrid(currentGrid[0][0]);
-		saveAllToGrid(currentGrid[1][0]);
-		saveAllToGrid(currentGrid[2][0]);
-		
-		saveGrid(currentGrid[0][0], getFileName(currentGridX-1, currentGridY-1));
-		saveGrid(currentGrid[1][0], getFileName(currentGridX, currentGridY-1));
-		saveGrid(currentGrid[2][0], getFileName(currentGridX+1, currentGridY-1));
-
-		
-		currentGridY += 1;
-		
-		currentGrid[0][0] = currentGrid[0][1];
-		currentGrid[1][0] = currentGrid[1][1];
-		currentGrid[2][0] = currentGrid[2][1];
-		
-		currentGrid[0][1] = currentGrid[0][2];
-		currentGrid[1][1] = currentGrid[1][2];
-		currentGrid[2][1] = currentGrid[2][2];
-		
-		loadGridAt(0, 2, currentGridX-1, currentGridY+1);
-		loadGridAt(1, 2, currentGridX, currentGridY+1);
-		loadGridAt(2, 2, currentGridX+1, currentGridY+1);
-		
-//		currentGrid[0][2] = getGridAt(currentGridX-1, currentGridY+1);
-//		currentGrid[1][2] = getGridAt(currentGridX, currentGridY+1);
-//		currentGrid[2][2] = getGridAt(currentGridX+1, currentGridY+1);
-	}
-	
-	public void decreaseCurrentGridY()
-	{
-		saveAllToGrid(currentGrid[0][2]);
-		saveAllToGrid(currentGrid[1][2]);
-		saveAllToGrid(currentGrid[2][2]);
-		
-		saveGrid(currentGrid[0][2], getFileName(currentGridX-1, currentGridY+1));
-		saveGrid(currentGrid[1][2], getFileName(currentGridX, currentGridY+1));
-		saveGrid(currentGrid[2][2], getFileName(currentGridX+1, currentGridY+1));
-		
-		currentGridY -= 1;
-		
-		currentGrid[0][2] = currentGrid[0][1];
-		currentGrid[1][2] = currentGrid[1][1];
-		currentGrid[2][2] = currentGrid[2][1];
-		
-		currentGrid[0][1] = currentGrid[0][0];
-		currentGrid[1][1] = currentGrid[1][0];
-		currentGrid[2][1] = currentGrid[2][0];
-		
-		loadGridAt(0, 0, currentGridX-1, currentGridY-1);
-		loadGridAt(1, 0, currentGridX, currentGridY-1);
-		loadGridAt(2, 0, currentGridX+1, currentGridY-1);
-		
-//		currentGrid[0][0] = getGridAt(currentGridX-1, currentGridY-1);
-//		currentGrid[1][0] = getGridAt(currentGridX, currentGridY-1);
-//		currentGrid[2][0] = getGridAt(currentGridX+1, currentGridY-1);
-	}
-	
-	public void saveAllToGrid(Grid theGrid)
-	{
-		saveEnemiesToGrid(theGrid);
-		saveChestsToGrid(theGrid);
-		saveCollectablesToGrid(theGrid);
-	}
+//	public void saveAllToGrid(Grid theGrid)
+//	{
+//		saveEnemiesToGrid(theGrid);
+//		saveChestsToGrid(theGrid);
+//		saveCollectablesToGrid(theGrid);
+//	}
 	
 	public void addAllToCurrent(Grid theGrid)
 	{
@@ -1215,83 +1271,83 @@ public class Map implements Serializable
 		currentChests.addAll(theGrid.getChests());
 	}
 	
-	public void saveEnemiesToGrid(Grid theGrid)
-	{
-		theGrid.getEnemies().removeAllElements();
-		
-		for (Iterator<Enemy> object = currentEnemies.iterator();object.hasNext();)
-		{
-			Enemy tmpEnemy = object.next();
-			
-			int gridX = (int)Math.floor(1.f * tmpEnemy.getPosX() / getGridSizeX());
-			int gridY = (int)Math.floor(1.f * tmpEnemy.getPosY() / getGridSizeY());
-			
-			if (gridX >= currentGridX-1 && gridX <= currentGridX+1
-					&& gridY >= currentGridY-1 && gridY <= currentGridY+1)	// is in currentGrid
-			{
-				if (gridX == theGrid.getPosX() && gridY == theGrid.getPosY())	//is in the chosen grid
-				{
-					theGrid.getEnemies().add(tmpEnemy);
-					object.remove();
-				}
-			} else
-			{
-				object.remove();
-			}
-		}		
-	}
+//	public void saveEnemiesToGrid(Grid theGrid)
+//	{
+//		theGrid.getEnemies().removeAllElements();
+//		
+//		for (Iterator<Enemy> object = currentEnemies.iterator();object.hasNext();)
+//		{
+//			Enemy tmpEnemy = object.next();
+//			
+//			int gridX = (int)Math.floor(1.f * tmpEnemy.getPosX() / getGridSizeX());
+//			int gridY = (int)Math.floor(1.f * tmpEnemy.getPosY() / getGridSizeY());
+//			
+//			if (gridX >= currentGridX-1 && gridX <= currentGridX+1
+//					&& gridY >= currentGridY-1 && gridY <= currentGridY+1)	// is in currentGrid
+//			{
+//				if (gridX == theGrid.getPosX() && gridY == theGrid.getPosY())	//is in the chosen grid
+//				{
+//					theGrid.getEnemies().add(tmpEnemy);
+//					object.remove();
+//				}
+//			} else
+//			{
+//				object.remove();
+//			}
+//		}		
+//	}
+//	
+//	public void saveChestsToGrid(Grid theGrid)
+//	{
+//		theGrid.getChests().removeAllElements();
+//		
+//		for (Iterator<Chest> object = currentChests.iterator();object.hasNext();)
+//		{
+//			Chest tmpChest = object.next();
+//			
+//			int gridX = (int)Math.floor(1.f * tmpChest.getPosX() / getGridSizeX());
+//			int gridY = (int)Math.floor(1.f * tmpChest.getPosY() / getGridSizeY());
+//			
+//			if (gridX >= currentGridX-1 && gridX <= currentGridX+1
+//					&& gridY >= currentGridY-1 && gridY <= currentGridY+1)	// is in currentGrid
+//			{
+//				if (gridX == theGrid.getPosX() && gridY == theGrid.getPosY())	//is in the chosen grid
+//				{
+//					theGrid.getChests().add(tmpChest);
+//					object.remove();
+//				}
+//			} else
+//			{
+//				object.remove();
+//			}
+//		}		
+//	}
 	
-	public void saveChestsToGrid(Grid theGrid)
-	{
-		theGrid.getChests().removeAllElements();
-		
-		for (Iterator<Chest> object = currentChests.iterator();object.hasNext();)
-		{
-			Chest tmpChest = object.next();
-			
-			int gridX = (int)Math.floor(1.f * tmpChest.getPosX() / getGridSizeX());
-			int gridY = (int)Math.floor(1.f * tmpChest.getPosY() / getGridSizeY());
-			
-			if (gridX >= currentGridX-1 && gridX <= currentGridX+1
-					&& gridY >= currentGridY-1 && gridY <= currentGridY+1)	// is in currentGrid
-			{
-				if (gridX == theGrid.getPosX() && gridY == theGrid.getPosY())	//is in the chosen grid
-				{
-					theGrid.getChests().add(tmpChest);
-					object.remove();
-				}
-			} else
-			{
-				object.remove();
-			}
-		}		
-	}
-	
-	public void saveCollectablesToGrid(Grid theGrid)
-	{
-		theGrid.getCollectableObjects().removeAllElements();
-		
-		for (Iterator<Collectable> object = currentCollectables.iterator();object.hasNext();)
-		{
-			Collectable tmpCollectable = object.next();
-			
-			int gridX = (int)Math.floor(1.f * tmpCollectable.getPosX() / getGridSizeX());
-			int gridY = (int)Math.floor(1.f * tmpCollectable.getPosY() / getGridSizeY());
-			
-			if (gridX >= currentGridX-1 && gridX <= currentGridX+1
-					&& gridY >= currentGridY-1 && gridY <= currentGridY+1)	// is in currentGrid
-			{
-				if (gridX == theGrid.getPosX() && gridY == theGrid.getPosY())	//is in the chosen grid
-				{
-					theGrid.getCollectableObjects().add(tmpCollectable);
-					object.remove();
-				}
-			} else
-			{
-				object.remove();
-			}
-		}		
-	}
+//	public void saveCollectablesToGrid(Grid theGrid)
+//	{
+//		theGrid.getCollectableObjects().removeAllElements();
+//		
+//		for (Iterator<Collectable> object = currentCollectables.iterator();object.hasNext();)
+//		{
+//			Collectable tmpCollectable = object.next();
+//			
+//			int gridX = (int)Math.floor(1.f * tmpCollectable.getPosX() / getGridSizeX());
+//			int gridY = (int)Math.floor(1.f * tmpCollectable.getPosY() / getGridSizeY());
+//			
+//			if (gridX >= currentGridX-1 && gridX <= currentGridX+1
+//					&& gridY >= currentGridY-1 && gridY <= currentGridY+1)	// is in currentGrid
+//			{
+//				if (gridX == theGrid.getPosX() && gridY == theGrid.getPosY())	//is in the chosen grid
+//				{
+//					theGrid.getCollectableObjects().add(tmpCollectable);
+//					object.remove();
+//				}
+//			} else
+//			{
+//				object.remove();
+//			}
+//		}		
+//	}
 
 	public Vector2f getStart() {
 		return start;
@@ -1309,21 +1365,21 @@ public class Map implements Serializable
 		this.exit = exit;
 	}
 
-	public int getCurrentGridX() {
-		return currentGridX;
-	}
-
-	public void setCurrentGridX(int currentGridX) {
-		this.currentGridX = currentGridX;
-	}
-
-	public int getCurrentGridY() {
-		return currentGridY;
-	}
-
-	public void setCurrentGridY(int currentGridY) {
-		this.currentGridY = currentGridY;
-	}
+//	public int getCurrentGridX() {
+//		return currentGridX;
+//	}
+//
+//	public void setCurrentGridX(int currentGridX) {
+//		this.currentGridX = currentGridX;
+//	}
+//
+//	public int getCurrentGridY() {
+//		return currentGridY;
+//	}
+//
+//	public void setCurrentGridY(int currentGridY) {
+//		this.currentGridY = currentGridY;
+//	}
 
 	public int getGridSizeX() {
 		return gridSizeX;
@@ -1344,14 +1400,18 @@ public class Map implements Serializable
 	public String getName() {
 		return name;
 	}
+	
+	public String getFileName() {
+		return (name+"/level.ser");
+	}
 
 	public void setName(String name) {
 		this.name = name;
 	}
 	
-	public Grid readGridFromFile(String fileName)
+	public LevelStructure readLevelStructureFromFile(String fileName)
 	{
-		Grid tmpGrid = null;
+		LevelStructure tmpLevelStructure = null;
 		ObjectInputStream ois = null;
 		FileInputStream fis = null;
 		
@@ -1361,47 +1421,8 @@ public class Map implements Serializable
 			  ois = new ObjectInputStream(fis);
 
 			  
-			  tmpGrid = (Grid)ois.readObject();
-//			  int tmpX, tmpY;
-//			  
-//			  tmpX = ois.readInt();
-//			  tmpY = ois.readInt();
-//			  
-//			  tmpGrid = new Grid(tmpX, tmpY);
-//			  
-//			  for (int i=0;i<tmpGrid.getGridSizeX();i++)
-//			  {
-//				  for (int j=0;j<tmpGrid.getGridSizeY();j++)
-//				  {
-//					  tmpGrid.setBlockAt(i, j, (Block)ois.readObject());
-//				  }
-//			  }
-//			  
-//			  for (int i=0;i<tmpGrid.getGridSizeX()*tmpGrid.getFogDensity();i++)
-//			  {
-//				  for (int j=0;j<tmpGrid.getGridSizeY()*tmpGrid.getFogDensity();j++)
-//				  {
-//					  tmpGrid.setFogAt(i, j, ois.readFloat());
-//				  }
-//			  }
-//			  
-//			  int tmpNum = ois.readInt();
-//			  for (int i=0;i<tmpNum;i++)
-//			  {
-//				  tmpGrid.addCollectable((Collectable)ois.readObject());
-//			  }
-//			  
-//			  tmpNum = ois.readInt();
-//			  for (int i=0;i<tmpNum;i++)
-//			  {
-//				  tmpGrid.addEnemy((Enemy)ois.readObject());
-//			  }
-//			  
-//			  tmpNum = ois.readInt();
-//			  for (int i=0;i<tmpNum;i++)
-//			  {
-//				  tmpGrid.addChest((Chest)ois.readObject());
-//			  }
+			  tmpLevelStructure = (LevelStructure)ois.readObject();
+
 			}
 			catch (Exception e) {
 				Print.err("error loading file: "+fileName);
@@ -1411,29 +1432,117 @@ public class Map implements Serializable
 			  if (ois != null) try { ois.close(); } catch (IOException e) {}
 			  if (fis != null) try { fis.close(); } catch (IOException e) {}
 			}
-		return tmpGrid;
+		return tmpLevelStructure;
 	}
 	
-	public void update()
+	public void writeLevelStructureToFile(LevelStructure theLevelStructure, String fileName)
 	{
-		for (Iterator<GridLoader> object=gridLoaders.iterator();object.hasNext();)
-		{
-			GridLoader tmp = object.next();
-			tmp.update();
-			if (tmp.isActive() && tmp.isDone())
-			{
-				currentGrid[tmp.getX()][tmp.getY()] = tmp.getResultGrid();
-				addAllToCurrent(currentGrid[tmp.getX()][tmp.getY()]);
-				object.remove();
-			}
+		Print.outln("write file: "+fileName);
+		
+		ObjectOutputStream oos = null;
+		FileOutputStream fos = null;
+		try {
+		  fos = new FileOutputStream(fileName);
+		  oos = new ObjectOutputStream(fos);
+		  
+		  oos.writeObject(theLevelStructure);
 		}
+		catch (IOException e) {
+		  e.printStackTrace();
+		}
+		finally {
+		  if (oos != null) try { oos.close(); } catch (IOException e) {}
+		  if (fos != null) try { fos.close(); } catch (IOException e) {}
+		}
+	}
+	
+//	public Grid readGridFromFile(String fileName)
+//	{
+//		Grid tmpGrid = null;
+//		ObjectInputStream ois = null;
+//		FileInputStream fis = null;
+//		
+//		Print.outln("load file: "+fileName);
+//		try {
+//			  fis = new FileInputStream(fileName);
+//			  ois = new ObjectInputStream(fis);
+//
+//			  
+//			  tmpGrid = (Grid)ois.readObject();
+////			  int tmpX, tmpY;
+////			  
+////			  tmpX = ois.readInt();
+////			  tmpY = ois.readInt();
+////			  
+////			  tmpGrid = new Grid(tmpX, tmpY);
+////			  
+////			  for (int i=0;i<tmpGrid.getGridSizeX();i++)
+////			  {
+////				  for (int j=0;j<tmpGrid.getGridSizeY();j++)
+////				  {
+////					  tmpGrid.setBlockAt(i, j, (Block)ois.readObject());
+////				  }
+////			  }
+////			  
+////			  for (int i=0;i<tmpGrid.getGridSizeX()*tmpGrid.getFogDensity();i++)
+////			  {
+////				  for (int j=0;j<tmpGrid.getGridSizeY()*tmpGrid.getFogDensity();j++)
+////				  {
+////					  tmpGrid.setFogAt(i, j, ois.readFloat());
+////				  }
+////			  }
+////			  
+////			  int tmpNum = ois.readInt();
+////			  for (int i=0;i<tmpNum;i++)
+////			  {
+////				  tmpGrid.addCollectable((Collectable)ois.readObject());
+////			  }
+////			  
+////			  tmpNum = ois.readInt();
+////			  for (int i=0;i<tmpNum;i++)
+////			  {
+////				  tmpGrid.addEnemy((Enemy)ois.readObject());
+////			  }
+////			  
+////			  tmpNum = ois.readInt();
+////			  for (int i=0;i<tmpNum;i++)
+////			  {
+////				  tmpGrid.addChest((Chest)ois.readObject());
+////			  }
+//			}
+//			catch (Exception e) {
+//				Print.err("error loading file: "+fileName);
+//				e.printStackTrace();
+//			}
+//			finally {
+//			  if (ois != null) try { ois.close(); } catch (IOException e) {}
+//			  if (fis != null) try { fis.close(); } catch (IOException e) {}
+//			}
+//		return tmpGrid;
+//	}
+	
+	public void update(GameEngine engine)
+	{
+		levelStructure.update(engine);
+		
+//		for (Iterator<GridLoader> object=gridLoaders.iterator();object.hasNext();)
+//		{
+//			GridLoader tmp = object.next();
+//			tmp.update();
+//			if (tmp.isActive() && tmp.isDone())
+//			{
+//				currentGrid[tmp.getX()][tmp.getY()] = tmp.getResultGrid();
+//				addAllToCurrent(currentGrid[tmp.getX()][tmp.getY()]);
+//				object.remove();
+//			}
+//		}
 		
 //		Print.outln("grids to save: "+savedGridFutures.size());
 		
-		for (Iterator<Future<Boolean>> object = savedGridFutures.iterator();object.hasNext();)
-		{
-			Future<Boolean> tmpFuture = object.next();
-			if (tmpFuture.isDone()) object.remove();
-		}
+//		for (Iterator<Future<Boolean>> object = savedGridFutures.iterator();object.hasNext();)
+//		{
+//			Future<Boolean> tmpFuture = object.next();
+//			if (tmpFuture.isDone()) object.remove();
+//		}
 	}
 }

@@ -7,7 +7,7 @@ import java.util.Vector;
 import org.lwjgl.opengl.GL11;
 
 import darklord.game.Darklord;
-import darklord.game.Level;
+import darklord.game.GameEngine;
 import darklord.game.Player;
 import darklord.media.SpriteSheet;
 import darklord.media.StaticText;
@@ -65,7 +65,7 @@ public class IngameUIStatus extends UI
 		staticTextsInt.add(theText);
 	}
 	
-	public void init(Level world)
+	public void init(GameEngine world)
 	{        
         UIObject panelLeft = new UIObject(new TextureRegion(0.f, 0.f, 3*128, 6*128), "panel left");
         panelLeft.setSize(new Vector2f(0.25f, 2.f));
@@ -238,7 +238,7 @@ public class IngameUIStatus extends UI
 		this.energyBarYellow = energyBarYellow;
 	}
 	
-	public void update(Level world)
+	public void update(GameEngine world)
 	{
 		Player player = world.mainPlayer;
 		// update energy bar lengths
