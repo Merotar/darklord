@@ -53,7 +53,7 @@ public class Map implements Serializable
 //	ExecutorService executor;
 //	Vector<Future<Boolean>> savedGridFutures;
 	String name;
-	LevelStructure levelStructure;
+	public LevelStructure levelStructure;
 //	private Grid gridBottomRight[][];
 //	private Grid gridBottomLeft[][];
 //	private Grid gridTopRight[][];
@@ -110,7 +110,7 @@ public class Map implements Serializable
 		if (isNewMap)
 		{
 			levelStructure = new LevelStructure(x, y);
-//			levelStructure.addGridTop();
+//			levelStructure.addGridLeft();
 			initDungeon(levelStructure.getActiveGrid(), 0, 0);
 //			Print.outln(levelStructure.getBlockAt(3, 3).toString());
 //			Print.outln(levelStructure.getBlockAt(3, 33).toString());
@@ -425,17 +425,17 @@ public class Map implements Serializable
 //		if (currentGrid[0][1] != null) tmp.addAll(currentGrid[0][1].getEnemies());
 //		if (currentGrid[1][1] != null) tmp.addAll(currentGrid[0][1].getEnemies());
 
-		return currentEnemies;
+		return levelStructure.getActiveGrid().getEnemies();
 	}
 	
 	Vector<Collectable> getCollectableObjects()
 	{
-		return currentCollectables;
+		return levelStructure.getActiveGrid().getCollectableObjects();
 	}
 	
 	Vector<Chest> getChests()
 	{
-		return currentChests;
+		return levelStructure.getActiveGrid().getChests();
 	}
 	
 	public int getMapSizeX()
@@ -683,11 +683,6 @@ public class Map implements Serializable
 //	}
 	
 	public void draw()
-	{
-		
-	}
-	
-	public void drawMap()
 	{
 		
 	}

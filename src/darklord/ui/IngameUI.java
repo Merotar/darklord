@@ -3,6 +3,7 @@ import org.lwjgl.opengl.GL11;
 
 import darklord.game.CountdownTimer;
 import darklord.game.GameEngine;
+import darklord.game.LevelStructure;
 import darklord.media.SpriteSheet;
 import darklord.math.Vector2f;
 
@@ -11,6 +12,7 @@ public class IngameUI
 	private Vector2f position, size;
 	private IngameUIStatus statusUI;
 	private IngameUIBuild buildUI;
+	private IngameUIMap mapUI;
 	private UI activeUI;
 	private SpriteSheet uiSpriteSheet;
 	private CountdownTimer clickTimer;
@@ -23,6 +25,7 @@ public class IngameUI
 		uiSpriteSheet = new SpriteSheet("darklord/img/ui.png");
 		statusUI = new IngameUIStatus(uiSpriteSheet, theRatio);
 		buildUI = new IngameUIBuild(uiSpriteSheet, theRatio);
+		mapUI = new IngameUIMap(uiSpriteSheet, theRatio);
 		activeUI = statusUI;
 	}
 	
@@ -56,11 +59,17 @@ public class IngameUI
 		return buildUI.getActiveBuildable();
 	}
 	
-	public void mouseDownReaction(Vector2f globalPos, int button)
+	public void mousePositionReaction(Vector2f globalPos)
+	{
+		if (mapUI.isActive()) mapUI.mousePositionReaction(globalToLocal(globalPos));
+	}
+	
+	public void mouseDownReaction(Vector2f globalPos, int button, LevelStructure level)
 	{
 		if (clickTimer.isDone())
 		{
 			activeUI.mouseDownReaction(globalToLocal(globalPos), button);
+			mapUI.mouseDownReaction(globalToLocal(globalPos), button, level);
 			clickTimer.reset();
 		}
 	}
@@ -69,6 +78,18 @@ public class IngameUI
 	{
 		activeUI.update(world);
 		clickTimer.update(dt);
+		if (mapUI.isActive()) mapUI.update(world, dt);
+	}
+	
+	public void setMapActive(boolean theActive, LevelStructure level)
+	{
+		mapUI.setActive(theActive);
+		if (theActive) mapUI.generateMap(level);
+	}
+	
+	public boolean isMapActive()
+	{
+		return mapUI.isActive();
 	}
 	
 	public void draw()
@@ -77,6 +98,8 @@ public class IngameUI
 		GL11.glTranslated(getPosition().getX(), getPosition().getY(), 0.);
 		GL11.glScaled(getSize().getX(), getSize().getY(), 1.);
 		activeUI.draw();
+		
+		if (mapUI.isActive()) mapUI.draw();
 		GL11.glPopMatrix();
 	}
 	

@@ -307,7 +307,7 @@ public class GameEngine
 		return isBlockSolid((int)Math.round(mainPlayer.getPosX()+0.5), (int)Math.round(mainPlayer.getPosY()+0.5));
 	}
 
-	public void draw(boolean showMap)
+	public void draw()
 	{
 		GL11.glPushMatrix();
 		
@@ -505,10 +505,10 @@ public class GameEngine
 			tmpText.draw(Darklord.textDrawer);
 		}
 		
-		if (showMap)
-		{
-			map.drawMap();
-		}
+//		if (showMap)
+//		{
+//			map.drawMap();
+//		}
 		
 		// draw ui
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -596,20 +596,23 @@ public class GameEngine
 	 */
 	public void mouseDownReaction(Vector2f pos, int button) // 0: left, 1: right
 	{			
-		switch (ingameStatus)
+		if (!isMapActive())
 		{
-		case DEFAULT:
-			mouseDownReactionDefault(pos, button);
-			break;
-		case BUILDING:
-			if (buildTimer.isDone())
+			switch (ingameStatus)
 			{
-				buildTimer.reset();
-				mouseDownReactionBuild(pos, button);
+			case DEFAULT:
+				mouseDownReactionDefault(pos, button);
+				break;
+			case BUILDING:
+				if (buildTimer.isDone())
+				{
+					buildTimer.reset();
+					mouseDownReactionBuild(pos, button);
+				}
+				break;
+			default:
+				mouseDownReactionDefault(pos, button);
 			}
-			break;
-		default:
-			mouseDownReactionDefault(pos, button);
 		}
 	}
 	
@@ -1378,6 +1381,27 @@ public class GameEngine
 		if (checkHighwayUpDown(posX, posY)) return true;
 
 		return false;
+	}
+	
+	public void setActive(boolean theActive)
+	{
+		mainUI.setMapActive(theActive, map.levelStructure);
+	}
+	
+	public void toggleMapActive()
+	{
+		if (mainUI.isMapActive())
+		{
+			mainUI.setMapActive(false, map.levelStructure);
+		} else
+		{
+			mainUI.setMapActive(true, map.levelStructure);
+		}
+	}
+	
+	public boolean isMapActive()
+	{
+		return mainUI.isMapActive();
 	}
 	
 	public void update(float dt)

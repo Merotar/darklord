@@ -72,7 +72,6 @@ public class Darklord {
 //	IngameUI ingameUI;
 	static SoundLoader sounds;
 	public static TextDrawer textDrawer;
-	boolean showMap;
 	
 	/**
 	 * initializes global variables
@@ -85,7 +84,6 @@ public class Darklord {
 		gameScreenPos = new Vector2f(0.5f, 0.f);
 		fullscreen = false;
 		useShader = false;
-		showMap = false;
 		maxFPS = 30;
 		gameMode = 1;
 		devMode = false;
@@ -465,7 +463,7 @@ public class Darklord {
 			if (isLeftMouseDown)
 			{
 				world.mouseDownReaction(globalToGamescreen(posMouseDown), 0);
-				world.mainUI.mouseDownReaction(screenToWorld(posMouseDown), 0);
+				world.mainUI.mouseDownReaction(screenToWorld(posMouseDown), 0, world.map.levelStructure);
 			}
 			if (isRightMouseDown)
 			{
@@ -486,7 +484,9 @@ public class Darklord {
 			}
 		}
 
-		world.mousePositionReaction(globalToGamescreen(mousePos));
+		if (!world.isMapActive()) world.mousePositionReaction(globalToGamescreen(mousePos));
+		world.mainUI.mousePositionReaction(screenToWorld(mousePos));
+		
 		float playerPosOld_x = world.mainPlayer.getPosX();
 		float playerPosOld_y = world.mainPlayer.getPosY();
 		if (!devMode) world.update(dt);
@@ -898,7 +898,7 @@ public class Darklord {
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_TAB))
 				{
-					showMap = !showMap;
+					world.toggleMapActive();
 				}
 				
 //				
@@ -1184,6 +1184,7 @@ public class Darklord {
 //		}
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
+		GL11.glClearColor(0.f, 0.f, 0.f, 1.0f);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT); 
 //		GL11.glScalef(gameScreenScale, gameScreenScale, 1.f);
 		
@@ -1191,7 +1192,7 @@ public class Darklord {
 		GL11.glTranslatef(gameScreenPos.getX(), gameScreenPos.getY(), 0.f);
 //		GL11.glClearColor(0.f, 0.f, 0.f, 1.f);
 //		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-		world.draw(showMap);
+		world.draw();
 		GL11.glPopMatrix();
 		
 //		float ratio = 1.f*resX/resY;
