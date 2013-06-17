@@ -1,6 +1,7 @@
 package darklord.game;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Vector;
 //import game.CollectableType;
 
@@ -12,7 +13,6 @@ import darklord.media.Animation;
 import darklord.media.Drawable;
 import darklord.media.Sprite;
 import darklord.media.TextureRegion;
-import darklord.ui.Beam;
 import darklord.math.Vector2f;
 
 /**
@@ -65,7 +65,7 @@ public class Player extends Collidable implements Serializable
 //	private int energyRed, energyBlue, energyGreen, energyYellow;
 //	private int energyRedMax, energyBlueMax, energyGreenMax, energyYellowMax;
 	private EnergyStore energyRed, energyBlue, energyGreen, energyYellow;
-	private int activeProjectile; // 0: red, 1: blue, 2: green
+//	private int activeProjectile; // 0: red, 1: blue, 2: green
 	private static int maxProjectile = 2;
 	private float visualRangeMax, visualRangeMin;
 	private Drawable appearance;
@@ -75,6 +75,17 @@ public class Player extends Collidable implements Serializable
 	private int maxProjectiles;
 	private Beam beam;
 	private float buildRadius;
+	private int attackType;
+	private Vector<ElectricAttack> electricAttacs;
+	private boolean electricAttackActive;
+//	private TimeStore electricAttackTimer;
+	private float electricAttackRange;
+	private int maxEnemiesElectricAttack;
+	
+	public static final int ATTACK_SHOT = 0;
+	public static final int ATTACK_ELECTRIC = 1;
+	public static final int ATTACK_POISON = 2;
+	public static final int ATTACK_BEAM = 3;
 //	private TimeStore redEnergyAdder;
 	
 	public int getMaxProjectiles() {
@@ -85,13 +96,13 @@ public class Player extends Collidable implements Serializable
 		this.maxProjectiles = maxProjectiles;
 	}
 
-	public int getActiveProjectile() {
-		return activeProjectile;
-	}
-
-	public void setActiveProjectile(int activeProjectile) {
-		this.activeProjectile = activeProjectile;
-	}
+//	public int getActiveProjectile() {
+//		return activeProjectile;
+//	}
+//
+//	public void setActiveProjectile(int activeProjectile) {
+//		this.activeProjectile = activeProjectile;
+//	}
 
 	public Player()
 	{
@@ -121,6 +132,11 @@ public class Player extends Collidable implements Serializable
 		((Sprite)glow.get(2)).setTextureRegion(new TextureRegion(6, 0, 128));
 
 		beam = new Beam();
+		electricAttacs = new Vector<ElectricAttack>();
+		electricAttackActive = false;
+//		electricAttackTimer = new TimeStore(0.3f);
+		electricAttackRange = 4.f;
+		maxEnemiesElectricAttack = 1;
 		
 		moveUp = moveDown = moveLeft = moveRight = false;
 		teleportUp = teleportDown = teleportLeft = teleportRight = false;
@@ -128,22 +144,24 @@ public class Player extends Collidable implements Serializable
 		attackBlockTimer = new Timer();
 		invulnerableOnContactTimer = new Timer();
 //		texture = new Vector<Texture>();
-		setActiveProjectile(0);
+//		setActiveProjectile(0);
 		setLevel(1);
 		setMaxXp(10);
 		setMaxProjectiles(5);
 		
 		buildRadius = 2.f;
 		
-		energyRed = new EnergyStore(10.f, 1.f);
-		energyBlue = new EnergyStore(10.f, 1.f);
-		energyGreen = new EnergyStore(10.f, 1.f);
-		energyYellow = new EnergyStore(10.f, 1.f);
+		energyRed = new EnergyStore(3.f, 1.f);
+		energyBlue = new EnergyStore(2.f, 0.2f);
+		energyGreen = new EnergyStore(3.f, 1.f);
+		energyYellow = new EnergyStore(1.f, 0.5f);
 		
 		crystalsRed = 10;
 		crystalsBlue = 10;
 		crystalsGreen = 10;
 		crystalsYellow = 10;
+		
+		attackType = ATTACK_SHOT;
 		
 //		redEnergyAdder = new TimeStore(1.f);
 		
@@ -179,6 +197,35 @@ public class Player extends Collidable implements Serializable
 		setPosY(thePosY);
 	}
 
+	public void addElectrixAttack(Enemy theEnemy)
+	{
+		if (electricAttacs.size() >= maxEnemiesElectricAttack) return;
+		boolean add = true;
+		for (ElectricAttack att : electricAttacs)
+		{
+			if (att.getTargetEnemy() == theEnemy)
+			{
+				add = false;
+				break;
+			}
+		}
+		if (add) electricAttacs.add(new ElectricAttack(getPos(), theEnemy));
+	}
+	
+//	public void removeElectrixAttack(Enemy theEnemy)
+//	{
+//		for (Iterator<ElectricAttack> obj = electricAttacs.iterator();obj.hasNext();)
+//		{
+//			ElectricAttack att = obj.next();
+//			
+//			if (att.getTargetEnemy() == theEnemy)
+//			{
+//				obj.remove();
+//				return;
+//			}
+//		}
+//	}
+	
 	public Player(Player orig)
 	{
 //		setPosX(orig.getPosX());
@@ -413,11 +460,42 @@ public class Player extends Collidable implements Serializable
 		attackBlockTimer.reset();
 	}
 	
+	private void doElectricAttackDamage(float dt)
+	{
+		for (Iterator<ElectricAttack> obj = electricAttacs.iterator();obj.hasNext();)
+		{
+			ElectricAttack att = obj.next();
+			if(att.damageEnemy(dt))
+			{
+				obj.remove();
+			}
+		}
+	}
+	
 	public void update(float dt)
 	{
 		this.updatePosition();
 		
 		this.beam.update();
+		
+		if (!electricAttackActive) electricAttacs.clear();
+		if (electricAttackActive)
+		{
+			if (!Darklord.sounds.electricity.isPlaying())
+			{
+				Darklord.sounds.electricity.playAsSoundEffect(1.f, Darklord.sounds.volumeMusic, false);
+			}
+			
+			if (decreaseEnergyBlue(dt))
+			{
+//				electricAttackTimer.add(dt);
+				doElectricAttackDamage(dt);
+			}
+		}
+		energyRed.increase(dt);
+		energyBlue.increase(dt);
+		energyGreen.increase(dt);
+		energyYellow.increase(dt);
 		
 		// level up?
 		if (getXp() >= getMaxXp())
@@ -428,7 +506,7 @@ public class Player extends Collidable implements Serializable
 		}
 		
 //		Print.outln("dt: "+ redEnergyAdder.getCurrent());
-		energyRed.increase(dt);
+
 		
 //		System.out.println("Player: ("+this.getPosX()+", "+this.getPosY()+")");
 		
@@ -464,7 +542,7 @@ public class Player extends Collidable implements Serializable
 	public void draw()
 	{
 		Darklord.chars.begin();
-		glow.get(getActiveProjectile()).draw(0.f, 0.f, getSizeX(), getSizeY());
+//		glow.get(getActiveProjectile()).draw(0.f, 0.f, getSizeX(), getSizeY());
 		appearance.draw(0.f, 0.f, getSizeX(), getSizeY());
 		Darklord.chars.end();
 		
@@ -525,14 +603,14 @@ public class Player extends Collidable implements Serializable
 		this.teleportStep = teleportStep;
 	}
 	
-	public void inreaseActiveProjectile()
-	{
-		activeProjectile++;
-		if (activeProjectile > maxProjectile)
-		{
-			activeProjectile = 0;
-		}
-	}
+//	public void inreaseActiveProjectile()
+//	{
+//		activeProjectile++;
+//		if (activeProjectile > maxProjectile)
+//		{
+//			activeProjectile = 0;
+//		}
+//	}
 
 //	public float getSizeX() {
 //		return sizeX;
@@ -946,5 +1024,37 @@ public class Player extends Collidable implements Serializable
 
 	public void setBuildRadius(float buildRadius) {
 		this.buildRadius = buildRadius;
+	}
+
+	public int getAttackType() {
+		return attackType;
+	}
+
+	public void setAttackType(int attackType) {
+		this.attackType = attackType;
+	}
+
+	public boolean isElectricAttackActive() {
+		return electricAttackActive;
+	}
+
+	public void setElectricAttackActive(boolean electricAttackActive) {
+		this.electricAttackActive = electricAttackActive;
+	}
+
+	public float getElectricAttackRange() {
+		return electricAttackRange;
+	}
+
+	public void setElectricAttackRange(float electricAttackRange) {
+		this.electricAttackRange = electricAttackRange;
+	}
+
+	public Vector<ElectricAttack> getElectricAttacs() {
+		return electricAttacs;
+	}
+
+	public void setElectricAttacs(Vector<ElectricAttack> electricAttacs) {
+		this.electricAttacs = electricAttacs;
 	}
 }

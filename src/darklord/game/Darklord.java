@@ -741,14 +741,7 @@ public class Darklord {
     public void checkMouseWheel()
     {
     	int wheel = Mouse.getDWheel();
-    	if (wheel < 0)
-    	{
-    		world.zoomOut();
-    	} else if (wheel > 0)
-    	{
-    		world.zoomIn();
-    	}
-        if(Mouse.isButtonDown(2)) world.zoom = 1.f;
+    	world.mouseWheelReaction(wheel);
     }
     
     /**
@@ -795,10 +788,15 @@ public class Darklord {
 				{
 					isRightMouseDown= true;
 				}
-			} //else
-//			{
-//				isLeftMouseDown = false;
-//			}
+				
+		        if(Mouse.isButtonDown(2))
+		        {
+		        	world.zoom = 1.f;
+		        }
+			} else
+			{
+				world.mouseReleaseReaction();
+			}
 			if (!Mouse.getEventButtonState() && !Mouse.isButtonDown(0))
 			{
 				isLeftMouseDown = false;
@@ -901,6 +899,25 @@ public class Darklord {
 					world.toggleMapActive();
 				}
 				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_1))
+				{
+					world.mainPlayer.setAttackType(Player.ATTACK_SHOT);
+				}
+				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_2))
+				{
+					world.mainPlayer.setAttackType(Player.ATTACK_ELECTRIC);
+				}
+				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_3))
+				{
+					world.mainPlayer.setAttackType(Player.ATTACK_POISON);
+				}
+				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_4))
+				{
+					world.mainPlayer.setAttackType(Player.ATTACK_BEAM);
+				}
 //				
 //				if (Keyboard.isKeyDown(Keyboard.KEY_F))
 //				{

@@ -37,8 +37,8 @@ public class StaticEnemy extends Enemy
 		Darklord.sprites01.end();
 	}
 	
-	public void update()
+	public void update(float dt)
 	{
-		
+		super.update(dt);
 	}
 }

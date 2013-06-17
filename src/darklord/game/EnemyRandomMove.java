@@ -96,6 +96,7 @@ public class EnemyRandomMove extends Enemy implements Serializable
 	 */
 	public void update(float dt)
 	{
+		super.update(dt);
 		if (motionTimer.getTimeDelta() > motionTime)
 		{
 			this.stopMotion();

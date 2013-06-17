@@ -19,7 +19,7 @@ import darklord.game.Print;
 
 public class SoundLoader
 {
-	public Audio digSound, shot, explosion, mainTheme, chest, build;
+	public Audio digSound, shot, explosion, mainTheme, chest, build, laser, electricity;
 	public float volumeMusic, volumeEffects;
 	
 	public SoundLoader()
@@ -35,6 +35,8 @@ public class SoundLoader
 			mainTheme = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("darklord/sound/mainTheme.ogg"));
 			chest = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("darklord/sound/chest.ogg"));
 			build = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("darklord/sound/build.ogg"));
+			laser = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("darklord/sound/laser.ogg"));
+			electricity = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("darklord/sound/electricity.ogg"));
 		} catch (IOException e)
 		{
 			e.printStackTrace();

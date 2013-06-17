@@ -40,6 +40,7 @@ public class StaticEnemyCrystal extends Enemy
 	
 	public void update(float dt, GameEngine level)
 	{
+		super.update(dt);
 		if (time.add(dt))
 		{
 			Vector2f pos, dir;

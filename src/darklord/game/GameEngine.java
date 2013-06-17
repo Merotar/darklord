@@ -117,7 +117,7 @@ public class GameEngine
 		File dir = new File("./"+name);
 		boolean isNewMap = true;//!dir.exists();
 		
-		map = new Map(10, 10, name, isNewMap);
+		map = new Map(20, 20, name, isNewMap);
 		
 		if (isNewMap)
 		{
@@ -374,6 +374,12 @@ public class GameEngine
 		
 		Darklord.sprites01.end();
 		
+		// draw electric attacks
+		for (ElectricAttack att : mainPlayer.getElectricAttacs())
+		{
+			att.draw();
+		}
+		
 		// draw collectable objects
 		for (Iterator<Collectable> object = map.getCollectableObjects().iterator(); object.hasNext();)
 		{
@@ -616,6 +622,11 @@ public class GameEngine
 		}
 	}
 	
+	public void mouseReleaseReaction()
+	{
+		mainPlayer.setElectricAttackActive(false);
+	}
+	
 	/**
 	 * reaction to a pressed mouse button
 	 * @param pos
@@ -654,19 +665,24 @@ public class GameEngine
 		
 		if (button == 1)
 		{
-			startProjectile(mouseGrid);
-						
-//			if (!mainPlayer.getBeam().isActive())
-//			{
-//				Vector2f dir = mouseGrid.sub(mainPlayer.getCenter());
-//				mainPlayer.getBeam().setStart(mainPlayer.getCenter());
-//				mainPlayer.getBeam().setDirection(dir);
-//				mainPlayer.getBeam().calcEnd(map);
-//				mainPlayer.getBeam().setActive(true);
-//				mainPlayer.getBeam().resetLifetime();
-//			}
+			switch (mainPlayer.getAttackType())
+			{
+			case Player.ATTACK_SHOT:
+				startProjectile(mouseGrid);
+				break;
+			case Player.ATTACK_ELECTRIC:
+				startElectricAttack();
+				break;
+			case Player.ATTACK_POISON:
+				
+				break;
+			case Player.ATTACK_BEAM:
+				startBeam(mouseGrid);
+				break;
+			default:
+				startProjectile(mouseGrid);
+			}
 		}
-
 	}
 	
 	public void mouseDownReactionBuild(Vector2f pos, int button) // 0: left, 1: right
@@ -760,9 +776,8 @@ public class GameEngine
 	 */
 	public void startProjectile(Vector2f pos)
 	{
-		float ammo = 0;
-		if (mainPlayer.getActiveProjectile() == 0) ammo = mainPlayer.getEnergyRed();
-//		if (mainPlayer.getActiveProjectile() == 1) ammo = mainPlayer.getEnergyBlue();
+		float ammo = mainPlayer.getEnergyRed();
+
 //		if (mainPlayer.getActiveProjectile() == 2) ammo = mainPlayer.getEnergyGreen();
 		
 		if (mainPlayer.getMaxProjectiles() > getNumerOfPojectiles() && ammo >= 1)
@@ -775,11 +790,46 @@ public class GameEngine
 //			position = position.add(mainPlayer.getSize().mul(0.5f));
 			position = position.add(dir.mul(0.5f));
 			
-			projectiles.add(new Projectile(position, dir, mainPlayer.getActiveProjectile()));
+			projectiles.add(new Projectile(position, dir, 0));
 			mainPlayer.decreaseEnergyRed(1);
 			Darklord.sounds.shot.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
 //			System.out.println("Create Projectile at ("+pos.getX()+", "+pos.getY()+")");;
 //			mainPlayer.switchActiveAbility();	
+		}
+	}
+	
+	public void startElectricAttack()
+	{
+		for (Enemy e : map.getEnemies())
+		{
+			if ((e.getCenter().sub(mainPlayer.getCenter())).length() < mainPlayer.getElectricAttackRange())
+			{
+				mainPlayer.addElectrixAttack(e);
+			}
+		}
+		mainPlayer.setElectricAttackActive(true);
+	}
+	
+	public void startBeam(Vector2f pos)
+	{
+		if (!mainPlayer.getBeam().isActive())
+		{
+			float ammo = mainPlayer.getEnergyYellow();
+			
+			if (ammo >= 1)
+			{
+				mainPlayer.decreaseEnergyYellow(1);
+				// start beam
+				Darklord.sounds.laser.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
+				Vector2f dir = pos.sub(mainPlayer.getCenter());
+				mainPlayer.getBeam().setStart(mainPlayer.getCenter());
+				mainPlayer.getBeam().setDirection(dir);
+				mainPlayer.getBeam().calcEnd(map);
+				mainPlayer.getBeam().setActive(true);
+				mainPlayer.getBeam().resetLifetime();
+				
+				mainPlayer.getBeam().damageEnemies(map.getEnemies());
+			}
 		}
 	}
 	
@@ -1056,28 +1106,16 @@ public class GameEngine
 					{
 						Darklord.sounds.explosion.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
 						
-						// red projectiles
-//						if (tmp.getType() == 0 && e instanceof EnemyRandomMove)	// red projectile
-						{
 //							System.out.println("Enemy damaged by projectile");
-							// generate "BAM" bubble
-							Vector2f direction = RandomGenerator.getRandomVector();
-							direction.normalize();
-							Vector2f start = e.getCenter().add(direction.mul(0.5f));
-							Vector2f stop = start.add(direction.mul(3));
-							MovingSprite tmpBubble = new MovingSprite(start, stop);
-							tmpBubble.setTextureRegion(new TextureRegion(6*128, 3*128, 2*128, 1*128));
-							bubbles.add(tmpBubble);
-							
+						
 //							mainPlayer.decreaseBlocksRed();
-							if (e.decreaseHp(tmp.getDamage())) 
-							{
-								mainPlayer.addXp(e.getXp());
-								Vector2f tmpPos = new Vector2f(mainPlayer.getCenter());
-								tmpPos.addY(-1.0f);
-								movingTexts.add(new MovingText("+"+e.getXp()+"XP", tmpPos));
-								obj2.remove();
-							}
+						if (e.decreaseHp(tmp.getDamage())) 
+						{
+							mainPlayer.addXp(e.getXp());
+							Vector2f tmpPos = new Vector2f(mainPlayer.getCenter());
+							tmpPos.addY(-1.0f);
+							movingTexts.add(new MovingText("+"+e.getXp()+"XP", tmpPos));
+							obj2.remove();
 						}
 						
 //						if (tmp.getType() == 0 && e instanceof StaticEnemyCrystal)	// red projectile
@@ -1093,6 +1131,17 @@ public class GameEngine
 				}
 			}
 		}
+	}
+	
+	public void addBamBubble(Vector2f position)
+	{
+		Vector2f direction = RandomGenerator.getRandomVector();
+		direction.normalize();
+		Vector2f start = position.add(direction.mul(0.5f));
+		Vector2f stop = start.add(direction.mul(3));
+		MovingSprite tmpBubble = new MovingSprite(start, stop);
+		tmpBubble.setTextureRegion(new TextureRegion(6*128, 3*128, 2*128, 1*128));
+		bubbles.add(tmpBubble);
 	}
 	
 	public void updateHostileProjectiles(float dt)
@@ -1192,6 +1241,18 @@ public class GameEngine
 		for (Iterator<Enemy> obj2 = map.getEnemies().iterator(); obj2.hasNext();)
 		{
 			Enemy e = obj2.next();
+			
+			if (e.isDamaged() && e.canGenerateBubble())
+			{
+				// generate "BAM" bubble
+				addBamBubble(e.getCenter());
+			}
+			
+			if (e.isDead())
+			{
+				obj2.remove();
+				continue;
+			}
 			
 			if((e.getPos().sub(mainPlayer.getPos())).length() > maxUpdateDistance) continue;
 			
@@ -1582,6 +1643,29 @@ public class GameEngine
 
 	public void setResY(int resY) {
 		this.resY = resY;
+	}
+
+	public void mouseWheelReaction(int wheel)
+	{
+		if (isMapActive())
+		{
+			if (wheel < 0)
+	    	{
+	    		mainUI.zoomMapOut();
+	    	} else if (wheel > 0)
+	    	{
+	    		mainUI.zoomMapIn();
+	    	}
+		} else
+		{
+			if (wheel < 0)
+	    	{
+	    		zoomOut();
+	    	} else if (wheel > 0)
+	    	{
+	    		zoomIn();
+	    	}
+		}
 	}
 	
 //	public Level createCopy()

@@ -18,6 +18,9 @@ public class IngameUIMap extends UI
 	private Vector2f center;
 	private Vector2f mousePos;
 	private SawToothFunction activePotentialFactor;
+	private float zoom;
+	private final float zoomMin = 0.2f;
+	private final float zoomMax = 1.2f;
 	
 	public IngameUIMap(SpriteSheet s, float theRatio)
 	{
@@ -30,8 +33,21 @@ public class IngameUIMap extends UI
 		center = new Vector2f();
 		mousePos = new Vector2f();
 		activePotentialFactor = new SawToothFunction(1.f);
+		zoom = 1.f;
 	}
 
+	public void zoomIn()
+	{
+		zoom *= 1.2;
+		if (zoom > zoomMax) zoom = zoomMax;
+	}
+	
+	public void zoomOut()
+	{
+		zoom /= 1.2;
+		if (zoom < zoomMin) zoom = zoomMin;
+	}
+	
 	public boolean isActive() {
 		return active;
 	}
@@ -140,7 +156,7 @@ public class IngameUIMap extends UI
 		
 		GL11.glPushMatrix();
 		GL11.glTranslatef(getPosition().getX(), getPosition().getY(), 0.f);
-		GL11.glScalef(getSize().getX(), getSize().getY(), 1.f);
+		GL11.glScalef(getSize().getX()*zoom, getSize().getY()*zoom, 1.f);
 		spriteSheet.begin();
 		float r, g, b;
 		for (int i=0;i<map.length;i++)
@@ -191,8 +207,8 @@ public class IngameUIMap extends UI
 	public Vector2f globalToLocal(Vector2f globalPos)
 	{
 		Vector2f localPos = globalPos.sub(position);
-		localPos.setX(localPos.getX()/getSize().getX());
-		localPos.setY(localPos.getY()/getSize().getY());
+		localPos.setX(localPos.getX()/(getSize().getX()*zoom));
+		localPos.setY(localPos.getY()/(getSize().getY()*zoom));
 		
 		return localPos;
 	}

@@ -1,12 +1,11 @@
-package darklord.ui;
+package darklord.game;
 
 
 import java.io.Serializable;
+import java.util.Vector;
+
 import org.lwjgl.opengl.GL11;
 
-import darklord.game.Darklord;
-import darklord.game.Map;
-import darklord.game.TimeStore;
 import darklord.media.Drawable;
 import darklord.media.Sprite;
 import darklord.media.TextureRegion;
@@ -27,6 +26,7 @@ public class Beam implements Serializable
 	Drawable appearance;
 	boolean active;
 	private TimeStore lifetime;
+	private float damage;
 	
 	public Beam(Vector2f theStart, Vector2f theDirection)
 	{
@@ -41,6 +41,7 @@ public class Beam implements Serializable
 		lifetime = new TimeStore(1.f);
 		((Sprite)appearance).setTextureRegion(new TextureRegion(0*128, 3*128, 2*128, 32));
 		setActive(false);
+		damage = 2.f;
 	}
 	
 	public Beam()
@@ -62,7 +63,7 @@ public class Beam implements Serializable
 			y = (int)Math.floor(currentPos.getY());
 //			Print.outln("x: "+x+", "+"y: "+y);
 			
-			if (map.getBlockAt(x, y).isSolid())
+			if (map.getBlockAt(x, y).isSolid() && !map.getBlockAt(x, y).isTransparent())
 			{
 				end = currentPos;
 				length = end.sub(start).length();
@@ -72,6 +73,26 @@ public class Beam implements Serializable
 		end = currentPos;
 		length = maxLength;
 		return;
+	}
+	
+	public void damageEnemies(Vector<Enemy> theEnemies)
+	{
+		int maxSteps = (int)(Math.ceil((end.sub(start)).length())/stepSize);
+		Vector2f currentPos = new Vector2f(start);
+		int x, y;
+		
+		for (int step=0;step<maxSteps; step++)
+		{
+			currentPos = currentPos.add(direction.mul(stepSize));
+
+			for (Enemy e : theEnemies)
+			{
+				if (e.collide(currentPos) && !e.isDamaged())
+				{
+					e.decreaseHp(damage);
+				}
+			}
+		}
 	}
 
 	public Vector2f getStart() {
@@ -122,7 +143,7 @@ public class Beam implements Serializable
 		GL11.glScaled(length, width, 1.f);
 		GL11.glTranslatef(0.f, -0.5f, 0.f);
 		Darklord.sprites01.begin();
-		appearance.draw();
+		((Sprite)appearance).draw((float)(1.f-lifetime.getFraction()));
 		Darklord.sprites01.end();
 		GL11.glPopMatrix();
 	}
@@ -165,5 +186,13 @@ public class Beam implements Serializable
 		{
 			setActive(false);
 		}
+	}
+
+	public float getDamage() {
+		return damage;
+	}
+
+	public void setDamage(float damage) {
+		this.damage = damage;
 	}
 }

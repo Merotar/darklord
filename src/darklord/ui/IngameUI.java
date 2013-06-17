@@ -129,4 +129,14 @@ public class IngameUI
 	public void setSize(Vector2f size) {
 		this.size = size;
 	}
+
+	public void zoomMapOut()
+	{
+		mapUI.zoomOut();
+	}
+	
+	public void zoomMapIn()
+	{
+		mapUI.zoomIn();
+	}
 }

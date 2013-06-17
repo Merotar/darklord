@@ -12,15 +12,16 @@ import org.lwjgl.input.Keyboard;
  */
 public class KeyboardSettings
 {
-	int KEY_1, KEY_2, KEY_3, KEY_8, KEY_W, KEY_A, KEY_S, KEY_D, KEY_ESCAPE, KEY_PERIOD,
+	int KEY_1, KEY_2, KEY_3, KEY_4, KEY_8, KEY_W, KEY_A, KEY_S, KEY_D, KEY_ESCAPE, KEY_PERIOD,
 	KEY_COMMA, KEY_F1, KEY_F2, KEY_F5, KEY_Q, KEY_E, KEY_LSHIFT, KEY_C, KEY_LCONTROL,
 	KEY_N, KEY_O, KEY_TAB, KEY_NUMPAD2, KEY_NUMPAD4, KEY_NUMPAD6, KEY_NUMPAD8;
 	
 	public KeyboardSettings()
 	{
-		KEY_1 = Keyboard.KEY_LSHIFT; //Keyboard.KEY_1;
+		KEY_1 = Keyboard.KEY_1;
 		KEY_2 = Keyboard.KEY_2;
 		KEY_3 = Keyboard.KEY_3;
+		KEY_4 = Keyboard.KEY_4;
 		KEY_NUMPAD2 = Keyboard.KEY_NUMPAD2;
 		KEY_NUMPAD4 = Keyboard.KEY_NUMPAD4;
 		KEY_NUMPAD6 = Keyboard.KEY_NUMPAD6;

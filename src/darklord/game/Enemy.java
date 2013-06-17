@@ -18,6 +18,9 @@ public class Enemy extends Collidable implements Serializable
 {
 	int type, xp;
 	float maxHp, hp, dmgOnContact;
+	boolean damaged;
+	boolean dead;
+	EnergyStore bubbleTimer;
 	
 	public Enemy()
 	{
@@ -27,6 +30,9 @@ public class Enemy extends Collidable implements Serializable
 		dmgOnContact = 1.f;
 		setSizeX(1.f);
 		setSizeY(1.f);
+		damaged = false;
+		dead = false;
+		bubbleTimer = new EnergyStore(0.5f, 1.f);
 	}
 	
 	public Enemy(Enemy e)
@@ -84,7 +90,12 @@ public class Enemy extends Collidable implements Serializable
 	public boolean decreaseHp(float f)
 	{
 		hp -= f;
-		if (hp<=0) return true;
+		damaged = true;
+		if (hp<=0)
+		{
+			dead = true;
+			return true;
+		}
 		return false;
 	}
 
@@ -98,9 +109,20 @@ public class Enemy extends Collidable implements Serializable
 	
 	public void update(float dt)
 	{
-		
+		damaged = false;
+		bubbleTimer.increase(dt);
 	}
 
+	public boolean canGenerateBubble()
+	{
+		if (bubbleTimer.getFraction() == 1.f)
+		{
+			bubbleTimer.setCurrent(0.f);
+			return true;
+		}
+		return false;
+	}
+	
 	public int getType()
 	{
 		return type;
@@ -125,5 +147,21 @@ public class Enemy extends Collidable implements Serializable
 
 	public void setXp(int xp) {
 		this.xp = xp;
+	}
+
+	public boolean isDamaged() {
+		return damaged;
+	}
+
+	public void setDamaged(boolean damaged) {
+		this.damaged = damaged;
+	}
+
+	public boolean isDead() {
+		return dead;
+	}
+
+	public void setDead(boolean dead) {
+		this.dead = dead;
 	}
 }
