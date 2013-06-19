@@ -11,11 +11,11 @@ import java.io.Serializable;
  * @since 07-06-2013
  * 
  */
-public class EnergyStore extends StoreObject<Float> implements Serializable
+public class RefillingStore extends StoreObject<Float> implements Serializable
 {
 	float amountPerSecond;
 	
-	public EnergyStore(float value, float amount)
+	public RefillingStore(float value, float amount)
 	{
 		super(value, value);
 		setAmountPerSecond(amount);

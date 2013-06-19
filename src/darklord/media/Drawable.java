@@ -18,4 +18,5 @@ public interface Drawable extends Serializable
 	
 	public void draw();
 	public void draw(float posX, float posY, float sizeX, float sizeY);
+	public void drawColor(float r, float g, float b, float a);
 }

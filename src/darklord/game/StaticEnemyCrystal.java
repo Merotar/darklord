@@ -1,5 +1,7 @@
 package darklord.game;
 
+import org.lwjgl.opengl.GL11;
+
 import darklord.media.Animation;
 import darklord.media.Drawable;
 import darklord.media.TextureRegion;
@@ -16,16 +18,17 @@ import darklord.math.Vector2f;
 public class StaticEnemyCrystal extends Enemy
 {
 	TimeStore time;
-	private Drawable appearance;
+//	private Drawable appearance;
 	
 	public StaticEnemyCrystal()
 	{
 		super();
 		time = new TimeStore(2.f);
-		setHp(2.f);
+		setHp(4.f);
 		setXp(2);
 		setType(2);
 		appearance = new Animation();
+//		((Animation)appearance).addTextureRegion(new TextureRegion(5*128, 0*128, 128, 128));
 		((Animation)appearance).addTextureRegion(new TextureRegion(0*128, 2*128, 128, 128));
 		((Animation)appearance).addTextureRegion(new TextureRegion(1*128, 2*128, 128, 128));
 		((Animation)appearance).addTextureRegion(new TextureRegion(2*128, 2*128, 128, 128));
@@ -84,8 +87,6 @@ public class StaticEnemyCrystal extends Enemy
 	
 	public void draw()
 	{
-		Darklord.chars.begin();
-		appearance.draw();
-		Darklord.chars.end();
+		super.draw();
 	}
 }

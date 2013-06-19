@@ -31,7 +31,7 @@ public class Sprite implements Drawable
 		textureRegion.setX(theX);
 		textureRegion.setY(theY);
 		textureRegion.setWidth(theWidth);
-		textureRegion.setHeight(theWidth);
+		textureRegion.setHeight(theHeight);
 	}
 
 	public void setTextureRegion(TextureRegion textureRegion) {
@@ -46,6 +46,11 @@ public class Sprite implements Drawable
 	public void draw(float alpha)
 	{
 		Darklord.sprites01.draw(getTextureRegion(), 0.f, 0.f, 1.f, 1.f, alpha);
+	}
+	
+	public void drawColor(float r, float g, float b, float a)
+	{
+		Darklord.sprites01.draw(getTextureRegion(), 0.f, 0.f, 1.f, 1.f, r, g, b, a);
 	}
 	
 	public void draw(float posX, float posY, float sizeX, float sizeY)

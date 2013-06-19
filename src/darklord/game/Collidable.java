@@ -14,10 +14,10 @@ import darklord.math.Vector2f;
  */
 abstract class Collidable implements Serializable
 {
-	private float posX, posY, sizeX, sizeY;
+	private float posX, posY, sizeX, sizeY, angle = 0.f;
 	
 //	public abstract boolean collide(Collidable obj);
-
+	
 	public Vector2f getPos()
 	{
 		return new Vector2f(posX, posY);
@@ -55,6 +55,11 @@ abstract class Collidable implements Serializable
 		setSizeY(s);
 	}
 	
+	public Vector2f getSizeVec()
+	{
+		return new Vector2f(sizeX, sizeY);
+	}
+	
 	public void setSizeX(float sizeX) {
 		this.sizeX = sizeX;
 	}
@@ -65,6 +70,12 @@ abstract class Collidable implements Serializable
 
 	public void setSizeY(float sizeY) {
 		this.sizeY = sizeY;
+	}
+	
+	public void setCenter(Vector2f center)
+	{
+		posX = center.getX() - sizeX;
+		posY = center.getY() - sizeY;
 	}
 	
 	public Vector2f getCenter()
@@ -94,6 +105,83 @@ abstract class Collidable implements Serializable
 		return collide(getPosX()+getSizeX()/2.f, getPosY()+getSizeY()/2.f, getSizeX()/2.f, getSizeY()/2.f, obj.getPosX()+obj.getSizeX()/2.f, obj.getPosY()+obj.getSizeY()/2.f, obj.getSizeX()/2.f, obj.getSizeY()/2.f);
 	}
 	
+	public boolean collideWithRotation(Collidable obj)
+	{
+		return (collideWithRotationOneDirection(this, obj) && collideWithRotationOneDirection(obj, this));
+	}
+	
+	public boolean collideWithRotationOneDirection(Collidable obj1, Collidable obj2)
+	{
+		Vector2f rotSizeHalfX = new Vector2f(obj2.getSizeX()/2.f, 0.f);
+		rotSizeHalfX.rotate(obj2.getAngle());
+		Vector2f rotSizeHalfY = new Vector2f(0.f, obj2.getSizeY()/2.f);
+		rotSizeHalfY.rotate(obj2.getAngle());
+		
+		Vector2f dir = new Vector2f(obj1.getSizeX(), 0.f);
+		dir.rotate(obj1.getAngle());
+		dir = dir.mul(1.f/dir.squaredLength());
+		Vector2f dirOrtho = new Vector2f(0.f, obj1.getSizeY());
+		dirOrtho.rotate(obj1.getAngle());
+		dirOrtho = dirOrtho.mul(1.f/dirOrtho.squaredLength());
+		
+		Vector2f rotatedOrigin = new Vector2f(obj1.getSizeVec().mul(0.5f));
+		rotatedOrigin.rotate(obj1.getAngle());
+		rotatedOrigin = obj1.getCenter().sub(rotatedOrigin);
+		
+		float originX = rotatedOrigin.scalar(dir);
+		float originY = rotatedOrigin.scalar(dirOrtho);
+		
+		Vector2f point1 = obj2.getCenter().sub(rotSizeHalfX);
+		point1 = point1.sub(rotSizeHalfY);
+		
+		Vector2f point2 = obj2.getCenter().add(rotSizeHalfX);
+		point2 = point2.sub(rotSizeHalfY);
+		
+		Vector2f point3 = obj2.getCenter().add(rotSizeHalfX);
+		point3 = point3.add(rotSizeHalfY);
+		
+		Vector2f point4 = obj2.getCenter().sub(rotSizeHalfX);
+		point4 = point4.add(rotSizeHalfY);
+		
+		float minX = point1.scalar(dir);
+		float maxX = point1.scalar(dir);
+		
+		float tmp;
+		
+		tmp = point2.scalar(dir);
+		minX = Math.min(minX, tmp);
+		maxX = Math.max(maxX, tmp);
+		
+		tmp = point3.scalar(dir);
+		minX = Math.min(minX, tmp);
+		maxX = Math.max(maxX, tmp);
+		
+		tmp = point4.scalar(dir);
+		minX = Math.min(minX, tmp);
+		maxX = Math.max(maxX, tmp);
+		
+		if (minX > 1 + originX || maxX < originX) return false;
+		
+		float minY = point1.scalar(dirOrtho);
+		float maxY = point1.scalar(dirOrtho);
+		
+		tmp = point2.scalar(dirOrtho);
+		minY = Math.min(minY, tmp);
+		maxY = Math.max(maxY, tmp);
+		
+		tmp = point3.scalar(dirOrtho);
+		minY = Math.min(minY, tmp);
+		maxY = Math.max(maxY, tmp);
+		
+		tmp = point4.scalar(dirOrtho);
+		minY = Math.min(minY, tmp);
+		maxY = Math.max(maxY, tmp);
+		
+		if (minY > 1 + originY || maxY < originY) return false;
+		
+		return true;
+	}
+	
 	public boolean collide(Vector2f collVec)
 	{
 		if (collVec.getX() < posX) return false;
@@ -101,5 +189,13 @@ abstract class Collidable implements Serializable
 		if (collVec.getY() < posY) return false;
 		if (collVec.getY() >= posY+sizeY) return false;
 		return true;
+	}
+
+	public float getAngle() {
+		return angle;
+	}
+
+	public void setAngle(float angle) {
+		this.angle = angle;
 	}
 }

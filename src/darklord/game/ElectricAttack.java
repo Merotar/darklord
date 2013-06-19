@@ -30,7 +30,7 @@ public class ElectricAttack implements Serializable
 		active = true;
 		damagePerSecond = 1.f;
 		appearance = new Sprite();
-		((Sprite)appearance).setTextureRegion(new TextureRegion(5*128, 2*128, 128, 128));
+		((Sprite)appearance).setTextureRegion(new TextureRegion(6*128, 4*128, 128, 128));
 	}
 	
 	public void draw()

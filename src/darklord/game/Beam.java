@@ -35,7 +35,7 @@ public class Beam implements Serializable
 		direction = theDirection;
 		end = new Vector2f();
 		width = 0.3f;
-		maxLength = 8.f;
+		maxLength = 9.f;
 		stepSize = 0.1f;
 		appearance = new Sprite();
 		lifetime = new TimeStore(1.f);

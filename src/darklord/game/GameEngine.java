@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.security.CryptoPrimitive;
 import java.util.Random;
 import java.util.Vector;
 import java.util.Iterator;
@@ -55,6 +56,7 @@ public class GameEngine
 	public float zoom;
 	public final float zoomMin = 0.1f;
 	public final float zoomMax = 1.2f;
+//	public StaticEnemyCrystal testEnemy;
 
 	public GameEngine()
 	{
@@ -115,7 +117,7 @@ public class GameEngine
 		ingameStatus = IngameStatus.DEFAULT;
 		
 		File dir = new File("./"+name);
-		boolean isNewMap = true;//!dir.exists();
+		boolean isNewMap = true;// !dir.exists();
 		
 		map = new Map(20, 20, name, isNewMap);
 		
@@ -129,6 +131,9 @@ public class GameEngine
 		{
 			mainPlayer = readPlayerFromFile();
 		}		
+		
+//		testEnemy = new StaticEnemyCrystal(mainPlayer.getPosX(), mainPlayer.getPosY());
+//		testEnemy.setSize(3.f);
 		
 		mainSelectBox = new SelectBox();
 		projectiles = new Vector<Projectile>();
@@ -289,7 +294,7 @@ public class GameEngine
 		}
 	}
 	
-	public boolean  collideWithBlock(float x, float y)
+	public boolean collideWithBlock(float x, float y)
 	{
 		return collideWithBlock((int)Math.floor(x), (int)Math.floor(y));
 	}
@@ -447,13 +452,17 @@ public class GameEngine
 		mainPlayer.draw();
 		GL11.glPopMatrix();
 		
+//		GL11.glPushMatrix();
+//		GL11.glTranslated(testEnemy.getPosX(), testEnemy.getPosY(), 0.);
+//		testEnemy.draw();
+//		GL11.glPopMatrix();
+		
 		// draw projectiles
 		for (Iterator<Projectile> object = projectiles.iterator(); object.hasNext();)
 		{
 			Projectile tmp = object.next();
 			
 			GL11.glPushMatrix();
-			GL11.glTranslated(tmp.getPosX(), tmp.getPosY(), 0.);
 			tmp.draw();
 			GL11.glPopMatrix();
 		}
@@ -464,7 +473,7 @@ public class GameEngine
 			Projectile tmp = object.next();
 			
 			GL11.glPushMatrix();
-			GL11.glTranslated(tmp.getPosX(), tmp.getPosY(), 0.);
+//			GL11.glTranslated(tmp.getPosX(), tmp.getPosY(), 0.);
 			tmp.draw();
 			GL11.glPopMatrix();
 		}
@@ -668,19 +677,19 @@ public class GameEngine
 			switch (mainPlayer.getAttackType())
 			{
 			case Player.ATTACK_SHOT:
-				startProjectile(mouseGrid);
+				startProjectileRed(mouseGrid);
 				break;
 			case Player.ATTACK_ELECTRIC:
 				startElectricAttack();
 				break;
 			case Player.ATTACK_POISON:
-				
+				startProjectileGreen(mouseGrid);
 				break;
 			case Player.ATTACK_BEAM:
 				startBeam(mouseGrid);
 				break;
 			default:
-				startProjectile(mouseGrid);
+				startProjectileRed(mouseGrid);
 			}
 		}
 	}
@@ -774,7 +783,7 @@ public class GameEngine
 	 * starts an projectile if ammo is available
 	 * @param pos start position of the projectile
 	 */
-	public void startProjectile(Vector2f pos)
+	public void startProjectileRed(Vector2f pos)
 	{
 		float ammo = mainPlayer.getEnergyRed();
 
@@ -790,8 +799,36 @@ public class GameEngine
 //			position = position.add(mainPlayer.getSize().mul(0.5f));
 			position = position.add(dir.mul(0.5f));
 			
-			projectiles.add(new Projectile(position, dir, 0));
-			mainPlayer.decreaseEnergyRed(1);
+			BulletProjectile tmpProjectile = new BulletProjectile(position, dir, 0);
+			projectiles.add(tmpProjectile);
+			mainPlayer.decreaseEnergyRed(tmpProjectile.getEnergyCosts());
+			Darklord.sounds.shot.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
+//			System.out.println("Create Projectile at ("+pos.getX()+", "+pos.getY()+")");;
+//			mainPlayer.switchActiveAbility();	
+		}
+	}
+	
+	public void startProjectileGreen(Vector2f pos)
+	{
+		float ammo = mainPlayer.getEnergyGreen();
+
+//		if (mainPlayer.getActiveProjectile() == 2) ammo = mainPlayer.getEnergyGreen();
+		
+		if (mainPlayer.getMaxProjectiles() > getNumerOfPojectiles() && ammo >= 1)
+		{
+			// shoot
+			Vector2f dir = new Vector2f();
+			dir = pos.sub(mainPlayer.getCenter());
+			dir.normalize();
+			Vector2f position =  new Vector2f(mainPlayer.getCenter());
+//			position = position.add(mainPlayer.getSize().mul(0.5f));
+//			position = position.add(dir.mul(0.5f));
+			
+			Projectile tmpProjectile = new ShockWave(position, dir, 0);
+			tmpProjectile.setPos(position.sub(new Vector2f(tmpProjectile.getSizeX()/2.f, tmpProjectile.getSizeY()/2.f)));
+			
+			projectiles.add(tmpProjectile);
+			mainPlayer.decreaseEnergyGreen(tmpProjectile.getEnergyCosts());
 			Darklord.sounds.shot.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
 //			System.out.println("Create Projectile at ("+pos.getX()+", "+pos.getY()+")");;
 //			mainPlayer.switchActiveAbility();	
@@ -985,111 +1022,113 @@ public class GameEngine
 			int projectileX = (int)Math.floor(tmp.getPosX());
 			int projectileY = (int)Math.floor(tmp.getPosY());
 			
-			// check for collision with block
 			boolean destroyed = false;
 			
-			int tmpProjectileX, tmpProjectileY;
-			// check block top left
-			tmpProjectileX = projectileX;
-			tmpProjectileY = projectileY;
-			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
-			{
-				object.remove();
-				destroyed = true;
-				
-
-				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
-				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-//					System.out.println("ice crystal destroyed");
-//					mainPlayer.decreaseBlocksBlue();
-				}
-				
-				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
-				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-//					System.out.println("plants destroyed");
-//					mainPlayer.decreaseBlocksGreen();
-				}
-				continue;
-			}
+			// check for collision with block
 			
-			// check block top right
-			tmpProjectileX = projectileX+1;
-			tmpProjectileY = projectileY;
-			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+			if (tmp instanceof BulletProjectile)
 			{
-				object.remove();
-				destroyed = true;
-				
+				int tmpProjectileX, tmpProjectileY;
+				// check block top left
+				tmpProjectileX = projectileX;
+				tmpProjectileY = projectileY;
+				if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+				{
+					object.remove();
+					destroyed = true;
+					
 
-				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
-				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-//					System.out.println("ice crystal destroyed");
-//					mainPlayer.decreaseBlocksBlue();
+					if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
+					{
+						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
+//						System.out.println("ice crystal destroyed");
+//						mainPlayer.decreaseBlocksBlue();
+					}
+					
+					if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
+					{
+						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
+//						System.out.println("plants destroyed");
+//						mainPlayer.decreaseBlocksGreen();
+					}
+					continue;
 				}
 				
-				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
+				// check block top right
+				tmpProjectileX = projectileX+1;
+				tmpProjectileY = projectileY;
+				if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
 				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-					System.out.println("plants destroyed");
-//					mainPlayer.decreaseBlocksGreen();
+					object.remove();
+					destroyed = true;
+					
+
+					if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
+					{
+						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
+//						System.out.println("ice crystal destroyed");
+//						mainPlayer.decreaseBlocksBlue();
+					}
+					
+					if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
+					{
+						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
+						System.out.println("plants destroyed");
+//						mainPlayer.decreaseBlocksGreen();
+					}
+					continue;
 				}
-				continue;
+				
+				// check block bottom left
+				tmpProjectileX = projectileX;
+				tmpProjectileY = projectileY+1;
+				if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+				{
+					object.remove();
+					destroyed = true;
+					
+
+					if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
+					{
+						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
+//						System.out.println("ice crystal destroyed");
+//						mainPlayer.decreaseBlocksBlue();
+					}
+					
+					if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
+					{
+						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
+//						System.out.println("plants destroyed");
+//						mainPlayer.decreaseBlocksGreen();
+					}
+					continue;
+				}
+				
+				// check block bottom right
+				tmpProjectileX = projectileX+1;
+				tmpProjectileY = projectileY+1;
+				if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+				{
+					object.remove();
+					destroyed = true;
+					
+
+					if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
+					{
+						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
+//						System.out.println("ice crystal destroyed");
+//						mainPlayer.decreaseBlocksBlue();
+					}
+					
+					if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
+					{
+						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
+//						System.out.println("plants destroyed");
+//						mainPlayer.decreaseBlocksGreen();
+					}
+					continue;
+				}
 			}
-			
-			// check block bottom left
-			tmpProjectileX = projectileX;
-			tmpProjectileY = projectileY+1;
-			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
-			{
-				object.remove();
-				destroyed = true;
-				
-
-				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
-				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-//					System.out.println("ice crystal destroyed");
-//					mainPlayer.decreaseBlocksBlue();
-				}
-				
-				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
-				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-//					System.out.println("plants destroyed");
-//					mainPlayer.decreaseBlocksGreen();
-				}
-				continue;
-			}
-			
-			// check block bottom right
-			tmpProjectileX = projectileX+1;
-			tmpProjectileY = projectileY+1;
-			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
-			{
-				object.remove();
-				destroyed = true;
-				
-
-				if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
-				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-//					System.out.println("ice crystal destroyed");
-//					mainPlayer.decreaseBlocksBlue();
-				}
-				
-				if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
-				{
-					map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-//					System.out.println("plants destroyed");
-//					mainPlayer.decreaseBlocksGreen();
-				}
-				continue;
-			}
-
-			
 			
 //			destroy |= collideProjectileWithBlock(tmp, projectileX, projectileY);
 //			destroy |= collideProjectileWithBlock(tmp, projectileX+1, projectileY);
@@ -1102,39 +1141,56 @@ public class GameEngine
 				for (Iterator<Enemy> obj2 = map.getEnemies().iterator(); obj2.hasNext();)
 				{
 					Enemy e = obj2.next();
-					if (e.collide(tmp))
+					boolean collideWithEnemy;
+					if (tmp instanceof ShockWave)
 					{
-						Darklord.sounds.explosion.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
-						
-//							System.out.println("Enemy damaged by projectile");
-						
-//							mainPlayer.decreaseBlocksRed();
-						if (e.decreaseHp(tmp.getDamage())) 
+						if (e.collideWithRotation(tmp))
 						{
-							mainPlayer.addXp(e.getXp());
-							Vector2f tmpPos = new Vector2f(mainPlayer.getCenter());
-							tmpPos.addY(-1.0f);
-							movingTexts.add(new MovingText("+"+e.getXp()+"XP", tmpPos));
-							obj2.remove();
+							if (e.addVenom(new Venom(1.f, 0.5f, 4.f)))
+							{
+								addBamBubble(e);
+								Darklord.sounds.explosion.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
+							}
 						}
-						
-//						if (tmp.getType() == 0 && e instanceof StaticEnemyCrystal)	// red projectile
-//						{
-//							System.out.println("crystal damaged by projectile");
-////							mainPlayer.decreaseBlocksBlue();
-//							if (e.decreaseHp(tmp.getDamage())) obj2.remove();	
-//						}
-						
-						object.remove();
-						break;
+					} else
+					{
+						if (e.collide(tmp))
+						{
+							Darklord.sounds.explosion.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
+							
+//								System.out.println("Enemy damaged by projectile");
+							
+//								mainPlayer.decreaseBlocksRed();
+							if (e.decreaseHp(tmp)) 
+							{
+								mainPlayer.addXp(e.getXp());
+								Vector2f tmpPos = new Vector2f(mainPlayer.getCenter());
+								tmpPos.addY(-1.0f);
+								movingTexts.add(new MovingText("+"+e.getXp()+"XP", tmpPos));
+								obj2.remove();
+							}
+							
+//							if (tmp.getType() == 0 && e instanceof StaticEnemyCrystal)	// red projectile
+//							{
+//								System.out.println("crystal damaged by projectile");
+////								mainPlayer.decreaseBlocksBlue();
+//								if (e.decreaseHp(tmp.getDamage())) obj2.remove();	
+//							}
+							
+							object.remove();
+							break;
+						}
 					}
+					
+					
 				}
 			}
 		}
 	}
 	
-	public void addBamBubble(Vector2f position)
+	public void addBamBubble(Enemy e)
 	{
+		Vector2f position = e.getCenter();
 		Vector2f direction = RandomGenerator.getRandomVector();
 		direction.normalize();
 		Vector2f start = position.add(direction.mul(0.5f));
@@ -1142,6 +1198,7 @@ public class GameEngine
 		MovingSprite tmpBubble = new MovingSprite(start, stop);
 		tmpBubble.setTextureRegion(new TextureRegion(6*128, 3*128, 2*128, 1*128));
 		bubbles.add(tmpBubble);
+		e.resetBubbleTimer();
 	}
 	
 	public void updateHostileProjectiles(float dt)
@@ -1242,10 +1299,13 @@ public class GameEngine
 		{
 			Enemy e = obj2.next();
 			
+//			if (e.collideWithRotation(testEnemy)) Print.outln("collide test!");
+			Print.outln("e.canGenerateBubble(): "+e.canGenerateBubble());
+			
 			if (e.isDamaged() && e.canGenerateBubble())
 			{
 				// generate "BAM" bubble
-				addBamBubble(e.getCenter());
+				addBamBubble(e);
 			}
 			
 			if (e.isDead())
@@ -1470,7 +1530,6 @@ public class GameEngine
 		// update mouse click timer
 		buildTimer.update(dt);
 		
-		
 		// update level position
 		
 		float playerScreenX = mainPlayer.getPosX() + this.getPosX();
@@ -1505,6 +1564,8 @@ public class GameEngine
 		}
 		
 		mainPlayer.update(dt);
+		
+//		testEnemy.setPos(mainPlayer.getPos());
 		
 		// TODO: reintegrate
 //		if (checkHighway())

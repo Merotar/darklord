@@ -6,6 +6,8 @@ import java.io.Serializable;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 
+import darklord.media.Drawable;
+
 /**
  * general description of an enemy
  * 
@@ -20,7 +22,9 @@ public class Enemy extends Collidable implements Serializable
 	float maxHp, hp, dmgOnContact;
 	boolean damaged;
 	boolean dead;
-	EnergyStore bubbleTimer;
+	protected Drawable appearance;
+	RefillingStore bubbleTimer;
+	private Venom venom;
 	
 	public Enemy()
 	{
@@ -32,7 +36,7 @@ public class Enemy extends Collidable implements Serializable
 		setSizeY(1.f);
 		damaged = false;
 		dead = false;
-		bubbleTimer = new EnergyStore(0.5f, 1.f);
+		bubbleTimer = new RefillingStore(0.5f, 1.f);
 	}
 	
 	public Enemy(Enemy e)
@@ -56,6 +60,14 @@ public class Enemy extends Collidable implements Serializable
 		setPosY(y);
 	}
 	
+	public boolean addVenom(Venom theVenom)
+	{
+		if (venom != null) return false;
+		
+		venom = theVenom;
+		return true;
+	}
+	
 //	public Vector2f getPosition()
 //	{
 //		return position;
@@ -63,6 +75,23 @@ public class Enemy extends Collidable implements Serializable
 	
 	void draw()
 	{
+		Darklord.chars.begin();
+		GL11.glPushMatrix();
+		GL11.glTranslated(getSizeX()/2.f, getSizeY()/2.f, 0.f);
+		GL11.glRotated(getAngle(), 0., 0., 1.);
+		GL11.glTranslated(-getSizeX()/2.f, -getSizeY()/2.f, 0.f);
+		GL11.glScaled(getSizeX(), getSizeY(), 1.f);
+		if (venom == null)
+		{
+			appearance.draw();
+		} else
+		{
+			float intensityGreen = 0.3f;
+			appearance.drawColor(intensityGreen, 1.0f, intensityGreen, 1.0f);
+		}
+		Darklord.chars.end();
+		GL11.glPopMatrix();
+		
 //		GL11.glEnable(GL11.GL_TEXTURE_2D);  
 //		Color.white.bind();
 //		
@@ -99,6 +128,11 @@ public class Enemy extends Collidable implements Serializable
 		return false;
 	}
 
+	public boolean decreaseHp(Projectile p)
+	{
+		return decreaseHp(p.getDamage());
+	}
+
 	public float getDmgOnContact() {
 		return dmgOnContact;
 	}
@@ -111,16 +145,25 @@ public class Enemy extends Collidable implements Serializable
 	{
 		damaged = false;
 		bubbleTimer.increase(dt);
+		if (venom != null)
+		{
+			venom.update(dt, this);
+			if (!venom.isActive()) venom = null;
+		}
 	}
 
 	public boolean canGenerateBubble()
 	{
-		if (bubbleTimer.getFraction() == 1.f)
+		if (bubbleTimer.getCurrent() == bubbleTimer.getMax())
 		{
-			bubbleTimer.setCurrent(0.f);
 			return true;
 		}
 		return false;
+	}
+	
+	public void resetBubbleTimer()
+	{
+		bubbleTimer.setCurrent(0.f);
 	}
 	
 	public int getType()

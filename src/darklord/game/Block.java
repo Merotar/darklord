@@ -206,7 +206,7 @@ public class Block implements Serializable
 				transparent = false;
 				background = new Sprite();
 				((Sprite)background).setTextureRegion(0*128, 0*128, 128, 128);
-				((Sprite)appearance).setTextureRegion(7*128, 2*128, 128, 128);
+				((Sprite)appearance).setTextureRegion(7*128, 7*128, 128, 128);
 				setMaxHp(1);
 				break;
 			case BLOCK_ROCK:		// rock

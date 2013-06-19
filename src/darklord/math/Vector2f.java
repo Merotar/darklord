@@ -30,6 +30,11 @@ public class Vector2f implements Serializable
 		y = orig.y;
 	}
 	
+	public float scalar(Vector2f vec)
+	{
+		return getX()*vec.getX()+getY()*vec.getY();
+	}
+	
 	public boolean compareTo(Vector2f v){
 		if ((x == v.getX()) && (y == v.getY())){
 			return true;
@@ -61,6 +66,7 @@ public class Vector2f implements Serializable
 	
 	public void rotate(float angle)
 	{
+		angle *= Math.PI/180;
 		float xOld = getX();
 		float yOld = getY();
 		setX((float)(Math.cos(angle)*xOld - Math.sin(angle)*yOld));
@@ -92,7 +98,7 @@ public class Vector2f implements Serializable
 	
 	public Vector2f orthogonalVector()
 	{
-		return new Vector2f(y, -x);
+		return new Vector2f(-y, x);
 	}
 	
 	public void round()
@@ -129,9 +135,22 @@ public class Vector2f implements Serializable
 		y /= length;
 	}
 	
+//	public Vector2f rotateNew(float angle)
+//	{
+//		Vector2f res =  new Vector2f();
+//		res.setX((float)(getX()*Math.cos(angle) - getY()*Math.sin(angle)));
+//		res.setY((float)(getX()*Math.sin(angle) + getY()*Math.cos(angle)));
+//		return res;
+//	}
+	
 	public float length()
 	{
 		return (float)Math.sqrt(x*x+y*y);
+	}
+	
+	public float squaredLength()
+	{
+		return x*x+y*y;
 	}
 	
 }

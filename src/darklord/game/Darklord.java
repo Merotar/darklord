@@ -489,6 +489,8 @@ public class Darklord {
 		
 		float playerPosOld_x = world.mainPlayer.getPosX();
 		float playerPosOld_y = world.mainPlayer.getPosY();
+		float overlapLimit = 0.35f;
+		
 		if (!devMode) world.update(dt);
 		
 		// normal motion
@@ -496,9 +498,38 @@ public class Darklord {
 		if (world.mainPlayer.moveRight())
 		{
 			boolean collide = false;
+			boolean collide2 = false;
+			float overlapY1, overlapY2;
+			
 			collide = world.collideWithBlock((float)Math.ceil(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-			collide = collide || world.collideWithBlock((float)Math.ceil(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
-			if (collide) world.mainPlayer.setPosX((float)Math.ceil(playerPosOld_x)-world.mainPlayer.getSizeX());
+			collide2 = world.collideWithBlock((float)Math.ceil(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
+
+			if (!(collide && collide2))
+			{
+				if (collide)
+				{
+					overlapY1 = world.mainPlayer.getPosY()+world.mainPlayer.getSizeY() - (float)Math.floor(world.mainPlayer.getPosY()+1.f);
+//					Print.outln("overlapY: "+overlapY);
+					if (overlapY1 < overlapLimit)
+					{
+						world.mainPlayer.setPosY(world.mainPlayer.getPosY()- overlapY1);
+//						collide = false;
+					}
+				}
+				
+				if (collide2)
+				{
+					overlapY2 = (float)Math.floor(world.mainPlayer.getPosY()+1.f) - world.mainPlayer.getPosY();
+//					Print.outln("overlapY: "+overlapY);
+					if (overlapY2 < overlapLimit)
+					{
+						world.mainPlayer.setPosY(world.mainPlayer.getPosY() + overlapY2);
+//						collide2 = false;
+					}
+				}
+			}
+			
+			if (collide || collide2) world.mainPlayer.setPosX((float)Math.ceil(playerPosOld_x)-world.mainPlayer.getSizeX());
 //			if (Math.abs(world.mainPlayer.getPosX()+1-playerPosOld_x) < world.mainPlayer.getSpeed())
 //			{
 //				world.mainPlayer.setPosX(((float)Math.ceil(world.mainPlayer.getPosX())));
@@ -508,9 +539,38 @@ public class Darklord {
 		if (world.mainPlayer.moveLeft())
 		{
 			boolean collide = false;
+			boolean collide2 = false;
+			float overlapY1, overlapY2;
+			
 			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
-			if (collide) world.mainPlayer.setPosX((float)Math.floor(playerPosOld_x));
+			collide2 = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
+			
+			if (!(collide && collide2))
+			{
+				if (collide)
+				{
+					overlapY1 = world.mainPlayer.getPosY()+world.mainPlayer.getSizeY() - (float)Math.floor(world.mainPlayer.getPosY()+1.f);
+//					Print.outln("overlapY: "+overlapY);
+					if (overlapY1 < overlapLimit)
+					{
+						world.mainPlayer.setPosY(world.mainPlayer.getPosY()- overlapY1);
+//						collide = false;
+					}
+				}
+				
+				if (collide2)
+				{
+					overlapY2 = (float)Math.floor(world.mainPlayer.getPosY()+1.f) - world.mainPlayer.getPosY();
+//					Print.outln("overlapY: "+overlapY);
+					if (overlapY2 < overlapLimit)
+					{
+						world.mainPlayer.setPosY(world.mainPlayer.getPosY() + overlapY2);
+//						collide2 = false;
+					}
+				}
+			}
+			
+			if (collide || collide2) world.mainPlayer.setPosX((float)Math.floor(playerPosOld_x));
 //			if (Math.abs(world.mainPlayer.getPosX()-playerPosOld_x) < world.mainPlayer.getSpeed())
 //			{
 //				world.mainPlayer.setPosX(((float)Math.floor(world.mainPlayer.getPosX())));
@@ -520,17 +580,76 @@ public class Darklord {
 		if (world.mainPlayer.moveUp())
 		{
 			boolean collide = false;
+			boolean collide2 = false;
+			float overlapX1, overlapX2;
+			
 			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
-			if (collide) world.mainPlayer.setPosY((float)Math.ceil(playerPosOld_y)-world.mainPlayer.getSizeY());	
+			collide2 = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()+1.f));
+
+			
+			if (!(collide && collide2))
+			{
+				if (collide)
+				{
+					overlapX1 = (float)Math.floor(world.mainPlayer.getPosX()+1.f) - world.mainPlayer.getPosX();
+//					Print.outln("overlapX: "+overlapX);
+					if (overlapX1 < overlapLimit)
+					{
+						world.mainPlayer.setPosX(world.mainPlayer.getPosX() + overlapX1);
+//						collide = false;
+					}
+				}
+				
+				if (collide2)
+				{
+					overlapX2 = world.mainPlayer.getPosX() + world.mainPlayer.getSizeX() - (float)Math.floor(world.mainPlayer.getPosX()+1.f);
+//					Print.outln("overlapY: "+overlapY);
+					if (overlapX2 < overlapLimit)
+					{
+						world.mainPlayer.setPosX(world.mainPlayer.getPosX() - overlapX2);
+//						collide2 = false;
+					}
+				}
+			}
+			
+			if (collide || collide2) world.mainPlayer.setPosY((float)Math.ceil(playerPosOld_y)-world.mainPlayer.getSizeY());	
 		}
 		
 		if (world.mainPlayer.moveDown())
 		{
 			boolean collide = false;
+			boolean collide2 = false;
+			float overlapX1, overlapX2;
+			
 			collide = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()), (float)Math.floor(world.mainPlayer.getPosY()));
-			collide = collide || world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
-			if (collide) world.mainPlayer.setPosY((float)Math.floor(playerPosOld_y));
+			collide2 = world.collideWithBlock((float)Math.floor(world.mainPlayer.getPosX()+1.f), (float)Math.floor(world.mainPlayer.getPosY()));
+
+			if (!(collide && collide2))
+			{
+				if (collide)
+				{
+					overlapX1 = (float)Math.floor(world.mainPlayer.getPosX()+1.f) - world.mainPlayer.getPosX();
+//					Print.outln("overlapX: "+overlapX);
+					if (overlapX1 < overlapLimit)
+					{
+						world.mainPlayer.setPosX(world.mainPlayer.getPosX() + overlapX1);
+//						collide = false;
+					}
+				}
+				
+				if (collide2)
+				{
+					overlapX2 = world.mainPlayer.getPosX() + world.mainPlayer.getSizeX() - (float)Math.floor(world.mainPlayer.getPosX()+1.f);
+//					Print.outln("overlapY: "+overlapY);
+					if (overlapX2 < overlapLimit)
+					{
+						world.mainPlayer.setPosX(world.mainPlayer.getPosX() - overlapX2);
+//						collide2 = false;
+					}
+				}
+			}
+			
+			if (collide || collide2) world.mainPlayer.setPosY((float)Math.floor(playerPosOld_y));
 		}
 		
 		// teleport
@@ -852,10 +971,10 @@ public class Darklord {
 	 */
 	public void checkKeyboard()
 	{
-		Keyboard.enableRepeatEvents(false);
+		Keyboard.enableRepeatEvents(true);
 		while (Keyboard.next())
 		{
-			if (Keyboard.getEventKeyState())
+//			if (Keyboard.getEventKeyState())
 			{
 				if (Keyboard.isKeyDown(myKeyboard.KEY_ESCAPE))
 				{
@@ -872,20 +991,6 @@ public class Darklord {
 				{
 					world.mainUI.setStatus();
 					world.ingameStatus = IngameStatus.DEFAULT;
-//					System.out.println("edit mode on");
-//					devMode = true;
-//					world.mainUI.switchActiveUI();
-//					
-//					switch (world.ingameStatus)
-//					{
-//					case DEFAULT:
-//						world.ingameStatus = IngameStatus.BUILDING;
-//						break;
-//					case BUILDING:
-//						world.ingameStatus = IngameStatus.DEFAULT;
-//					default:
-//						world.ingameStatus = IngameStatus.DEFAULT;
-//					}
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_F2))
@@ -940,6 +1045,9 @@ public class Darklord {
 					{
 						world.mainPlayer.startUp();
 					}
+				} else
+				{
+					world.mainPlayer.stopUp();
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_S))
@@ -951,6 +1059,9 @@ public class Darklord {
 					{
 						world.mainPlayer.startDown();
 					}
+				} else
+				{
+					world.mainPlayer.stopDown();
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_A))
@@ -961,6 +1072,9 @@ public class Darklord {
 					{
 						world.mainPlayer.startLeft();
 					}
+				} else
+				{
+					world.mainPlayer.stopLeft();
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_D))
@@ -971,18 +1085,22 @@ public class Darklord {
 					{
 						world.mainPlayer.startRight();
 					}
+				} else
+				{
+					world.mainPlayer.stopRight();
 				}
 //				if (Keyboard.isKeyDown(myKeyboard.KEY_E))
 //				{
-//					world.mainPlayer.inreaseActiveProjectile();
+////					world.testEnemy.setAngle(world.testEnemy.getAngle()+10);
+////					world.mainPlayer.inreaseActiveProjectile();
 //				}
-			} else
-			{
-				world.mainPlayer.stopUp();
-				world.mainPlayer.stopDown();
-				world.mainPlayer.stopLeft();
-				world.mainPlayer.stopRight();
-			}
+			}// else
+//			{
+//				world.mainPlayer.stopUp();
+//				world.mainPlayer.stopDown();
+//				world.mainPlayer.stopLeft();
+//				world.mainPlayer.stopRight();
+//			}
 		}
 	}
 	

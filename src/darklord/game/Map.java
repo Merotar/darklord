@@ -1403,6 +1403,11 @@ public class Map implements Serializable
 		this.name = name;
 	}
 	
+	public LevelStructure readLevelStructureFromFile()
+	{
+		return readLevelStructureFromFile(getFileName());
+	}
+	
 	public LevelStructure readLevelStructureFromFile(String fileName)
 	{
 		LevelStructure tmpLevelStructure = null;
@@ -1427,6 +1432,11 @@ public class Map implements Serializable
 			  if (fis != null) try { fis.close(); } catch (IOException e) {}
 			}
 		return tmpLevelStructure;
+	}
+	
+	public void writeLevelStructureToFile()
+	{
+		writeLevelStructureToFile(levelStructure, this.getFileName());
 	}
 	
 	public void writeLevelStructureToFile(LevelStructure theLevelStructure, String fileName)

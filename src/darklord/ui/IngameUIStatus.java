@@ -74,22 +74,22 @@ public class IngameUIStatus extends UI
         
         UIBar energyBarRed = new UIBar(new TextureRegion(0.f, 6*128+0*32, 2*128, 32), "energy bar red");
         energyBarRed.setSize(new Vector2f(0.8f*0.25f, .02f*aspectRatio));
-        energyBarRed.setPosition(new Vector2f(0.1f*0.25f, 0.2f));
+        energyBarRed.setPosition(new Vector2f(0.1f*0.25f, 0.35f));
         setEnergyBarRed(energyBarRed);
         
         UIBar energyBarBlue = new UIBar(new TextureRegion(0.f, 6*128+1*32, 2*128, 32), "energy bar red");
         energyBarBlue.setSize(new Vector2f(0.8f*0.25f, .02f*aspectRatio));
-        energyBarBlue.setPosition(new Vector2f(0.1f*0.25f, 0.25f));
+        energyBarBlue.setPosition(new Vector2f(0.1f*0.25f, 0.3f));
         setEnergyBarBlue(energyBarBlue);
         
         UIBar energyBarGreen = new UIBar(new TextureRegion(0.f, 6*128+2*32, 2*128, 32), "energy bar red");
         energyBarGreen.setSize(new Vector2f(0.8f*0.25f, .02f*aspectRatio));
-        energyBarGreen.setPosition(new Vector2f(0.1f*0.25f, 0.3f));
+        energyBarGreen.setPosition(new Vector2f(0.1f*0.25f, 0.25f));
         setEnergyBarGreen(energyBarGreen);
         
         UIBar energyBarYellow = new UIBar(new TextureRegion(0.f, 6*128+3*32, 2*128, 32), "energy bar red");
         energyBarYellow.setSize(new Vector2f(0.8f*0.25f, .02f*aspectRatio));
-        energyBarYellow.setPosition(new Vector2f(0.1f*0.25f, 0.35f));
+        energyBarYellow.setPosition(new Vector2f(0.1f*0.25f, 0.2f));
         setEnergyBarYellow(energyBarYellow);
         
         // add UIObjects

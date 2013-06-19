@@ -3,6 +3,8 @@ package darklord.game;
 
 import java.io.Serializable;
 
+import org.lwjgl.opengl.GL11;
+
 import darklord.media.Animation;
 import darklord.media.Drawable;
 import darklord.media.TextureRegion;
@@ -22,7 +24,7 @@ public class EnemyRandomMove extends Enemy implements Serializable
 //	float speed;
 	Timer motionTimer;
 	float motionTime;	// time to move to the next tile
-	private Drawable appearance;
+//	private Drawable appearance;
 	
 	enum Direction
 	{
@@ -111,9 +113,7 @@ public class EnemyRandomMove extends Enemy implements Serializable
 	
 	public void draw()
 	{
-		Darklord.chars.begin();
-		appearance.draw();
-		Darklord.chars.end();
+		super.draw();
 	}
 
 //	public float getSpeed() {

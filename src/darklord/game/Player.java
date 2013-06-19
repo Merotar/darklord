@@ -64,7 +64,7 @@ public class Player extends Collidable implements Serializable
 	private int crystalsRed, crystalsBlue, crystalsGreen, crystalsYellow;
 //	private int energyRed, energyBlue, energyGreen, energyYellow;
 //	private int energyRedMax, energyBlueMax, energyGreenMax, energyYellowMax;
-	private EnergyStore energyRed, energyBlue, energyGreen, energyYellow;
+	private RefillingStore energyRed, energyBlue, energyGreen, energyYellow;
 //	private int activeProjectile; // 0: red, 1: blue, 2: green
 	private static int maxProjectile = 2;
 	private float visualRangeMax, visualRangeMin;
@@ -127,16 +127,18 @@ public class Player extends Collidable implements Serializable
 		glow.add(new Sprite());
 		glow.add(new Sprite());
 		glow.add(new Sprite());
+		glow.add(new Sprite());
 		((Sprite)glow.get(0)).setTextureRegion(new TextureRegion(4, 0, 128));
 		((Sprite)glow.get(1)).setTextureRegion(new TextureRegion(5, 0, 128));
 		((Sprite)glow.get(2)).setTextureRegion(new TextureRegion(6, 0, 128));
-
+		((Sprite)glow.get(3)).setTextureRegion(new TextureRegion(7, 0, 128));
+		
 		beam = new Beam();
 		electricAttacs = new Vector<ElectricAttack>();
 		electricAttackActive = false;
 //		electricAttackTimer = new TimeStore(0.3f);
 		electricAttackRange = 4.f;
-		maxEnemiesElectricAttack = 1;
+		maxEnemiesElectricAttack = 2;
 		
 		moveUp = moveDown = moveLeft = moveRight = false;
 		teleportUp = teleportDown = teleportLeft = teleportRight = false;
@@ -151,10 +153,10 @@ public class Player extends Collidable implements Serializable
 		
 		buildRadius = 2.f;
 		
-		energyRed = new EnergyStore(3.f, 1.f);
-		energyBlue = new EnergyStore(2.f, 0.2f);
-		energyGreen = new EnergyStore(3.f, 1.f);
-		energyYellow = new EnergyStore(1.f, 0.5f);
+		energyRed = new RefillingStore(3.f, 1.f);
+		energyBlue = new RefillingStore(2.f, 0.2f);
+		energyGreen = new RefillingStore(3.f, 1.f);
+		energyYellow = new RefillingStore(1.f, 0.5f);
 		
 		crystalsRed = 10;
 		crystalsBlue = 10;
@@ -542,7 +544,7 @@ public class Player extends Collidable implements Serializable
 	public void draw()
 	{
 		Darklord.chars.begin();
-//		glow.get(getActiveProjectile()).draw(0.f, 0.f, getSizeX(), getSizeY());
+		glow.get(attackType).draw(0.f, 0.f, getSizeX(), getSizeY());
 		appearance.draw(0.f, 0.f, getSizeX(), getSizeY());
 		Darklord.chars.end();
 		

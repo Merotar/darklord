@@ -22,14 +22,16 @@ public class Projectile extends Collidable
 	private Vector2f direction;
 //	private float lifeTime;
 //	private Timer timer;
-	private TimeStore time;
+	protected TimeStore time;
 	private boolean active;
 	private float speed;
 //	private float timePassed;
 	private float size;
 	private int type;
-	private int damage;
-	private Drawable appearance;
+	private float damage;
+	protected Drawable appearance;
+	private float energyCosts;
+	private float range;
 	
 	public Projectile()
 	{
@@ -40,13 +42,14 @@ public class Projectile extends Collidable
 //		timer.start();
 		active = true;
 		
-		float range = 7.f;	// use variable instead of modifying lifetime
-		setSpeed(7.f);
-		time = new TimeStore(range/getSpeed());
+		range = 7.f;	// use variable instead of modifying lifetime
+		speed = 4.f;
+		time = new TimeStore(range/speed);
 		setSize(0.3f);
 		setDamage(1);
 		appearance = new Sprite();
 		setType(0);
+		energyCosts = 1.f;
 	}
 	
 	public Projectile(int t)
@@ -62,12 +65,19 @@ public class Projectile extends Collidable
 //		position.setY(posY);
 //	}
 	
-	public Projectile(Vector2f pos, Vector2f dir, int type)
+	public Projectile(Vector2f pos, Vector2f dir, Vector2f theSize, int type)
 	{
 		this(type);
-		setPosX(pos.getX()-size/2.f);
-		setPosY(pos.getY()-size/2.f);
+		setSizeX(theSize.getX());
+		setSizeY(theSize.getY());
+		setPosX(pos.getX());
+		setPosY(pos.getY());
 		direction = dir;
+	}
+	
+	public Projectile(Vector2f pos, Vector2f dir, int type)
+	{
+		this(pos, dir, new Vector2f(0.3f, 0.3f), type);
 	}
 	
 	public int getType() {
@@ -151,7 +161,8 @@ public class Projectile extends Collidable
 	public void draw()
 	{
 		Darklord.sprites01.begin();
-		appearance.draw(0, 0, getSize(), getSize());
+		GL11.glTranslated(getPosX(), getPosY(), 0.);
+		appearance.draw(0, 0, getSizeX(), getSizeY());
 		Darklord.sprites01.end();
 //		GL11.glEnable(GL11.GL_TEXTURE_2D);  
 //		Color.white.bind();
@@ -211,12 +222,12 @@ public class Projectile extends Collidable
 		this.active = active;
 	}
 
-	public int getDamage() {
+	public float getDamage() {
 		return damage;
 	}
 
-	public void setDamage(int damage) {
-		this.damage = damage;
+	public void setDamage(float f) {
+		this.damage = f;
 	}
 
 	public Vector2f getDirection() {
@@ -229,5 +240,23 @@ public class Projectile extends Collidable
 
 	public void setSpeed(float speed) {
 		this.speed = speed;
+		time.setMax(range/speed);
+	}
+
+	public float getEnergyCosts() {
+		return energyCosts;
+	}
+
+	public void setEnergyCosts(float energyCosts) {
+		this.energyCosts = energyCosts;
+	}
+
+	public float getRange() {
+		return range;
+	}
+
+	public void setRange(float range) {
+		this.range = range;
+		time.setMax(range/speed);
 	}
 }
