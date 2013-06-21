@@ -28,6 +28,7 @@ public class Grid implements Serializable
 	public Vector<Collectable> collectableObjects;
 	public Vector<Chest> chests;
 	private Grid gridTop, gridBottom, gridLeft, gridRight;
+	private Vector<Rule> rules;
 	
 	public Grid()
 	{
@@ -45,6 +46,7 @@ public class Grid implements Serializable
 		gridTop = gridBottom = gridLeft = gridRight = null;
 		
 		theGrid = new Block[gridSizeX][gridSizeY];
+		rules = new Vector<Rule>();
 		
 		this.setFogDensity(1);
 //		fogMap = new float[getGridSizeX()*getFogDensity()][getGridSizeY()*getFogDensity()];
@@ -76,6 +78,11 @@ public class Grid implements Serializable
 	public void addChest(Chest theChest)
 	{
 		chests.add(theChest);
+	}
+	
+	public void addRule(Rule theRule)
+	{
+		rules.add(theRule);
 	}
 	
 	public void addEnemy(Enemy theEnemy)

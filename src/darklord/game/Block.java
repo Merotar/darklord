@@ -18,7 +18,7 @@ import darklord.media.TextureRegion;
  * @since 12-05-2013
  * 
  */
-public class Block implements Serializable
+public class Block extends Buildable implements Serializable
 {
 	private boolean visible, solid, transparent;
 	private int id, hp, maxHp;

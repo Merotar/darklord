@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 import darklord.media.MovingSprite;
 import darklord.media.MovingText;
 import darklord.media.TextureRegion;
+import darklord.ui.DevUI;
 import darklord.ui.IngameStatus;
 import darklord.ui.IngameUI;
 //import org.lwjgl.util.vector.Vector2f;
@@ -312,7 +313,7 @@ public class GameEngine
 		return isBlockSolid((int)Math.round(mainPlayer.getPosX()+0.5), (int)Math.round(mainPlayer.getPosY()+0.5));
 	}
 
-	public void draw()
+	public void draw(boolean devMode)
 	{
 		GL11.glPushMatrix();
 		
@@ -526,11 +527,15 @@ public class GameEngine
 //		}
 		
 		// draw ui
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-//		GL11.glScaled(1., -1., 1.);
-		mainUI.draw();
-		GL11.glPopMatrix();
+		if (!devMode)
+		{
+			GL11.glPushMatrix();
+//			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+			GL11.glLoadIdentity();
+//			GL11.glScaled(1., -1., 1.);
+			mainUI.draw();
+			GL11.glPopMatrix();
+		}
 		
 //		GL11.glPushMatrix();
 //		GL11.glTranslated(2.,2., 0.);
@@ -538,7 +543,7 @@ public class GameEngine
 //		Darklords.textDrawer.draw(Float.toString(mainPlayer.getHp()));
 //		GL11.glPopMatrix();
 		
-//		GL11.glPopMatrix();
+		GL11.glPopMatrix();
 	}
 
 	public float getPosX() {
@@ -875,7 +880,7 @@ public class GameEngine
 	 * @param pos
 	 * @param button
 	 */
-	public void mouseDownReactionDev(Vector2f pos, int button)
+	public void mouseDownReactionDev(Vector2f pos, int button, DevUI devUI)
 	{
 		Vector2f mouseGrid = new Vector2f(pos.getX()/this.gridSize, pos.getY()/this.gridSize);
 		// translate grid
@@ -893,7 +898,13 @@ public class GameEngine
 		// left mouse button
 		if (button == 0)
 		{
-			this.map.getBlockAt(x_int, y_int).setType(DevModeSettings.getActiveBLock());
+			if (devUI.isBlockMode())
+			{
+				if (devUI.getActiveBuildable() instanceof Block)
+				{
+					this.map.getBlockAt(x_int, y_int).setType(((Block)devUI.getActiveBuildable()).getType());
+				}
+			}
 		}
 		
 		// right mouse button
@@ -1300,7 +1311,7 @@ public class GameEngine
 			Enemy e = obj2.next();
 			
 //			if (e.collideWithRotation(testEnemy)) Print.outln("collide test!");
-			Print.outln("e.canGenerateBubble(): "+e.canGenerateBubble());
+//			Print.outln("e.canGenerateBubble(): "+e.canGenerateBubble());
 			
 			if (e.isDamaged() && e.canGenerateBubble())
 			{

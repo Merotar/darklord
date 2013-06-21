@@ -29,6 +29,7 @@ import darklord.media.SpriteSheet;
 import darklord.media.TextDrawer;
 import darklord.media.TextureRegion;
 import darklord.ui.Button;
+import darklord.ui.DevUI;
 import darklord.ui.IngameStatus;
 import darklord.ui.UI;
 import darklord.math.Vector2f;
@@ -69,6 +70,7 @@ public class Darklord {
 	static SpriteSheet chars;
 	GameStatus gameStatus;
 	UI mainMenu;
+	DevUI devUI;
 //	IngameUI ingameUI;
 	static SoundLoader sounds;
 	public static TextDrawer textDrawer;
@@ -329,6 +331,9 @@ public class Darklord {
         chars = new SpriteSheet("darklord/img/chars.png");
 		textDrawer = new TextDrawer("darklord/img/font.png");
         
+		devUI = new DevUI(ratio);
+		devUI.init(world);
+		
         initMainMenu();
 //        initGameUI();
         
@@ -354,13 +359,18 @@ public class Darklord {
 				mainMenu();
 				break;
 			case INGAME:
-				ingame();
+				if (!devMode)
+				{
+					ingame();
+				} else
+				{
+					ingameDev();
+				}
 				break;
 			default:
 				Print.err("wrong game status");
 				break;
 			}
-			// main loop repeated while the window is not closed
 			
 //			long waitingTime = (int)Math.round((1000000.f/maxFPS - fpsTimer.getTimeDelta())/1000.);
 //			if (waitingTime > 0)
@@ -437,6 +447,36 @@ public class Darklord {
 		System.exit(0);
 	}
 	
+	public void ingameDev()
+	{
+		//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);  
+		//GL11.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+
+		//world.attack.update();
+
+		checkMouseDev();
+		checkKeyboardDev();
+
+		if (isLeftMouseDown)
+		{
+			world.mouseDownReactionDev(globalToGamescreen(posMouseDown), 0, devUI);
+			devUI.mouseDownReaction(screenToWorld(posMouseDown), 0, world.map.levelStructure);
+		}
+		if (isRightMouseDown)
+		{
+			world.mouseDownReactionDev(globalToGamescreen(posRightMouseDown), 1, devUI);
+			isRightMouseDown = false;
+		}
+
+		world.mousePositionReaction(globalToGamescreen(mousePos));
+		
+		devUI.update(world, dt);
+		
+		drawIngameDev();
+		
+//		world.mainUI.mousePositionReaction(screenToWorld(mousePos));
+	}
+	
 	public void ingame()
 	{
 		//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);  
@@ -476,10 +516,10 @@ public class Darklord {
 			}
 		} else
 		{
-			if (isLeftMouseDown) world.mouseDownReactionDev(globalToGamescreen(posMouseDown), 0);
+			if (isLeftMouseDown) world.mouseDownReactionDev(globalToGamescreen(posMouseDown), 0, devUI);
 			if (isRightMouseDown)
 			{
-				world.mouseDownReactionDev(globalToGamescreen(posRightMouseDown), 1);
+				world.mouseDownReactionDev(globalToGamescreen(posRightMouseDown), 1, devUI);
 				isRightMouseDown = false;
 			}
 		}
@@ -1313,58 +1353,36 @@ public class Darklord {
 	 */
 	public void drawIngame()
 	{
-//		if (useShader)
-//		{
-//			ARBShaderObjects.glUseProgramObjectARB(program);
-//		}
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
 		GL11.glClearColor(0.f, 0.f, 0.f, 1.0f);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT); 
-//		GL11.glScalef(gameScreenScale, gameScreenScale, 1.f);
 		
 		GL11.glPushMatrix();
 		GL11.glTranslatef(gameScreenPos.getX(), gameScreenPos.getY(), 0.f);
-//		GL11.glClearColor(0.f, 0.f, 0.f, 1.f);
-//		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-		world.draw();
+		world.draw(devMode);
 		GL11.glPopMatrix();
 		
-//		float ratio = 1.f*resX/resY;
-//		GL11.glEnable(GL11.GL_TEXTURE_2D); 
-//		Color.white.bind();
-////		Print.outln("s:"+Darklords.textures.panelBottom.getImageWidth());
-//		Darklords.textures.block.get(1).bind();
-//		GL11.glBegin(GL11.GL_QUADS);
-////		float size = 1.0f;
-////		GL11.glTexCoord2f(0.f, 0.15f);
-////		GL11.glVertex2f(0.f, 0.f);
-////		GL11.glTexCoord2f(1.f, 0.15f);
-////		GL11.glVertex2f(resX, 0.f);
-////		GL11.glTexCoord2f(1.f, 0.f);
-////		GL11.glVertex2f(resX, 0.2f*resY);
-////		GL11.glTexCoord2f(0.f, 0.f);
-////		GL11.glVertex2f(0.f, 0.2f*resY);
-//		GL11.glTexCoord2f(0.f, 0.5f);
-//		GL11.glVertex2f(-1.f, -0.8f);
-//		GL11.glTexCoord2f(0.5f, 0.5f);
-//		GL11.glVertex2f(1.f, -0.8f);
-//		GL11.glTexCoord2f(0.5f, 0.f);
-//		GL11.glVertex2f(1.f, -1.f);
-//		GL11.glTexCoord2f(0.f, 0.f);
-//		GL11.glVertex2f(-1.f, -1.f);
-//		GL11.glEnd();
-//		GL11.glDisable(GL11.GL_TEXTURE_2D);  
+	}
+	
+	public void drawIngameDev()
+	{
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+		GL11.glClearColor(0.f, 0.f, 0.f, 1.0f);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT); 
 		
-//		SpriteSheet s = new SpriteSheet("./img/textures.png");
-//		s.begin();
-//		s.draw(new TextureRegion(128, 0, 128, 128));
-//		s.end();
+		GL11.glPushMatrix();
+		GL11.glTranslatef(gameScreenPos.getX(), gameScreenPos.getY(), 0.f);
+		world.draw(devMode);
 		
-//		if(useShader)
-//		{
-//			ARBShaderObjects.glUseProgramObjectARB(0);
-//		}
+		GL11.glPushMatrix();
+		GL11.glLoadIdentity();
+		devUI.draw();
+		GL11.glPopMatrix();
+
+		GL11.glPopMatrix();
+		
 	}
 	
 	public static void main(String[] argv)

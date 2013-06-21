@@ -121,6 +121,11 @@ public class Projectile extends Collidable
 		this.setSizeX(size);
 		this.setSizeY(size);
 	}
+	
+	public void setSizeVec(Vector2f theSize) {
+		this.setSizeX(theSize.getX());
+		this.setSizeY(theSize.getY());
+	}
 
 	
 //	public void setPositionX(float posX)
