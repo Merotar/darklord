@@ -17,10 +17,10 @@ import java.util.concurrent.Future;
  */
 public class GridLoader
 {
-	private Grid resultGrid;
+	private Room resultGrid;
 	private boolean done, active;
 	private int x, y, currentX, currentY;
-	Future<Grid> result;
+	Future<Room> result;
 	ExecutorService executor;
 	
 	public GridLoader(String fileName, int theX, int theY, int theCurrentX, int theCurrentY, ExecutorService theExecutor)
@@ -37,7 +37,7 @@ public class GridLoader
 	public void initCallable(String fileName)
 	{
 		done = false;
-		Callable<Grid> tmpCallable = new GridLoadCallable(fileName);
+		Callable<Room> tmpCallable = new GridLoadCallable(fileName);
 
 		result = executor.submit(tmpCallable);
 	}
@@ -66,7 +66,7 @@ public class GridLoader
 		this.done = done;
 	}
 
-	public Grid getResultGrid() {
+	public Room getResultGrid() {
 		active = false;
 		return resultGrid;
 	}

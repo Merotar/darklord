@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
  * @since 07-06-2013
  * 
  */
-public class GridLoadCallable implements Callable<Grid>
+public class GridLoadCallable implements Callable<Room>
 {
 	String fileName;
 	
@@ -23,9 +23,9 @@ public class GridLoadCallable implements Callable<Grid>
 		fileName = theFileName;
 	}
 	
-	public Grid readGridFromFile(String fileName)
+	public Room readGridFromFile(String fileName)
 	{
-		Grid tmpGrid = null;
+		Room tmpGrid = null;
 		ObjectInputStream ois = null;
 		FileInputStream fis = null;
 		
@@ -34,7 +34,7 @@ public class GridLoadCallable implements Callable<Grid>
 			  fis = new FileInputStream(fileName);
 			  ois = new ObjectInputStream(fis);
 
-			  tmpGrid = (Grid)ois.readObject();
+			  tmpGrid = (Room)ois.readObject();
 			  
 //			  Print.outln("enemy:"+tmpGrid.getEnemies().get(0).dmgOnContact);
 			  
@@ -90,7 +90,7 @@ public class GridLoadCallable implements Callable<Grid>
 	}
 
 	@Override
-	public Grid call() throws Exception
+	public Room call() throws Exception
 	{
 		return readGridFromFile(fileName);
 	}

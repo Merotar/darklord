@@ -14,11 +14,15 @@ import darklord.math.Vector2f;
  */
 abstract class Collidable implements Serializable
 {
-	private float posX, posY, sizeX, sizeY, angle = 0.f;
+	protected float posX;
+	protected float posY;
+	protected float sizeX;
+	protected float sizeY;
+	protected float angle = 0.f;
 	
 //	public abstract boolean collide(Collidable obj);
 	
-	public Vector2f getPos()
+	public Vector2f getPosition()
 	{
 		return new Vector2f(posX, posY);
 	}

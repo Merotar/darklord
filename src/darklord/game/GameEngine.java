@@ -428,7 +428,7 @@ public class GameEngine
 			Enemy tmp = object.next();
 			
 			GL11.glPushMatrix();
-			GL11.glTranslated(tmp.getPos().getX(), tmp.getPos().getY(), 0.);
+			GL11.glTranslated(tmp.getPosition().getX(), tmp.getPosition().getY(), 0.);
 			tmp.draw();
 			GL11.glPopMatrix();
 		}
@@ -1290,7 +1290,7 @@ public class GameEngine
 		{
 			Collectable tmp = object.next();
 			
-			if((tmp.getPos().sub(mainPlayer.getPos())).length() > maxUpdateDistance) continue;
+			if((tmp.getPosition().sub(mainPlayer.getPosition())).length() > maxUpdateDistance) continue;
 			
 //			if (Collider.collideBorders(mainPlayer.getPosX(), mainPlayer.getPosX()+mainPlayer.getSizeX(), mainPlayer.getPosY(), mainPlayer.getPosY()+mainPlayer.getSizeY(),
 //					tmp.getX(), tmp.getX()+tmp.getSize(), tmp.getY(), tmp.getY()+tmp.getSize()))
@@ -1325,7 +1325,7 @@ public class GameEngine
 				continue;
 			}
 			
-			if((e.getPos().sub(mainPlayer.getPos())).length() > maxUpdateDistance) continue;
+			if((e.getPosition().sub(mainPlayer.getPosition())).length() > maxUpdateDistance) continue;
 			
 			if (e instanceof EnemyRandomMove)
 			{

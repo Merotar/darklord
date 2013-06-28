@@ -16,16 +16,16 @@ import java.util.concurrent.Callable;
  */
 public class GridStoreCallable implements Callable<Boolean>
 {
-	Grid gridTostore;
+	Room gridTostore;
 	String fileName;
 	
-	public GridStoreCallable(Grid theGrid, String theFileName)
+	public GridStoreCallable(Room theGrid, String theFileName)
 	{
 		gridTostore = theGrid;
 		fileName = theFileName;
 	}
 	
-	public void writeGridToFile(Grid theGrid)
+	public void writeGridToFile(Room theGrid)
 	{
 		Print.outln("write file: "+fileName);
 		

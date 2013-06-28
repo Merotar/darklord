@@ -207,7 +207,7 @@ public class Projectile extends Collidable
 		}
 		if (active)
 		{
-			setPos(getPos().add(direction.mul(dt*speed)));
+			setPos(getPosition().add(direction.mul(dt*speed)));
 		}
 		
 		// move

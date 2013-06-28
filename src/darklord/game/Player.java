@@ -211,7 +211,7 @@ public class Player extends Collidable implements Serializable
 				break;
 			}
 		}
-		if (add) electricAttacs.add(new ElectricAttack(getPos(), theEnemy));
+		if (add) electricAttacs.add(new ElectricAttack(getPosition(), theEnemy));
 	}
 	
 //	public void removeElectrixAttack(Enemy theEnemy)
@@ -333,9 +333,20 @@ public class Player extends Collidable implements Serializable
 		this.maxHp = maxHp;
 	}
 	
-	public Vector2f getPos()
+	public Vector2f getPosition()
 	{
 		return new Vector2f(getPosX(), getPosY());
+	}
+	
+	public Vector2f getLocalPosition(LevelStructure level)
+	{
+		float x = (posX) % level.getGridSizeX();
+		float y = (posY) % level.getGridSizeY();
+		
+		if (x < 0) x += level.getGridSizeX();
+		if (y < 0) y += level.getGridSizeY();
+		
+		return new Vector2f(x, y);
 	}
 	
 	public void setPos(Vector2f v)

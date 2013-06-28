@@ -278,7 +278,7 @@ public class Map implements Serializable
 		return false;
 	}
 	
-	private void initDungeon(Grid theGrid, int theX, int theY)
+	private void initDungeon(Room theGrid, int theX, int theY)
 	{
 //		if (theGrid == null) theGrid = new Grid(getGridSizeX(), getGridSizeY(), BlockType.BLOCK_DIRT);
 		
@@ -382,7 +382,7 @@ public class Map implements Serializable
 		}
 	}
 	
-	void generateCorridor(Grid theGrid, Vector2f position, int maxLength)
+	void generateCorridor(Room theGrid, Vector2f position, int maxLength)
 	{
 		int length = (int)Math.round(RandomGenerator.getRandomZeroToOne()*maxLength);
 		Vector2f direction = null;
@@ -400,7 +400,7 @@ public class Map implements Serializable
 
 	}
 	
-	void generateVein(Grid theGrid, Vector2f position, int maxLength, BlockType type)
+	void generateVein(Room theGrid, Vector2f position, int maxLength, BlockType type)
 	{
 		int length = (int)Math.round(RandomGenerator.getRandomZeroToOne()*maxLength);
 		Vector2f direction = null;
@@ -1118,6 +1118,16 @@ public class Map implements Serializable
 //		readFile("defaultMap.map");
 	}
 
+	public void setLocalBlockAt(int x, int y, BlockType t)
+	{
+		levelStructure.getLocalBlockAt(x, y).setType(t);
+	}
+	
+	public Block getLocalBlockAt(int x, int y)
+	{
+		return levelStructure.getLocalBlockAt(x, y);
+	}
+	
 	public void setBlock(int x_int, int y_int, BlockType t)
 	{
 		levelStructure.getBlockAt(x_int, y_int).setType(t);
@@ -1258,7 +1268,7 @@ public class Map implements Serializable
 //		saveCollectablesToGrid(theGrid);
 //	}
 	
-	public void addAllToCurrent(Grid theGrid)
+	public void addAllToCurrent(Room theGrid)
 	{
 		currentEnemies.addAll(theGrid.getEnemies());
 		currentCollectables.addAll(theGrid.getCollectableObjects());

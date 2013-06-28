@@ -1,7 +1,13 @@
-package darklord.game;
+package darklord.rules;
 
 import java.io.Serializable;
 import java.util.Vector;
+
+import darklord.game.GameEngine;
+import darklord.game.Player;
+import darklord.game.Print;
+import darklord.game.Room;
+
 
 public class Rule implements Serializable
 {
@@ -27,28 +33,28 @@ public class Rule implements Serializable
 		reactions.add(theReaction);
 	}
 	
-	public boolean checkConditions(Grid theGrid, Player thePlayer)
+	private boolean checkConditions(GameEngine engine, Player thePlayer)
 	{
 		for (Condition tmpCondition : conditions)
 		{
-			if (tmpCondition.isTrue(theGrid, thePlayer)) return true;
+			if (tmpCondition.isTrue(engine, thePlayer)) return true;
 		}
 		return false;
 	}
 	
-	public void apply(Grid theGrid, Player thePlayer)
+	public void apply(GameEngine engine, Player thePlayer)
 	{
 		if (active)
 		{
-			if (checkConditions(theGrid, thePlayer))
+			if (checkConditions(engine, thePlayer))
 			{
 				for (Reaction tmpReaction : reactions)
 				{
-					tmpReaction.apply(theGrid, thePlayer);
+					tmpReaction.apply(engine, thePlayer);
 				}
+				if (oneTimeRule) active = false;
 			}
 		}
-		if (oneTimeRule) active = false;
 	}
 
 	public boolean isActive() {

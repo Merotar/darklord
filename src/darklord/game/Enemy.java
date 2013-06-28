@@ -41,7 +41,7 @@ public class Enemy extends Collidable implements Serializable
 	
 	public Enemy(Enemy e)
 	{
-		this.setPos(e.getPos());
+		this.setPos(e.getPosition());
 		this.setSizeX(e.getSizeX());
 		this.setSizeY(e.getSizeY());
 		this.setType(e.getType());

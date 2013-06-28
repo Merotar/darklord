@@ -1,14 +1,24 @@
 package darklord.game;
 
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.Vector;
 
 import org.lwjgl.opengl.GL11;
+
+import darklord.rules.Condition;
+import darklord.rules.Reaction;
+import darklord.rules.Rule;
+import darklord.rules.RuleParser;
+
 
 /**
  * describes the architecture of an level with blocks and enemies
@@ -18,7 +28,7 @@ import org.lwjgl.opengl.GL11;
  * @since 12-05-2013
  * 
  */
-public class Grid implements Serializable
+public class Room implements Serializable
 {
 	private Block[][] theGrid;
 	private Vector<Enemy> enemies;
@@ -27,15 +37,17 @@ public class Grid implements Serializable
 	private int fogDensity, posX, posY;
 	public Vector<Collectable> collectableObjects;
 	public Vector<Chest> chests;
-	private Grid gridTop, gridBottom, gridLeft, gridRight;
-	private Vector<Rule> rules;
+	private Room gridTop, gridBottom, gridLeft, gridRight;
+	private int levelRequirement;
+	public Vector<Rule> rules;
+	private String name;
 	
-	public Grid()
+	public Room()
 	{
 		this(10, 10);
 	}
 	
-	public Grid(int x, int y, int thePosX, int thePosY, BlockType t)
+	public Room(int x, int y, int thePosX, int thePosY, BlockType t)
 	{
 		gridSizeX = x;
 		gridSizeY = y;
@@ -63,9 +75,11 @@ public class Grid implements Serializable
 		chests = new Vector<Chest>();
 		
 		initDefault(t);
+		name ="defaultRoom";
+		rules = readRulesFromTextFile(name+"Rules.txt");
 	}
 	
-	public Grid(int x, int y)
+	public Room(int x, int y)
 	{
 		this(x, y, 0, 0, BlockType.BLOCK_NONE);
 	}
@@ -181,6 +195,14 @@ public class Grid implements Serializable
 		}
 		return false;
 	}
+	
+	public void update(GameEngine engine, Player thePlayer)
+	{	
+		for (Rule tmpRule : rules)
+		{
+			tmpRule.apply(engine, thePlayer);
+		}
+	}
 
 	public Vector<Enemy> getEnemies()
 	{
@@ -291,35 +313,106 @@ public class Grid implements Serializable
 		this.enemies = enemies;
 	}
 
-	public Grid getGridTop() {
+	public Room getGridTop() {
 		return gridTop;
 	}
 
-	public void setGridTop(Grid gridTop) {
+	public void setGridTop(Room gridTop) {
 		this.gridTop = gridTop;
 	}
 
-	public Grid getGridBottom() {
+	public Room getGridBottom() {
 		return gridBottom;
 	}
 
-	public void setGridBottom(Grid gridBottom) {
+	public void setGridBottom(Room gridBottom) {
 		this.gridBottom = gridBottom;
 	}
 
-	public Grid getGridLeft() {
+	public Room getGridLeft() {
 		return gridLeft;
 	}
 
-	public void setGridLeft(Grid gridLeft) {
+	public void setGridLeft(Room gridLeft) {
 		this.gridLeft = gridLeft;
 	}
 
-	public Grid getGridRight() {
+	public Room getGridRight() {
 		return gridRight;
 	}
 
-	public void setGridRight(Grid gridRight) {
+	public void setGridRight(Room gridRight) {
 		this.gridRight = gridRight;
 	}
+
+	public int getLevelRequirement() {
+		return levelRequirement;
+	}
+
+	public void setLevelRequirement(int levelRequirement) {
+		this.levelRequirement = levelRequirement;
+	}
+	
+	public Vector<Rule> readRulesFromTextFile(String fileName)
+	{
+		Vector<Rule> theRules = new Vector<Rule>();
+		File file = new File(fileName);
+		try
+		{
+			Scanner s = new Scanner(file);
+			String line;
+			String[] words;
+
+			while (s.hasNextLine())
+			{
+                line = s.nextLine();
+                words = line.split("\\s+");
+
+            	if (words[0].equals(RuleParser.newRule))
+            	{
+            		Rule tmpRule = new Rule();
+            		
+        			while (s.hasNextLine())
+        			{
+                        line = s.nextLine();
+                        words = line.split("\\s+");
+                        
+                        // new condition
+                        if (words[0].equals(RuleParser.Condition))
+                        {
+                        	Condition tmpCondition = RuleParser.parseCondition(words);
+                        	if (tmpCondition != null) tmpRule.addCondition(tmpCondition);
+                        }
+                        
+                        // new reaction
+                        if (words[0].equals(RuleParser.Reaction))
+                        {
+                        	Reaction tmpReaction = RuleParser.parseReaction(words);
+                        	if (tmpReaction != null) tmpRule.addReaction(tmpReaction);
+                        }
+                        
+                        // finalize rule
+                        if (words[0].equals(RuleParser.endRule))
+                        {
+                        	theRules.add(tmpRule);
+                        	break;
+                        }
+        			}
+            	}
+			}
+		}  catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return theRules;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 }

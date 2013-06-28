@@ -6,27 +6,27 @@ import darklord.math.Vector2f;
 
 public class LevelStructure implements Serializable
 {
-	private Grid gridCenter;
-	private Grid activeGrid;
+	private Room gridCenter;
+	private Room activeRoom;
 	private int gridSizeX, gridSizeY;
 //	private final int levelStructureSize = 20;
 //	private int posX, posY;
 	private int gridMapSize, centerX, centerY;
-	Grid[][] gridMap;
+	Room[][] roomMap;
 //	boolean[][] isDiscovered;
 	
 	public LevelStructure(int sizeX, int sizeY)
 	{
 		setGridSizeX(sizeX);
 		setGridSizeY(sizeY);
-		gridCenter = new Grid(sizeX, sizeY, 0, 0, BlockType.BLOCK_DIRT);
-		activeGrid = gridCenter;
+		gridCenter = new Room(sizeX, sizeY, 0, 0, BlockType.BLOCK_DIRT);
+		activeRoom = gridCenter;
 		
 		gridMapSize = 4;
 		centerX = gridMapSize / 2;
 		centerY = gridMapSize / 2;
-		gridMap = new Grid[gridMapSize][gridMapSize];
-		gridMap[centerX][centerY] = gridCenter;
+		roomMap = new Room[gridMapSize][gridMapSize];
+		roomMap[centerX][centerY] = gridCenter;
 		
 //		grids = new Grid[levelStructureSize][levelStructureSize];
 //		isDiscovered = new boolean[levelStructureSize][levelStructureSize];
@@ -44,12 +44,12 @@ public class LevelStructure implements Serializable
 	
 	public boolean isGridTop()
 	{
-		return activeGrid.getGridTop() != null;
+		return activeRoom.getGridTop() != null;
 	}
 	
 	public boolean isGridBottom()
 	{
-		return activeGrid.getGridBottom() != null;
+		return activeRoom.getGridBottom() != null;
 //		if ( posY-1 < 0) return false;
 //		if (grids[posX][posY-1] != null) return true;
 //		return false;
@@ -57,7 +57,7 @@ public class LevelStructure implements Serializable
 	
 	public boolean isGridLeft()
 	{
-		return activeGrid.getGridLeft() != null;
+		return activeRoom.getGridLeft() != null;
 //		if (posX-1 < 0) return false;
 //		if (grids[posX-1][posY] != null) return true;
 //		return false;
@@ -65,7 +65,7 @@ public class LevelStructure implements Serializable
 	
 	public boolean isGridRight()
 	{
-		return activeGrid.getGridRight() != null;
+		return activeRoom.getGridRight() != null;
 //		if (posX+1 >= levelStructureSize) return false;
 //		if (grids[posX+1][posY] != null) return true;
 //		return false;
@@ -73,20 +73,20 @@ public class LevelStructure implements Serializable
 	
 	public boolean addGridTop()
 	{
-		if (activeGrid.getGridTop() == null)
+		if (activeRoom.getGridTop() == null)
 		{
-			int newPosX = activeGrid.getPosX();
-			int newPosY = activeGrid.getPosY()+1;
-			Grid tmpGrid = new Grid(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_NONE);
+			int newPosX = activeRoom.getPosX();
+			int newPosY = activeRoom.getPosY()+1;
+			Room tmpGrid = new Room(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_NONE);
 			
 			if (newPosX+centerX-1 < 0 || newPosX+centerX+1 >= gridMapSize || newPosY+centerY-1 < 0 || newPosY+centerY+1 >= gridMapSize)
 			{
 				increaseGridMapSize();
-				newPosX = activeGrid.getPosX();
-				newPosY = activeGrid.getPosY()+1;
+				newPosX = activeRoom.getPosX();
+				newPosY = activeRoom.getPosY()+1;
 			}
 			setGridLinks(tmpGrid);
-			activeGrid.setGridTop(tmpGrid);
+			activeRoom.setGridTop(tmpGrid);
 			return true;
 		}
 		return false;
@@ -98,20 +98,20 @@ public class LevelStructure implements Serializable
 	
 	public boolean addGridBottom()
 	{
-		if (activeGrid.getGridBottom() == null)
+		if (activeRoom.getGridBottom() == null)
 		{
-			int newPosX = activeGrid.getPosX();
-			int newPosY = activeGrid.getPosY()-1;
-			Grid tmpGrid = new Grid(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_NONE);
+			int newPosX = activeRoom.getPosX();
+			int newPosY = activeRoom.getPosY()-1;
+			Room tmpGrid = new Room(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_NONE);
 			
 			if (newPosX+centerX-1 < 0 || newPosX+centerX+1 >= gridMapSize || newPosY+centerY-1 < 0 || newPosY+centerY+1 >= gridMapSize)
 			{
 				increaseGridMapSize();
-				newPosX = activeGrid.getPosX();
-				newPosY = activeGrid.getPosY()-1;
+				newPosX = activeRoom.getPosX();
+				newPosY = activeRoom.getPosY()-1;
 			}
 			setGridLinks(tmpGrid);
-			activeGrid.setGridBottom(tmpGrid);
+			activeRoom.setGridBottom(tmpGrid);
 			return true;
 		}
 		return false;
@@ -123,20 +123,20 @@ public class LevelStructure implements Serializable
 	
 	public boolean addGridLeft()
 	{
-		if (activeGrid.getGridLeft() == null)
+		if (activeRoom.getGridLeft() == null)
 		{
-			int newPosX = activeGrid.getPosX()-1;
-			int newPosY = activeGrid.getPosY();
-			Grid tmpGrid = new Grid(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_NONE);
+			int newPosX = activeRoom.getPosX()-1;
+			int newPosY = activeRoom.getPosY();
+			Room tmpGrid = new Room(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_NONE);
 			
 			if (newPosX+centerX-1 < 0 || newPosX+centerX+1 >= gridMapSize || newPosY+centerY-1 < 0 || newPosY+centerY+1 >= gridMapSize)
 			{
 				increaseGridMapSize();
-				newPosX = activeGrid.getPosX()-1;
-				newPosY = activeGrid.getPosY();
+				newPosX = activeRoom.getPosX()-1;
+				newPosY = activeRoom.getPosY();
 			}
 			setGridLinks(tmpGrid);
-			activeGrid.setGridLeft(tmpGrid);
+			activeRoom.setGridLeft(tmpGrid);
 			return true;
 		}
 		return false;
@@ -148,21 +148,21 @@ public class LevelStructure implements Serializable
 	
 	public boolean addGridRight()
 	{
-		if (activeGrid.getGridRight() == null)
+		if (activeRoom.getGridRight() == null)
 		{
-			int newPosX = activeGrid.getPosX()+1;
-			int newPosY = activeGrid.getPosY();
-			Grid tmpGrid = new Grid(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_NONE);
+			int newPosX = activeRoom.getPosX()+1;
+			int newPosY = activeRoom.getPosY();
+			Room tmpGrid = new Room(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_NONE);
 			
 			if (newPosX+centerX-1 < 0 || newPosX+centerX+1 >= gridMapSize || newPosY+centerY-1 < 0 || newPosY+centerY+1 >= gridMapSize)
 			{
 				increaseGridMapSize();
-				newPosX = activeGrid.getPosX()+1;
-				newPosY = activeGrid.getPosY();
+				newPosX = activeRoom.getPosX()+1;
+				newPosY = activeRoom.getPosY();
 			}
 			setGridLinks(tmpGrid);
 			
-			activeGrid.setGridRight(tmpGrid);
+			activeRoom.setGridRight(tmpGrid);
 			return true;
 		}
 		return false;
@@ -174,57 +174,57 @@ public class LevelStructure implements Serializable
 	
 	public void increaseGridMapSize()
 	{
-		Grid[][] oldMap = gridMap;
+		Room[][] oldMap = roomMap;
 		int oldSize = gridMapSize;
 		gridMapSize *=2;
 		centerX = gridMapSize / 2;
 		centerY = gridMapSize / 2;
 		
-		gridMap = new Grid[gridMapSize][gridMapSize];
-		gridMap[centerX][centerY] = gridCenter;
+		roomMap = new Room[gridMapSize][gridMapSize];
+		roomMap[centerX][centerY] = gridCenter;
 		
 		for (int i=0;i<oldSize;i++)
 		{
 			for (int j=0;j<oldSize;j++)
 			{
-				gridMap[oldSize/2+i][oldSize/2+j] = oldMap[i][j];
+				roomMap[oldSize/2+i][oldSize/2+j] = oldMap[i][j];
 			}
 		}
 		Print.outln("increased map: new size: "+gridMapSize);
 	}
 	
-	public void setGridLinks(Grid theGrid)
+	public void setGridLinks(Room theGrid)
 	{
-		theGrid.setGridTop(gridMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY+1]);
-		theGrid.setGridBottom(gridMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY-1]);
-		theGrid.setGridLeft(gridMap[theGrid.getPosX()+centerX-1][theGrid.getPosY()+centerY]);
-		theGrid.setGridRight(gridMap[theGrid.getPosX()+centerX+1][theGrid.getPosY()+centerY]);
+		theGrid.setGridTop(roomMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY+1]);
+		theGrid.setGridBottom(roomMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY-1]);
+		theGrid.setGridLeft(roomMap[theGrid.getPosX()+centerX-1][theGrid.getPosY()+centerY]);
+		theGrid.setGridRight(roomMap[theGrid.getPosX()+centerX+1][theGrid.getPosY()+centerY]);
 		
-		gridMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY] = theGrid;
+		roomMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY] = theGrid;
 		
-		if (gridMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY+1] != null)
+		if (roomMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY+1] != null)
 		{
-			gridMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY+1].setGridBottom(theGrid);
+			roomMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY+1].setGridBottom(theGrid);
 		}
-		if (gridMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY-1] != null)
+		if (roomMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY-1] != null)
 		{
-			gridMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY-1].setGridTop(theGrid);
+			roomMap[theGrid.getPosX()+centerX][theGrid.getPosY()+centerY-1].setGridTop(theGrid);
 		}
-		if (gridMap[theGrid.getPosX()+centerX-1][theGrid.getPosY()+centerY] != null)
+		if (roomMap[theGrid.getPosX()+centerX-1][theGrid.getPosY()+centerY] != null)
 		{
-			gridMap[theGrid.getPosX()+centerX-1][theGrid.getPosY()+centerY].setGridRight(theGrid);
+			roomMap[theGrid.getPosX()+centerX-1][theGrid.getPosY()+centerY].setGridRight(theGrid);
 		}
-		if (gridMap[theGrid.getPosX()+centerX+1][theGrid.getPosY()+centerY] != null)
+		if (roomMap[theGrid.getPosX()+centerX+1][theGrid.getPosY()+centerY] != null)
 		{
-			gridMap[theGrid.getPosX()+centerX+1][theGrid.getPosY()+centerY].setGridLeft(theGrid);
+			roomMap[theGrid.getPosX()+centerX+1][theGrid.getPosY()+centerY].setGridLeft(theGrid);
 		}
 	}
 	
-	public Grid getGridTop(Grid theGrid)
+	public Room getGridTop(Room theGrid)
 	{
 		if (isGridTop()) return theGrid.getGridTop();
 		
-		Grid tmpGrid = theGrid;
+		Room tmpGrid = theGrid;
 		while (tmpGrid.getGridBottom() != null)
 		{
 			tmpGrid = tmpGrid.getGridBottom();
@@ -241,11 +241,11 @@ public class LevelStructure implements Serializable
 //		return grids[x][y+1];
 	}
 	
-	public Grid getGridBottom(Grid theGrid)
+	public Room getGridBottom(Room theGrid)
 	{
 		if (isGridBottom()) return theGrid.getGridBottom();
 		
-		Grid tmpGrid = theGrid;
+		Room tmpGrid = theGrid;
 		while (tmpGrid.getGridTop() != null)
 		{
 			tmpGrid = tmpGrid.getGridTop();
@@ -254,11 +254,11 @@ public class LevelStructure implements Serializable
 		return tmpGrid;
 	}
 	
-	public Grid getGridLeft(Grid theGrid)
+	public Room getGridLeft(Room theGrid)
 	{
 		if (isGridLeft()) return theGrid.getGridLeft();
 		
-		Grid tmpGrid = theGrid;
+		Room tmpGrid = theGrid;
 		while (tmpGrid.getGridRight() != null)
 		{
 			tmpGrid = tmpGrid.getGridRight();
@@ -267,17 +267,26 @@ public class LevelStructure implements Serializable
 		return tmpGrid;
 	}
 	
-	public Grid getGridRight(Grid theGrid)
+	public Room getGridRight(Room theGrid)
 	{
 		if (isGridRight()) return theGrid.getGridRight();
 		
-		Grid tmpGrid = theGrid;
+		Room tmpGrid = theGrid;
 		while (tmpGrid.getGridLeft() != null)
 		{
 			tmpGrid = tmpGrid.getGridLeft();
 		}
 		
 		return tmpGrid;
+	}
+	
+	public Block getLocalBlockAt(int x, int y)
+	{
+		if (x >= 0 && x < gridSizeX && y >= 0 && y < gridSizeY)
+		{
+			return activeRoom.getBlockAt(x, y);
+		}
+		return null;
 	}
 	
 	public Block getBlockAt(int x, int y)
@@ -291,8 +300,8 @@ public class LevelStructure implements Serializable
 		if (localX < 0) localX += getGridSizeX();
 		if (localY < 0) localY += getGridSizeY();
 		
-		gridX = gridX - activeGrid.getPosX();
-		gridY = gridY - activeGrid.getPosY();
+		gridX = gridX - activeRoom.getPosX();
+		gridY = gridY - activeRoom.getPosY();
 		
 //		Print.outln("x: "+x+ ", y: "+y);
 //		Print.outln("gridX: "+gridX+ ", gridY: "+gridY);
@@ -314,33 +323,33 @@ public class LevelStructure implements Serializable
 			return null;
 		}
 		
-		if (gridX == 0 && gridY == 0) return activeGrid.getBlockAt(localX, localY);
+		if (gridX == 0 && gridY == 0) return activeRoom.getBlockAt(localX, localY);
 		
 		if (gridX == -1 && gridY == 0)
 		{
-			return getGridLeft(activeGrid).getBlockAt(localX, localY);
+			return getGridLeft(activeRoom).getBlockAt(localX, localY);
 		}
 		
 		if (gridX == 1 && gridY == 0)
 		{
-			return getGridRight(activeGrid).getBlockAt(localX, localY);
+			return getGridRight(activeRoom).getBlockAt(localX, localY);
 		}
 		
 		if (gridX == 0 && gridY == -1)
 		{
-			return getGridBottom(activeGrid).getBlockAt(localX, localY);
+			return getGridBottom(activeRoom).getBlockAt(localX, localY);
 		}
 		
 		if (gridX == 0 && gridY == 1)
 		{
-			return getGridTop(activeGrid).getBlockAt(localX, localY);
+			return getGridTop(activeRoom).getBlockAt(localX, localY);
 		}
 		
 		if (gridX == -1 && gridY == -1)
 		{
 			if (isGridLeft())
 			{
-				Grid tmpGrid = getGridLeft(activeGrid).getGridBottom();
+				Room tmpGrid = getGridLeft(activeRoom).getGridBottom();
 				if (tmpGrid != null)
 				{
 					return tmpGrid.getBlockAt(localX, localY);
@@ -348,7 +357,7 @@ public class LevelStructure implements Serializable
 			}
 			if (isGridBottom())
 			{
-				Grid tmpGrid = getGridBottom(activeGrid).getGridLeft();
+				Room tmpGrid = getGridBottom(activeRoom).getGridLeft();
 				if (tmpGrid != null)
 				{
 					return tmpGrid.getBlockAt(localX, localY);
@@ -360,7 +369,7 @@ public class LevelStructure implements Serializable
 		{
 			if (isGridLeft())
 			{
-				Grid tmpGrid = getGridLeft(activeGrid).getGridTop();
+				Room tmpGrid = getGridLeft(activeRoom).getGridTop();
 				if (tmpGrid != null)
 				{
 					return tmpGrid.getBlockAt(localX, localY);
@@ -368,7 +377,7 @@ public class LevelStructure implements Serializable
 			}
 			if (isGridTop())
 			{
-				Grid tmpGrid = getGridTop(activeGrid).getGridLeft();
+				Room tmpGrid = getGridTop(activeRoom).getGridLeft();
 				if (tmpGrid != null)
 				{
 					return tmpGrid.getBlockAt(localX, localY);
@@ -380,7 +389,7 @@ public class LevelStructure implements Serializable
 		{
 			if (isGridRight())
 			{
-				Grid tmpGrid = getGridRight(activeGrid).getGridBottom();
+				Room tmpGrid = getGridRight(activeRoom).getGridBottom();
 				if (tmpGrid != null)
 				{
 					return tmpGrid.getBlockAt(localX, localY);
@@ -388,7 +397,7 @@ public class LevelStructure implements Serializable
 			}
 			if (isGridBottom())
 			{
-				Grid tmpGrid = getGridBottom(activeGrid).getGridRight();
+				Room tmpGrid = getGridBottom(activeRoom).getGridRight();
 				if (tmpGrid != null)
 				{
 					return tmpGrid.getBlockAt(localX, localY);
@@ -400,7 +409,7 @@ public class LevelStructure implements Serializable
 		{
 			if (isGridTop())
 			{
-				Grid tmpGrid = getGridTop(activeGrid).getGridRight();
+				Room tmpGrid = getGridTop(activeRoom).getGridRight();
 				if (tmpGrid != null)
 				{
 					return tmpGrid.getBlockAt(localX, localY);
@@ -408,7 +417,7 @@ public class LevelStructure implements Serializable
 			}
 			if (isGridRight())
 			{
-				Grid tmpGrid = getGridRight(activeGrid).getGridTop();
+				Room tmpGrid = getGridRight(activeRoom).getGridTop();
 				if (tmpGrid != null)
 				{
 					return tmpGrid.getBlockAt(localX, localY);
@@ -459,8 +468,8 @@ public class LevelStructure implements Serializable
 		this.gridSizeY = gridSizeY;
 	}
 
-	public Grid getActiveGrid() {
-		return activeGrid;
+	public Room getActiveGrid() {
+		return activeRoom;
 	}
 //
 //	public void setActiveGrid(Grid activeGrid) {
@@ -469,7 +478,7 @@ public class LevelStructure implements Serializable
 	
 	public Vector2f generateStartPosition()
 	{
-		return new Vector2f(activeGrid.getPosX()*gridSizeX+gridSizeX/2.f, activeGrid.getPosY()*gridSizeY+gridSizeY/2.f);
+		return new Vector2f(activeRoom.getPosX()*gridSizeX+gridSizeX/2.f, activeRoom.getPosY()*gridSizeY+gridSizeY/2.f);
 	}
 	
 	public void update(GameEngine engine)
@@ -479,59 +488,61 @@ public class LevelStructure implements Serializable
 		int gridX = (int)Math.floor(1.f * player.getPosX() / getGridSizeX());
 		int gridY = (int)Math.floor(1.f * player.getPosY() / getGridSizeY());
 		
-		int diffX = gridX - activeGrid.getPosX();
-		int diffY = gridY - activeGrid.getPosY();
+		int diffX = gridX - activeRoom.getPosX();
+		int diffY = gridY - activeRoom.getPosY();
 		
 //		Print.outln("active grid: ("+activeGrid.getPosX()+"; "+activeGrid.getPosY()+")");
 //		Print.outln("diff: ("+diffX+"; "+diffY+")");
 		
 		if (diffY == 1)
 		{
-			 int tmpY = activeGrid.getPosY();
+			 int tmpY = activeRoom.getPosY();
 			 boolean addPlayerPos = !isGridTop();
-			activeGrid = getGridTop(activeGrid);
+			activeRoom = getGridTop(activeRoom);
 			 if (addPlayerPos)
 			 {
-				 player.setPosY(player.getPosY()+gridSizeY*(activeGrid.getPosY()-tmpY-1));
-				 engine.setPosY(engine.getPosY()-gridSizeY*(activeGrid.getPosY()-tmpY-1));
+				 player.setPosY(player.getPosY()+gridSizeY*(activeRoom.getPosY()-tmpY-1));
+				 engine.setPosY(engine.getPosY()-gridSizeY*(activeRoom.getPosY()-tmpY-1));
 			 }
 //			Print.outln("active grid: ("+activeGrid.getPosX()+"; "+activeGrid.getPosY()+")");
 		} else if (diffY == -1)
 		{
-			 int tmpY = activeGrid.getPosY();
+			 int tmpY = activeRoom.getPosY();
 			 boolean addPlayerPos = !isGridBottom();
-			activeGrid = getGridBottom(activeGrid);
+			activeRoom = getGridBottom(activeRoom);
 			 if (addPlayerPos)
 			 {
-				 player.setPosY(player.getPosY()+gridSizeY*(activeGrid.getPosY()-tmpY+1));
-				 engine.setPosY(engine.getPosY()-gridSizeY*(activeGrid.getPosY()-tmpY+1));
+				 player.setPosY(player.getPosY()+gridSizeY*(activeRoom.getPosY()-tmpY+1));
+				 engine.setPosY(engine.getPosY()-gridSizeY*(activeRoom.getPosY()-tmpY+1));
 			 }
 //			Print.outln("active grid: ("+activeGrid.getPosX()+"; "+activeGrid.getPosY()+")");
 		}
 		
 		if (diffX == 1)
 		{
-			 int tmpX = activeGrid.getPosX();
+			 int tmpX = activeRoom.getPosX();
 			 boolean addPlayerPos = !isGridRight();
-			activeGrid = getGridRight(activeGrid);
+			activeRoom = getGridRight(activeRoom);
 			 if (addPlayerPos)
 			 {
-				 player.setPosX(player.getPosX()+gridSizeX*(activeGrid.getPosX()-tmpX-1));
-				 engine.setPosX(engine.getPosX()-gridSizeX*(activeGrid.getPosX()-tmpX-1));
+				 player.setPosX(player.getPosX()+gridSizeX*(activeRoom.getPosX()-tmpX-1));
+				 engine.setPosX(engine.getPosX()-gridSizeX*(activeRoom.getPosX()-tmpX-1));
 			 }
 //			Print.outln("active grid: ("+activeGrid.getPosX()+"; "+activeGrid.getPosY()+")");
 		} else if (diffX == -1)
 		{
-			 int tmpX = activeGrid.getPosX();
+			 int tmpX = activeRoom.getPosX();
 			 boolean addPlayerPos = !isGridLeft();
-			activeGrid = getGridLeft(activeGrid);
+			activeRoom = getGridLeft(activeRoom);
 			 if (addPlayerPos)
 			 {
-				 player.setPosX(player.getPosX()+gridSizeX*(activeGrid.getPosX()-tmpX+1));
-				 engine.setPosX(engine.getPosX()-gridSizeX*(activeGrid.getPosX()-tmpX+1));
+				 player.setPosX(player.getPosX()+gridSizeX*(activeRoom.getPosX()-tmpX+1));
+				 engine.setPosX(engine.getPosX()-gridSizeX*(activeRoom.getPosX()-tmpX+1));
 			 }
 //			Print.outln("active grid: ("+activeGrid.getPosX()+"; "+activeGrid.getPosY()+")");
 		}
+		
+		activeRoom.update(engine, engine.mainPlayer);
 		
 //		int localX =  x - gridX*getGridSizeX();
 //		int localY =  y - gridY*getGridSizeY();
@@ -548,12 +559,12 @@ public class LevelStructure implements Serializable
 //		if (gridY == -1) activeGrid = activeGrid.getGridTop();
 	}
 
-	public Grid[][] getGridMap() {
-		return gridMap;
+	public Room[][] getGridMap() {
+		return roomMap;
 	}
 
-	public void setGridMap(Grid[][] gridMap) {
-		this.gridMap = gridMap;
+	public void setGridMap(Room[][] gridMap) {
+		this.roomMap = gridMap;
 	}
 
 	public int getGridMapSize() {
@@ -564,11 +575,11 @@ public class LevelStructure implements Serializable
 		this.gridMapSize = gridMapSize;
 	}
 
-	public Grid getGridCenter() {
+	public Room getGridCenter() {
 		return gridCenter;
 	}
 
-	public void setGridCenter(Grid gridCenter) {
+	public void setGridCenter(Room gridCenter) {
 		this.gridCenter = gridCenter;
 	}
 }

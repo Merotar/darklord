@@ -54,7 +54,7 @@ public class EnemyRandomMove extends Enemy implements Serializable
 //		speed = 1.f;
 		motionTimer = new Timer();
 		motionTime = 500;
-		oldPos = getPos();
+		oldPos = getPosition();
 		
 		appearance = new Animation();
 		((Animation)appearance).addTextureRegion(new TextureRegion(0, 1, 128));
@@ -76,7 +76,7 @@ public class EnemyRandomMove extends Enemy implements Serializable
 	{
 		setDirection(direction);
 		motionTimer.start();
-		oldPos = getPos();
+		oldPos = getPosition();
 	}
 	
 	public void stopMotion()
