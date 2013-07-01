@@ -11,7 +11,7 @@ import darklord.math.Vector2f;
 import darklord.media.SpriteSheet;
 import darklord.media.TextureRegion;
 
-public class UISelectionListType<T extends ButtonBlock>
+public class UISelectionListType<T extends Button>
 {
 	private Vector2f position, size;
 	private Vector<T> elements;
@@ -78,7 +78,7 @@ public class UISelectionListType<T extends ButtonBlock>
 		}
 	}
 	
-	public T getActiveBuildable()
+	public T getActiveElement()
 	{
 		if (selectedObject != -1)
 		{
@@ -95,7 +95,7 @@ public class UISelectionListType<T extends ButtonBlock>
 		GL11.glTranslated(getPosition().getX(), getPosition().getY(), 0.);
 		GL11.glScaled(getSize().getX(), getSize().getY(), 1.);
 		
-		Darklord.sprites01.begin();
+		spriteSheet.begin();
 		// draw elements
 		for (T tmp: elements)
 		{
@@ -105,9 +105,9 @@ public class UISelectionListType<T extends ButtonBlock>
 					tmp.getSize().getX(), 
 					tmp.getSize().getY());
 		}
-		Darklord.sprites01.end();
+		spriteSheet.end();
 		
-		spriteSheet.begin();
+		Darklord.ui.begin();
 		
 		// draw selection
 		if (selectedObject >= 0)
@@ -121,7 +121,7 @@ public class UISelectionListType<T extends ButtonBlock>
 		}
 
 		
-		spriteSheet.end();
+		Darklord.ui.end();
 		GL11.glPopMatrix();
 	}
 	

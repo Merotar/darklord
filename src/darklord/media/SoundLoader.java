@@ -15,12 +15,14 @@ import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
+import darklord.game.Darklord;
 import darklord.game.Print;
 
 public class SoundLoader
 {
-	public Audio digSound, shot, explosion, mainTheme, chest, build, laser, electricity;
-	public float volumeMusic, volumeEffects;
+	public Audio digSound, shot, explosion, mainTheme, pling, build, laser, electricity;
+	public static float volumeMusic;
+	public static float volumeEffects;
 	
 	public SoundLoader()
 	{
@@ -33,7 +35,7 @@ public class SoundLoader
 			shot = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("darklord/sound/shot.ogg"));
 			explosion = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("darklord/sound/explosion.ogg"));
 			mainTheme = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("darklord/sound/mainTheme.ogg"));
-			chest = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("darklord/sound/chest.ogg"));
+			pling = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("darklord/sound/chest.ogg"));
 			build = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("darklord/sound/build.ogg"));
 			laser = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("darklord/sound/laser.ogg"));
 			electricity = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("darklord/sound/electricity.ogg"));
@@ -41,5 +43,11 @@ public class SoundLoader
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	public static void playSound(Audio theSound)
+	{
+		theSound.playAsSoundEffect(1.f, volumeEffects, false);
+
 	}
 }

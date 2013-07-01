@@ -111,7 +111,7 @@ public class Map implements Serializable
 		{
 			levelStructure = new LevelStructure(x, y);
 //			levelStructure.addGridLeft();
-			initDungeon(levelStructure.getActiveGrid(), 0, 0);
+//			initDungeon(levelStructure.getActiveGrid(), 0, 0);
 //			Print.outln(levelStructure.getBlockAt(3, 3).toString());
 //			Print.outln(levelStructure.getBlockAt(3, 33).toString());
 			start = levelStructure.generateStartPosition();
@@ -1468,6 +1468,68 @@ public class Map implements Serializable
 		  if (oos != null) try { oos.close(); } catch (IOException e) {}
 		  if (fos != null) try { fos.close(); } catch (IOException e) {}
 		}
+	}
+	
+	public void writeCentralRoomToFile()
+	{
+		writeCentralRoomToFile(getName()+"/"+levelStructure.getActiveGrid().getName()+".rm");
+	}
+	
+	public void writeCentralRoomToFile(String name)
+	{
+		levelStructure.getActiveGrid().setName(name);
+		String fileName = getName()+"/"+levelStructure.getActiveGrid().getName()+".rm";
+
+		Print.outln("write room to file: "+fileName);
+		
+		ObjectOutputStream oos = null;
+		FileOutputStream fos = null;
+		try {
+		  fos = new FileOutputStream(fileName);
+		  oos = new ObjectOutputStream(fos);
+		  
+		  oos.writeObject(levelStructure.getActiveGrid());
+		}
+		catch (IOException e) {
+		  e.printStackTrace();
+		}
+		finally {
+		  if (oos != null) try { oos.close(); } catch (IOException e) {}
+		  if (fos != null) try { fos.close(); } catch (IOException e) {}
+		}
+	}
+	
+	public void readCentralRoomFromFile()
+	{
+		readCentralRoomFromFile(getName()+"/"+levelStructure.getActiveGrid().getName()+".rm");
+	}
+	
+	public LevelStructure readCentralRoomFromFile(String name)
+	{
+		LevelStructure tmpLevelStructure = null;
+		ObjectInputStream ois = null;
+		FileInputStream fis = null;
+		
+		String fileName = getName()+"/"+name+".rm";
+		
+		Print.outln("load room file: "+fileName);
+		try {
+			  fis = new FileInputStream(fileName);
+			  ois = new ObjectInputStream(fis);
+
+			  
+			  levelStructure.setActiveGrid((Room)ois.readObject());
+
+			}
+			catch (Exception e) {
+				Print.err("error loading file: "+fileName);
+				e.printStackTrace();
+			}
+			finally {
+			  if (ois != null) try { ois.close(); } catch (IOException e) {}
+			  if (fis != null) try { fis.close(); } catch (IOException e) {}
+			}
+		return tmpLevelStructure;
 	}
 	
 //	public Grid readGridFromFile(String fileName)

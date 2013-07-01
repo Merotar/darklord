@@ -18,7 +18,7 @@ public class PlayerAtBlockCondition implements Condition
 	
 	public boolean isTrue(GameEngine engine, Player thePlayer)
 	{
-		if (position.collide(thePlayer.getLocalPosition(engine.map.levelStructure))) return true;
+		if (position.collide(thePlayer.getLocalPosition(engine.map.levelStructure), thePlayer.getSizeVec())) return true;
 		return false;
 	}
 	

@@ -194,6 +194,15 @@ abstract class Collidable implements Serializable
 		if (collVec.getY() >= posY+sizeY) return false;
 		return true;
 	}
+	
+	public boolean collide(Vector2f thePosition, Vector2f theSize)
+	{
+		Vector2f tmpSizeHalf = theSize.mul(0.5f);
+		Vector2f tmpCenter = (tmpSizeHalf).add(thePosition);
+		
+		return collide(getPosX()+getSizeX()/2.f, getPosY()+getSizeY()/2.f, getSizeX()/2.f, getSizeY()/2.f, tmpCenter.getX(), tmpCenter.getY(), tmpSizeHalf.getX(), tmpSizeHalf.getY());
+
+	}
 
 	public float getAngle() {
 		return angle;

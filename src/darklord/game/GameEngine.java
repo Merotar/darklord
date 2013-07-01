@@ -434,10 +434,13 @@ public class GameEngine
 		}
 		
 		// draw selection
-		GL11.glPushMatrix();
-		GL11.glTranslated(mainSelectBox.getX(), mainSelectBox.getY(), 0.f);
-		mainSelectBox.draw();
-		GL11.glPopMatrix();
+		if (mainSelectBox.isVisible() || Darklord.devMode)
+		{
+			GL11.glPushMatrix();
+			GL11.glTranslated(mainSelectBox.getX(), mainSelectBox.getY(), 0.f);
+			mainSelectBox.draw();
+			GL11.glPopMatrix();
+		}
 		
 		// draw the players beam
 		if (mainPlayer.getBeam().isActive())
@@ -573,24 +576,25 @@ public class GameEngine
 		mouseGrid.setX(mouseGrid.getX()-this.getPosX());
 		mouseGrid.setY(mouseGrid.getY()-this.getPosY());
 		
+		// apply zoom (center is main player)
+		mouseGrid = mouseGrid.sub(mainPlayer.getPosition());
+		mouseGrid = mouseGrid.mul(1.f/zoom);
+		mouseGrid = mouseGrid.add(mainPlayer.getPosition());
+		
 //		System.out.println("Mouse Pressed: "+mouseGrid.getX()+", "+mouseGrid.getY());
 		int x_int = (int)Math.floor(mouseGrid.getX());
 		int y_int = (int)Math.floor(mouseGrid.getY());
 		
-//		if (x_int < map.getMapSizeX() && x_int >= 0 && y_int < map.getMapSizeY() && y_int >= 0)
-//		{
-			if (this.isBlockSolid(x_int, y_int))
-			{
-				mainSelectBox.setPos(x_int, y_int);
-				mainSelectBox.show();
-			} else
-			{
-				mainSelectBox.hide();
-			}
-//		} else
-//		{
-//			mainSelectBox.hide();
-//		}
+
+		mainSelectBox.setPos(x_int, y_int);
+		if (this.isBlockSolid(x_int, y_int))
+		{
+			mainSelectBox.show();
+		} else
+		{
+			mainSelectBox.hide();
+		}
+
 	}
 	
 //	public int getNumerOfPojectiles(int type)
@@ -654,6 +658,11 @@ public class GameEngine
 		mouseGrid.setX(mouseGrid.getX()-this.getPosX());
 		mouseGrid.setY(mouseGrid.getY()-this.getPosY());
 //		mouseGrid.print();
+		
+		// apply zoom (center is main player)
+		mouseGrid = mouseGrid.sub(mainPlayer.getPosition());
+		mouseGrid = mouseGrid.mul(1.f/zoom);
+		mouseGrid = mouseGrid.add(mainPlayer.getPosition());
 //
 //		System.out.println("pos: ("+this.getPosX()+", "+this.getPosY()+")");
 		
@@ -707,6 +716,10 @@ public class GameEngine
 		mouseGrid.setX(mouseGrid.getX()-this.getPosX());
 		mouseGrid.setY(mouseGrid.getY()-this.getPosY());
 		
+		// apply zoom (center is main player)
+		mouseGrid = mouseGrid.sub(mainPlayer.getPosition());
+		mouseGrid = mouseGrid.mul(1.f/zoom);
+		mouseGrid = mouseGrid.add(mainPlayer.getPosition());
 		
 		// exit function if cursor too far away
 		// TODO: round distance
@@ -750,7 +763,7 @@ public class GameEngine
 					{
 						if (!Darklord.sounds.build.isPlaying())
 						{
-							Darklord.sounds.build.playAsSoundEffect(1.f, Darklord.sounds.volumeMusic, false);
+							Darklord.sounds.build.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
 						}
 					}
 				}
@@ -888,6 +901,11 @@ public class GameEngine
 		mouseGrid.setX(mouseGrid.getX()-this.getPosX());
 		mouseGrid.setY(mouseGrid.getY()-this.getPosY());
 //		mouseGrid.print();
+		
+		// apply zoom (center is main player)
+		mouseGrid = mouseGrid.sub(mainPlayer.getPosition());
+		mouseGrid = mouseGrid.mul(1.f/zoom);
+		mouseGrid = mouseGrid.add(mainPlayer.getPosition());
 //
 //		System.out.println("pos: ("+this.getPosX()+", "+this.getPosY()+")");
 		
@@ -895,38 +913,67 @@ public class GameEngine
 		int x_int = (int)Math.floor(mouseGrid.getX());
 		int y_int = (int)Math.floor(mouseGrid.getY());
 
-		// left mouse button
-		if (button == 0)
+		// check if left ui is not hit
+		if (pos.getX() > 0.f)
 		{
-			if (devUI.isBlockMode())
+			// left mouse button
+			if (button == 0)
 			{
-				if (devUI.getActiveBuildable() instanceof Block)
+				if (devUI.isBlockMode())
 				{
-					this.map.getBlockAt(x_int, y_int).setType(((Block)devUI.getActiveBuildable()).getType());
+					if (devUI.getActiveBuildable() != null)
+					{
+						this.map.getBlockAt(x_int, y_int).setType(((Block)devUI.getActiveBuildable()).getType());
+					}
+				}
+				
+				if (devUI.isEnemyMode())
+				{
+					if (devUI.getActiveEnemy() != null && hitEnemy(mouseGrid) == null)
+					{
+						Enemy tmpEnemy;
+						
+						if (devUI.getActiveEnemy() instanceof EnemyRandomMove)
+						{
+							tmpEnemy = new EnemyRandomMove(x_int, y_int);
+							map.getEnemies().add(tmpEnemy);
+						}
+						
+						if (devUI.getActiveEnemy() instanceof StaticEnemyCrystal)
+						{
+							tmpEnemy = new StaticEnemyCrystal(x_int, y_int);
+							map.getEnemies().add(tmpEnemy);
+						}
+					}
 				}
 			}
-		}
-		
-		// right mouse button
-		if (button == 1)
-		{
-			map.setBlock(x_int, y_int, BlockType.BLOCK_NONE);
-			switch (DevModeSettings.getActiveEnemy())
+			
+			// right mouse button
+			if (button == 1)
 			{
-			case 0:
-				map.getEnemies().add(new EnemyRandomMove(x_int, y_int));
-				break;
-			case 1:
-				map.getEnemies().add(new StaticEnemyCrystal(x_int, y_int));
-				break;
-			default:
-				map.getEnemies().add(new EnemyRandomMove(x_int, y_int));
-				break;
+				if (devUI.isBlockMode())
+				{
+					this.map.getBlockAt(x_int, y_int).setType(BlockType.BLOCK_NONE);
+
+				}
+				
+				if (devUI.isEnemyMode())
+				{
+					Enemy tmpEnemy = hitEnemy(mouseGrid);
+					map.getEnemies().remove(tmpEnemy);
+				}
+
 			}
-//			System.out.println("add collectable "+DevModeSettings.activeCollectable+ "at x: "+(x_int+0.25f)+", y: "+(y_int+0.25f));
-//			this.map.collectableObjects.add(new Collectable(DevModeSettings.activeCollectable, x_int+0.25f, y_int+0.25f));
-		
 		}
+	}
+	
+	public Enemy hitEnemy(Vector2f thePosition)
+	{
+		for (Enemy tmpEnemy : map.getEnemies())
+		{
+			if (tmpEnemy.isInside(thePosition)) return tmpEnemy;
+		}
+		return null;
 	}
 	
 	/**

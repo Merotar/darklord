@@ -66,13 +66,12 @@ public class Darklord {
 	int locResX, locResY;
 	Vector2f gameScreenPos; // (0, 0) ist top left
 	float gameScreenScale, musicPosition;
-	public static SpriteSheet sprites01;
-	static SpriteSheet chars;
+	public static SpriteSheet sprites01, chars, ui;
 	GameStatus gameStatus;
 	UI mainMenu;
 	DevUI devUI;
 //	IngameUI ingameUI;
-	static SoundLoader sounds;
+	public static SoundLoader sounds;
 	public static TextDrawer textDrawer;
 	
 	/**
@@ -321,14 +320,17 @@ public class Darklord {
         
         // init other stuff
         
+        sprites01 = new SpriteSheet("darklord/img/textures.png");
+        chars = new SpriteSheet("darklord/img/chars.png");
+        ui = new SpriteSheet("darklord/img/ui.png");
+        
         world = new GameEngine(levelList.firstElement());
         
 //        world.setResX((int)(resX-(gameScreenPos.getX()*resX/2.f)));
 //        world.setResX((int)(resY-(gameScreenPos.getY()*resY/2.f)));
         
 //      world = new Level(15,15);
-        sprites01 = new SpriteSheet("darklord/img/textures.png");
-        chars = new SpriteSheet("darklord/img/chars.png");
+
 		textDrawer = new TextDrawer("darklord/img/font.png");
         
 		devUI = new DevUI(ratio);
@@ -1248,21 +1250,32 @@ public class Darklord {
 					world.map.levelStructure.addGridRight();
 				}
 				
-//				if (Keyboard.isKeyDown(myKeyboard.KEY_LCONTROL) && Keyboard.isKeyDown(myKeyboard.KEY_S))
-//				{
-//					Scanner s = new Scanner(System.in);
-//					Print.outln("save level as: ");
-//					String fileName = s.nextLine();
-//					if (fileName.length() > 0)
-//					{
-////						world.map.writeToFile(fileName, world.mainPlayer.getPos());
+				if (Keyboard.isKeyDown(myKeyboard.KEY_1))
+				{
+					devUI.setBlocksUI();
+				}
+				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_2))
+				{
+					devUI.setEnemiesUI();
+				}
+				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_LCONTROL) && Keyboard.isKeyDown(myKeyboard.KEY_S))
+				{
+					Scanner s = new Scanner(System.in);
+					Print.outln("save room as: ");
+					String fileName = s.nextLine();
+					if (fileName.length() > 0)
+					{
+//						world.map.writeToFile(fileName, world.mainPlayer.getPos());
 //						world.map.writeToTextFile(fileName, world.mainPlayer.getPos());
 //						Print.outln("level saved as "+ fileName+"!");
-//					} else 
-//					{
-//						Print.outln("level could not be saved!");
-//					}
-//				}
+						world.map.writeCentralRoomToFile(fileName);
+					} else 
+					{
+						Print.outln("level could not be saved!");
+					}
+				}
 //				
 //				if (Keyboard.isKeyDown(myKeyboard.KEY_LCONTROL) && Keyboard.isKeyDown(myKeyboard.KEY_N))
 //				{
@@ -1278,15 +1291,16 @@ public class Darklord {
 //					world = new Level(sizeX, sizeY);
 //				}
 //				
-//				if (Keyboard.isKeyDown(myKeyboard.KEY_LCONTROL) && Keyboard.isKeyDown(myKeyboard.KEY_O))
-//				{
-//					System.out.println("file to load: ");
-//					Scanner s = new Scanner(System.in);
-//					String fileName = s.nextLine();
-//					
+				if (Keyboard.isKeyDown(myKeyboard.KEY_LCONTROL) && Keyboard.isKeyDown(myKeyboard.KEY_O))
+				{
+					System.out.println("file to load: ");
+					Scanner s = new Scanner(System.in);
+					String fileName = s.nextLine();
+					
 //					world.map.readTextFile(fileName);
 //					world.mainPlayer.setPos(world.map.getStart());
-//				}
+					world.map.readCentralRoomFromFile(fileName);
+				}
 				
 //				if (Keyboard.isKeyDown(myKeyboard.KEY_PERIOD) && devMode)
 //				{

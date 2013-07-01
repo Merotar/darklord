@@ -81,8 +81,6 @@ public class SelectBox
 	
 	public void draw()
 	{
-		if (!visible) return;
-		
 		Darklord.sprites01.begin();
 		appearance.draw();
 		Darklord.sprites01.end();
@@ -106,5 +104,13 @@ public class SelectBox
 //		GL11.glVertex2f(x1, y1);
 //		GL11.glEnd();
 //		GL11.glDisable(GL11.GL_TEXTURE_2D);
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 }

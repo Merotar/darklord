@@ -718,19 +718,19 @@ public class Player extends Collidable implements Serializable
 		switch (type)
 		{
 		case BLOCK_RED:
-			Darklord.sounds.chest.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
+			Darklord.sounds.pling.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
 			crystalsRed++;
 			break;
 		case BLOCK_BLUE:
-			Darklord.sounds.chest.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
+			Darklord.sounds.pling.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
 			crystalsBlue++;
 			break;
 		case BLOCK_GREEN:
-			Darklord.sounds.chest.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
+			Darklord.sounds.pling.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
 			crystalsGreen++;
 			break;
 		case BLOCK_YELLOW:
-			Darklord.sounds.chest.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
+			Darklord.sounds.pling.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
 			crystalsYellow++;
 			break;
 		case ABILITY_TELEPORT:

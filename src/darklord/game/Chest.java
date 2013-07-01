@@ -38,7 +38,7 @@ public class Chest extends Collidable implements Serializable
 	public void onCollision(Player player)
 	{
 		// show content of chest in upper area of screen
-		Darklord.sounds.chest.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
+		Darklord.sounds.pling.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
 		player.setEnergyRedMax(player.getEnergyRedMax()+1);
 	}
 	

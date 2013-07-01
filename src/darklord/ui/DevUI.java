@@ -5,8 +5,11 @@ import org.lwjgl.opengl.GL11;
 import darklord.game.Block;
 import darklord.game.Buildable;
 import darklord.game.CountdownTimer;
+import darklord.game.Darklord;
+import darklord.game.Enemy;
 import darklord.game.GameEngine;
 import darklord.game.LevelStructure;
+import darklord.game.Print;
 import darklord.math.Vector2f;
 import darklord.media.SpriteSheet;
 
@@ -14,6 +17,7 @@ public class DevUI
 {
 	private Vector2f position, size;
 	private DevUIBlocks blocksUI;
+	private DevUIEnemies enemiesUI;
 	private UI activeUI;
 	private SpriteSheet uiSpriteSheet;
 	private CountdownTimer clickTimer;
@@ -23,8 +27,9 @@ public class DevUI
 		position = new Vector2f(-1.f, -1.f);
 		size = new Vector2f(2.f, 2.f);
 		clickTimer = new CountdownTimer(0.2f);
-		uiSpriteSheet = new SpriteSheet("darklord/img/ui.png");
+		uiSpriteSheet = Darklord.ui;//new SpriteSheet("darklord/img/ui.png");
 		blocksUI = new DevUIBlocks(uiSpriteSheet, theRatio);
+		enemiesUI = new DevUIEnemies(uiSpriteSheet, theRatio);
 		activeUI = blocksUI;
 	}
 	
@@ -38,14 +43,44 @@ public class DevUI
 		GL11.glPopMatrix();
 	}
 	
+	public boolean isInside(Vector2f thePosition)
+	{
+		boolean inside = true;
+//		thePosition = globalToLocal(thePosition);
+		
+		if (thePosition.getX()>getPosition().getX()+getSize().getX()) inside = false;
+		if (thePosition.getX()<getPosition().getX()) inside = false;
+		if (thePosition.getY()>getPosition().getY()+getSize().getY()) inside = false;
+		if (thePosition.getY()<getPosition().getY()) inside = false;
+//		if (inside) Print.outln("inside of button "+getName());
+		
+		return inside;
+	}
+	
 	public boolean isBlockMode()
 	{
 		return (activeUI instanceof DevUIBlocks);
 	}
 	
+	public boolean isEnemyMode()
+	{
+		return (activeUI instanceof DevUIEnemies);
+	}
+	
 	public void init(GameEngine world)
 	{
 		blocksUI.init(world);
+		enemiesUI.init(world);
+	}
+	
+	public void setBlocksUI()
+	{
+		activeUI = blocksUI;
+	}
+	
+	public void setEnemiesUI()
+	{
+		activeUI = enemiesUI;
 	}
 	
 	public Vector2f globalToLocal(Vector2f globalPos)
@@ -59,7 +94,20 @@ public class DevUI
 	
 	public Buildable getActiveBuildable()
 	{
-		return blocksUI.getActiveBuildable();
+		if (activeUI == blocksUI)
+		{
+			return blocksUI.getActiveBuildable();
+		}
+		return null;
+	}
+	
+	public Enemy getActiveEnemy()
+	{
+		if (activeUI == enemiesUI)
+		{
+			return enemiesUI.getActiveEnemy();
+		}
+		return null;
 	}
 	
 	public void mousePositionReaction(Vector2f globalPos)

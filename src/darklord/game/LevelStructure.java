@@ -19,7 +19,7 @@ public class LevelStructure implements Serializable
 	{
 		setGridSizeX(sizeX);
 		setGridSizeY(sizeY);
-		gridCenter = new Room(sizeX, sizeY, 0, 0, BlockType.BLOCK_DIRT);
+		gridCenter = new Room(sizeX, sizeY, 0, 0, BlockType.BLOCK_NONE);
 		activeRoom = gridCenter;
 		
 		gridMapSize = 4;
@@ -470,6 +470,11 @@ public class LevelStructure implements Serializable
 
 	public Room getActiveGrid() {
 		return activeRoom;
+	}
+	
+	public void setActiveGrid(Room theRoom)
+	{
+		activeRoom = theRoom;
 	}
 //
 //	public void setActiveGrid(Grid activeGrid) {

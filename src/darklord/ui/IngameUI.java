@@ -2,6 +2,7 @@ package darklord.ui;
 import org.lwjgl.opengl.GL11;
 
 import darklord.game.CountdownTimer;
+import darklord.game.Darklord;
 import darklord.game.GameEngine;
 import darklord.game.LevelStructure;
 import darklord.media.SpriteSheet;
@@ -22,7 +23,7 @@ public class IngameUI
 		position = new Vector2f(-1.f, -1.f);
 		size = new Vector2f(2.f, 2.f);
 		clickTimer = new CountdownTimer(0.2f);
-		uiSpriteSheet = new SpriteSheet("darklord/img/ui.png");
+		uiSpriteSheet = Darklord.ui;//new SpriteSheet("darklord/img/ui.png");
 		statusUI = new IngameUIStatus(uiSpriteSheet, theRatio);
 		buildUI = new IngameUIBuild(uiSpriteSheet, theRatio);
 		mapUI = new IngameUIMap(uiSpriteSheet, theRatio);

@@ -6,6 +6,7 @@ import java.io.Serializable;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 
+import darklord.math.Vector2f;
 import darklord.media.Drawable;
 
 /**
@@ -39,12 +40,33 @@ public class Enemy extends Collidable implements Serializable
 		bubbleTimer = new RefillingStore(0.5f, 1.f);
 	}
 	
+	public boolean isInside(Vector2f thePosition)
+	{
+		boolean inside = true;
+		
+		if (thePosition.getX()>getPosition().getX()+1.f) inside = false;
+		if (thePosition.getX()<getPosition().getX()) inside = false;
+		if (thePosition.getY()>getPosition().getY()+1.f) inside = false;
+		if (thePosition.getY()<getPosition().getY()) inside = false;
+//		if (inside) Print.outln("inside of button "+getName());
+		
+		return inside;
+	}
+	
 	public Enemy(Enemy e)
 	{
+		this();
 		this.setPos(e.getPosition());
 		this.setSizeX(e.getSizeX());
 		this.setSizeY(e.getSizeY());
 		this.setType(e.getType());
+		this.appearance = e.appearance;
+		this.type = e.type;
+		this.hp = e.hp;
+		this.maxHp = e.maxHp;
+		this.xp = e.xp;
+		this.dmgOnContact = e.dmgOnContact;
+		this.bubbleTimer = e.bubbleTimer;
 	}
 	
 	public Enemy(int t)
