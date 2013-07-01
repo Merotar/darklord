@@ -195,6 +195,16 @@ abstract class Collidable implements Serializable
 		return true;
 	}
 	
+	public boolean contains(Vector2f thePosition, Vector2f theSize)
+	{
+		if (thePosition.getX() < posX) return false;
+		if (thePosition.getX()+theSize.getX() > posX+sizeX) return false;
+		if (thePosition.getY() < posY) return false;
+		if (thePosition.getY()+theSize.getY() > posY+sizeY) return false;
+		
+		return true;
+	}
+	
 	public boolean collide(Vector2f thePosition, Vector2f theSize)
 	{
 		Vector2f tmpSizeHalf = theSize.mul(0.5f);

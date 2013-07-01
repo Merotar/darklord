@@ -89,4 +89,9 @@ public class StaticEnemyCrystal extends Enemy
 	{
 		super.draw();
 	}
+
+	public StaticEnemyCrystal createNew()
+	{
+		return new StaticEnemyCrystal();
+	}
 }

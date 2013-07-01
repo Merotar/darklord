@@ -17,7 +17,6 @@ import org.lwjgl.opengl.GL11;
 import darklord.rules.Condition;
 import darklord.rules.Reaction;
 import darklord.rules.Rule;
-import darklord.rules.RuleParser;
 
 
 /**
@@ -76,7 +75,7 @@ public class Room implements Serializable
 		
 		initDefault(t);
 		name ="defaultRoom";
-		rules = readRulesFromTextFile(name+"Rules.txt");
+//		rules = readRulesFromTextFile(name+"Rules.txt");
 	}
 	
 	public Room(int x, int y)
@@ -353,59 +352,59 @@ public class Room implements Serializable
 		this.levelRequirement = levelRequirement;
 	}
 	
-	public Vector<Rule> readRulesFromTextFile(String fileName)
-	{
-		Vector<Rule> theRules = new Vector<Rule>();
-		File file = new File(fileName);
-		try
-		{
-			Scanner s = new Scanner(file);
-			String line;
-			String[] words;
-
-			while (s.hasNextLine())
-			{
-                line = s.nextLine();
-                words = line.split("\\s+");
-
-            	if (words[0].equals(RuleParser.newRule))
-            	{
-            		Rule tmpRule = new Rule();
-            		
-        			while (s.hasNextLine())
-        			{
-                        line = s.nextLine();
-                        words = line.split("\\s+");
-                        
-                        // new condition
-                        if (words[0].equals(RuleParser.Condition))
-                        {
-                        	Condition tmpCondition = RuleParser.parseCondition(words);
-                        	if (tmpCondition != null) tmpRule.addCondition(tmpCondition);
-                        }
-                        
-                        // new reaction
-                        if (words[0].equals(RuleParser.Reaction))
-                        {
-                        	Reaction tmpReaction = RuleParser.parseReaction(words);
-                        	if (tmpReaction != null) tmpRule.addReaction(tmpReaction);
-                        }
-                        
-                        // finalize rule
-                        if (words[0].equals(RuleParser.endRule))
-                        {
-                        	theRules.add(tmpRule);
-                        	break;
-                        }
-        			}
-            	}
-			}
-		}  catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		return theRules;
-	}
+//	public Vector<Rule> readRulesFromTextFile(String fileName)
+//	{
+//		Vector<Rule> theRules = new Vector<Rule>();
+//		File file = new File(fileName);
+//		try
+//		{
+//			Scanner s = new Scanner(file);
+//			String line;
+//			String[] words;
+//
+//			while (s.hasNextLine())
+//			{
+//                line = s.nextLine();
+//                words = line.split("\\s+");
+//
+//            	if (words[0].equals(Parser.newRule))
+//            	{
+//            		Rule tmpRule = new Rule();
+//            		
+//        			while (s.hasNextLine())
+//        			{
+//                        line = s.nextLine();
+//                        words = line.split("\\s+");
+//                        
+//                        // new condition
+//                        if (words[0].equals(Parser.Condition))
+//                        {
+//                        	Condition tmpCondition = Parser.parseCondition(words);
+//                        	if (tmpCondition != null) tmpRule.addCondition(tmpCondition);
+//                        }
+//                        
+//                        // new reaction
+//                        if (words[0].equals(Parser.Reaction))
+//                        {
+//                        	Reaction tmpReaction = Parser.parseReaction(words);
+//                        	if (tmpReaction != null) tmpRule.addReaction(tmpReaction);
+//                        }
+//                        
+//                        // finalize rule
+//                        if (words[0].equals(Parser.endRule))
+//                        {
+//                        	theRules.add(tmpRule);
+//                        	break;
+//                        }
+//        			}
+//            	}
+//			}
+//		}  catch (Exception e)
+//		{
+//			e.printStackTrace();
+//		}
+//		return theRules;
+//	}
 
 	public String getName() {
 		return name;
@@ -413,6 +412,14 @@ public class Room implements Serializable
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Vector<Rule> getRules() {
+		return rules;
+	}
+
+	public void setRules(Vector<Rule> rules) {
+		this.rules = rules;
 	}
 	
 }

@@ -597,6 +597,27 @@ public class GameEngine
 
 	}
 	
+	public void mousePositionReactionDev(Vector2f pos, DevUI devUI)
+	{
+		Vector2f mouseGrid = new Vector2f(pos.getX()/this.gridSize, pos.getY()/this.gridSize);
+		// translate grid
+		mouseGrid.setX(mouseGrid.getX()-this.getPosX());
+		mouseGrid.setY(mouseGrid.getY()-this.getPosY());
+		
+		// apply zoom (center is main player)
+		mouseGrid = mouseGrid.sub(mainPlayer.getPosition());
+		mouseGrid = mouseGrid.mul(1.f/zoom);
+		mouseGrid = mouseGrid.add(mainPlayer.getPosition());
+		
+//		System.out.println("Mouse Pressed: "+mouseGrid.getX()+", "+mouseGrid.getY());
+		int x_int = (int)Math.floor(mouseGrid.getX());
+		int y_int = (int)Math.floor(mouseGrid.getY());
+		
+		devUI.setCursorInt(x_int, y_int);
+
+	}
+	
+	
 //	public int getNumerOfPojectiles(int type)
 //	{
 //		int amount = 0;
@@ -931,19 +952,11 @@ public class GameEngine
 				{
 					if (devUI.getActiveEnemy() != null && hitEnemy(mouseGrid) == null)
 					{
-						Enemy tmpEnemy;
+						Enemy tmpEnemy = devUI.getActiveEnemy().createNew();
+						tmpEnemy.setPosX(x_int);
+						tmpEnemy.setPosY(y_int);
 						
-						if (devUI.getActiveEnemy() instanceof EnemyRandomMove)
-						{
-							tmpEnemy = new EnemyRandomMove(x_int, y_int);
-							map.getEnemies().add(tmpEnemy);
-						}
-						
-						if (devUI.getActiveEnemy() instanceof StaticEnemyCrystal)
-						{
-							tmpEnemy = new StaticEnemyCrystal(x_int, y_int);
-							map.getEnemies().add(tmpEnemy);
-						}
+						map.getEnemies().add(tmpEnemy);
 					}
 				}
 			}

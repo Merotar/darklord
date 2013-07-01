@@ -36,11 +36,6 @@ public class EnemyRandomMove extends Enemy implements Serializable
 		this(1.f, 1.f);
 	}
 	
-	public EnemyRandomMove(EnemyRandomMove e)
-	{
-		super(e);
-	}
-	
 	public EnemyRandomMove(float x, float y)
 	{
 		this(x, y, 1);
@@ -114,6 +109,11 @@ public class EnemyRandomMove extends Enemy implements Serializable
 	public void draw()
 	{
 		super.draw();
+	}
+
+	public EnemyRandomMove createNew()
+	{
+		return new EnemyRandomMove();
 	}
 
 //	public float getSpeed() {

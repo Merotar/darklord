@@ -17,7 +17,7 @@ import darklord.media.Drawable;
  * @since 12-05-2013
  * 
  */
-public class Enemy extends Collidable implements Serializable
+public abstract class Enemy extends Collidable implements Serializable
 {
 	int type, xp;
 	float maxHp, hp, dmgOnContact;
@@ -159,6 +159,8 @@ public class Enemy extends Collidable implements Serializable
 		return dmgOnContact;
 	}
 
+	public abstract Enemy createNew();
+	
 	public void setDmgOnContact(float dmgOnContact) {
 		this.dmgOnContact = dmgOnContact;
 	}

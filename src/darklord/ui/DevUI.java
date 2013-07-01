@@ -12,6 +12,7 @@ import darklord.game.LevelStructure;
 import darklord.game.Print;
 import darklord.math.Vector2f;
 import darklord.media.SpriteSheet;
+import darklord.media.StaticText;
 
 public class DevUI
 {
@@ -21,6 +22,7 @@ public class DevUI
 	private UI activeUI;
 	private SpriteSheet uiSpriteSheet;
 	private CountdownTimer clickTimer;
+	private StaticText<Float> cursorPositionText;
 
 	public DevUI(float theRatio)
 	{
@@ -31,6 +33,7 @@ public class DevUI
 		blocksUI = new DevUIBlocks(uiSpriteSheet, theRatio);
 		enemiesUI = new DevUIEnemies(uiSpriteSheet, theRatio);
 		activeUI = blocksUI;
+		cursorPositionText = new StaticText<Float>("00", 0.f);
 	}
 	
 	public void draw()
@@ -40,6 +43,7 @@ public class DevUI
 		GL11.glScaled(getSize().getX(), getSize().getY(), 1.);
 		activeUI.draw();
 		
+		cursorPositionText.draw(Darklord.textDrawer);
 		GL11.glPopMatrix();
 	}
 	
@@ -69,6 +73,9 @@ public class DevUI
 	
 	public void init(GameEngine world)
 	{
+		cursorPositionText.setPosition(new Vector2f(0.1f, 0.05f));
+		cursorPositionText.setSize(new Vector2f(0.05f, 0.05f));
+		
 		blocksUI.init(world);
 		enemiesUI.init(world);
 	}
@@ -110,8 +117,15 @@ public class DevUI
 		return null;
 	}
 	
-	public void mousePositionReaction(Vector2f globalPos)
+	public void mousePositionReaction(Vector2f pos)
 	{
+//		cursorPositionText.setText(pos.getX()+"-"+pos.getY());
+//		if (mapUI.isActive()) mapUI.mousePositionReaction(globalToLocal(globalPos));
+	}
+	
+	public void setCursorInt(int x, int y)
+	{
+		cursorPositionText.setText(x+","+y);
 //		if (mapUI.isActive()) mapUI.mousePositionReaction(globalToLocal(globalPos));
 	}
 	
@@ -153,7 +167,7 @@ public class DevUI
 	}
 	
 	public void update(GameEngine world, float dt)
-	{
+	{		
 		activeUI.update(world);
 		clickTimer.update(dt);
 	}

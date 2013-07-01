@@ -41,4 +41,9 @@ public class StaticEnemy extends Enemy
 	{
 		super.update(dt);
 	}
+
+	public StaticEnemy createNew()
+	{
+		return new StaticEnemy();
+	}
 }

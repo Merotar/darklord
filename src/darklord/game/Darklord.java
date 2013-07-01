@@ -471,7 +471,9 @@ public class Darklord {
 		}
 
 		world.mousePositionReaction(globalToGamescreen(mousePos));
+		world.mousePositionReactionDev(globalToGamescreen(mousePos), devUI);
 		
+//		devUI.mousePositionReaction(globalToGamescreen(mousePos));
 		devUI.update(world, dt);
 		
 		drawIngameDev();
@@ -1270,7 +1272,8 @@ public class Darklord {
 //						world.map.writeToFile(fileName, world.mainPlayer.getPos());
 //						world.map.writeToTextFile(fileName, world.mainPlayer.getPos());
 //						Print.outln("level saved as "+ fileName+"!");
-						world.map.writeCentralRoomToFile(fileName);
+//						world.map.writeActiveRoomToFile(fileName);
+						world.map.writeActiveRoomToTextFile(fileName);
 					} else 
 					{
 						Print.outln("level could not be saved!");
@@ -1299,7 +1302,9 @@ public class Darklord {
 					
 //					world.map.readTextFile(fileName);
 //					world.mainPlayer.setPos(world.map.getStart());
-					world.map.readCentralRoomFromFile(fileName);
+//					world.map.readActiveRoomFromFile(fileName);
+//					world.map.levelStructure.setActiveGrid(world.map.readRoomFromTextFile(fileName));
+					world.map.loadActiveRoom(fileName);
 				}
 				
 //				if (Keyboard.isKeyDown(myKeyboard.KEY_PERIOD) && devMode)

@@ -3,6 +3,9 @@ package darklord.game;
 
 //import java.awt.List;
 import darklord.math.Vector2f;
+import darklord.rules.Condition;
+import darklord.rules.Reaction;
+import darklord.rules.Rule;
 
 import java.sql.Savepoint;
 import java.util.List;
@@ -1405,12 +1408,26 @@ public class Map implements Serializable
 		return name;
 	}
 	
+//	public String getFileName() {
+//		return (name+"/level.ser");
+//	}
+	
 	public String getFileName() {
 		return (name+"/level.ser");
 	}
-
+	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getRoomFileName(String name)
+	{
+		return getName()+"/rooms/"+name+".txt";
+	}
+	
+	public String getRuleFileName(String name)
+	{
+		return getName()+"/rooms/"+name+"Rule.txt";
 	}
 	
 	public LevelStructure readLevelStructureFromFile()
@@ -1429,7 +1446,6 @@ public class Map implements Serializable
 			  fis = new FileInputStream(fileName);
 			  ois = new ObjectInputStream(fis);
 
-			  
 			  tmpLevelStructure = (LevelStructure)ois.readObject();
 
 			}
@@ -1470,67 +1486,303 @@ public class Map implements Serializable
 		}
 	}
 	
-	public void writeCentralRoomToFile()
-	{
-		writeCentralRoomToFile(getName()+"/"+levelStructure.getActiveGrid().getName()+".rm");
-	}
+//	public void writeActiveRoomToFile()
+//	{
+//		writeActiveRoomToFile(getName()+"/"+levelStructure.getActiveGrid().getName()+".rm");
+//	}
 	
-	public void writeCentralRoomToFile(String name)
+//	public void writeActiveRoomToFile(String name)
+//	{
+//		levelStructure.getActiveGrid().setName(name);
+//		String fileName = getName()+"/"+levelStructure.getActiveGrid().getName()+".rm";
+//
+//		Print.outln("write room to file: "+fileName);
+//		
+//		ObjectOutputStream oos = null;
+//		FileOutputStream fos = null;
+//		try {
+//		  fos = new FileOutputStream(fileName);
+//		  oos = new ObjectOutputStream(fos);
+//		  
+//		  oos.writeObject(levelStructure.getActiveGrid());
+//		}
+//		catch (IOException e) {
+//		  e.printStackTrace();
+//		}
+//		finally {
+//		  if (oos != null) try { oos.close(); } catch (IOException e) {}
+//		  if (fos != null) try { fos.close(); } catch (IOException e) {}
+//		}
+//	}
+	
+	public void writeActiveRoomToTextFile(String name)
 	{
 		levelStructure.getActiveGrid().setName(name);
-		String fileName = getName()+"/"+levelStructure.getActiveGrid().getName()+".rm";
+		String fileName = getRoomFileName(name); //getName()+"/"+levelStructure.getActiveGrid().getName()+".txt";
 
 		Print.outln("write room to file: "+fileName);
 		
-		ObjectOutputStream oos = null;
-		FileOutputStream fos = null;
-		try {
-		  fos = new FileOutputStream(fileName);
-		  oos = new ObjectOutputStream(fos);
-		  
-		  oos.writeObject(levelStructure.getActiveGrid());
+		PrintStream stream = null;
+		try
+		{
+			stream = new PrintStream(fileName);
+			
+			stream.println("Name "+levelStructure.getActiveGrid().getName());
+			
+			stream.println("SizeX "+levelStructure.getGridSizeX());
+			stream.println("SizeY "+levelStructure.getGridSizeY());
+
+			for (int j=0;j<levelStructure.getGridSizeY();j++)
+			{
+				for (int i=0;i<levelStructure.getGridSizeX();i++)
+				{
+					stream.println("Block "+i+" "+j+" "+levelStructure.getActiveGrid().getBlockAt(i, j).getType());
+				}
+			}
+			stream.println();
+			
+			for (Enemy tmpEnemy : levelStructure.getActiveGrid().getEnemies())
+			{
+				String[] tmpString = tmpEnemy.getClass().toString().split("\\.");
+				stream.println("Enemy "+tmpEnemy.getPosX()+" "+tmpEnemy.getPosY()+" "+tmpString[tmpString.length-1]);
+			}
+			stream.println();
+			
+			// TODO: write collectables & rules
 		}
 		catch (IOException e) {
 		  e.printStackTrace();
 		}
 		finally {
-		  if (oos != null) try { oos.close(); } catch (IOException e) {}
-		  if (fos != null) try { fos.close(); } catch (IOException e) {}
+		  if (stream != null) try { stream.close(); } catch (Exception e) {e.printStackTrace();}
 		}
 	}
 	
-	public void readCentralRoomFromFile()
+	public void loadActiveRoom(String name)
 	{
-		readCentralRoomFromFile(getName()+"/"+levelStructure.getActiveGrid().getName()+".rm");
+		levelStructure.setActiveGrid(readRoomFromTextFile(name));
+		levelStructure.getActiveGrid().setRules(readRulesFromTextFile(name));
 	}
 	
-	public LevelStructure readCentralRoomFromFile(String name)
+	public Room readRoomFromTextFile(String name)
 	{
-		LevelStructure tmpLevelStructure = null;
-		ObjectInputStream ois = null;
-		FileInputStream fis = null;
-		
-		String fileName = getName()+"/"+name+".rm";
-		
-		Print.outln("load room file: "+fileName);
-		try {
-			  fis = new FileInputStream(fileName);
-			  ois = new ObjectInputStream(fis);
+		Room tmpRoom = null;
+		int sizeX = 0;
+		int sizeY = 0;
+		String fileName = getRoomFileName(name); //getName()+"/"+name+".txt";
+		String roomName = null;
+		Vector<Rule> theRules = new Vector<Rule>();
+		File file = new File(fileName);
+		try
+		{
+			Scanner s = new Scanner(file);
+			String line;
+			String[] words;
+			
+            line = s.nextLine();
+            words = line.split("\\s+");
+            
+            if (words[0].equals("Name"))
+            {
+                roomName = words[0];
+            } else
+            {
+            	Print.err("room name not specified");
+            	return null;
+            }
+            
+            line = s.nextLine();
+            words = line.split("\\s+");
 
-			  
-			  levelStructure.setActiveGrid((Room)ois.readObject());
+            if (words[0].equals("SizeX"))
+            {
+            	sizeX = Integer.parseInt(words[1]);
+                line = s.nextLine();
+                words = line.split("\\s+");
+            	
+                if (words[0].equals("SizeY"))
+                {
+                	sizeY = Integer.parseInt(words[1]);
+                	
+                } else
+                {
+                	Print.err("SizeY not specified");
+                	return null;
+                }
+            } else
+            {
+            	Print.err("SizeX not specified");
+            	return null;
+            }
+            if (sizeX > 0 && sizeY > 0)
+            {
+                tmpRoom = new Room(sizeX, sizeY);
+                tmpRoom.setName(roomName);
+            } else
+            {
+            	return null;
+            }
 
+			while (s.hasNextLine())
+			{
+                line = s.nextLine();
+                words = line.split("\\s+");
+                	
+                // scan Blocks
+            	if (words[0].equals(Parser.Block))
+            	{
+            		int x = Integer.parseInt(words[1]);
+            		int y = Integer.parseInt(words[2]);
+            		BlockType type = Parser.parseBlockType(words[3]);
+            		if (x >= 0 && y >= 0 && x < sizeX && y < sizeY)
+            		{
+                		tmpRoom.getBlockAt(x, y).setType(type);
+            		} else
+            		{
+            			Print.err("wrong coordinates: ("+x+","+y+")");
+            		}
+            	}
+                
+            	// scan enemies
+            	if (words[0].equals(Parser.Enemy))
+            	{
+            		Enemy tmpEnemy = Parser.parseEnemy(words);
+            		if (tmpEnemy != null) tmpRoom.addEnemy(tmpEnemy);
+            	}
+                
+//                // new rule
+//            	if (words[0].equals(Parser.newRule))
+//            	{
+//            		Rule tmpRule = new Rule();
+//            		
+//        			while (s.hasNextLine())
+//        			{
+//                        line = s.nextLine();
+//                        words = line.split("\\s+");
+//                        
+//                        // new condition
+//                        if (words[0].equals(Parser.Condition))
+//                        {
+//                        	Condition tmpCondition = Parser.parseCondition(words);
+//                        	if (tmpCondition != null) tmpRule.addCondition(tmpCondition);
+//                        }
+//                        
+//                        // new reaction
+//                        if (words[0].equals(Parser.Reaction))
+//                        {
+//                        	Reaction tmpReaction = Parser.parseReaction(words);
+//                        	if (tmpReaction != null) tmpRule.addReaction(tmpReaction);
+//                        }
+//                        
+//                        // finalize rule
+//                        if (words[0].equals(Parser.endRule))
+//                        {
+//                        	tmpRoom.addRule(tmpRule);
+//                        	break;
+//                        }
+//        			}
+//            	}
 			}
-			catch (Exception e) {
-				Print.err("error loading file: "+fileName);
-				e.printStackTrace();
-			}
-			finally {
-			  if (ois != null) try { ois.close(); } catch (IOException e) {}
-			  if (fis != null) try { fis.close(); } catch (IOException e) {}
-			}
-		return tmpLevelStructure;
+		}  catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return tmpRoom;
 	}
+	
+	public Vector<Rule> readRulesFromTextFile(String name)
+	{
+		Vector<Rule> theRules = new Vector<Rule>();
+		String fileName = getRuleFileName(name); //getName()+"/"+name+"Rules.txt";
+		File file = new File(fileName);
+		
+		try
+		{
+			if (!file.exists())
+			{
+				file.createNewFile();
+			}
+			
+			Scanner s = new Scanner(file);
+			String line;
+			String[] words;
+
+			while (s.hasNextLine())
+			{
+                line = s.nextLine();
+                words = line.split("\\s+");
+
+            	if (words[0].equals(Parser.newRule))
+            	{
+            		Rule tmpRule = new Rule();
+            		
+        			while (s.hasNextLine())
+        			{
+                        line = s.nextLine();
+                        words = line.split("\\s+");
+                        
+                        // new condition
+                        if (words[0].equals(Parser.Condition))
+                        {
+                        	Condition tmpCondition = Parser.parseCondition(words);
+                        	if (tmpCondition != null) tmpRule.addCondition(tmpCondition);
+                        }
+                        
+                        // new reaction
+                        if (words[0].equals(Parser.Reaction))
+                        {
+                        	Reaction tmpReaction = Parser.parseReaction(words);
+                        	if (tmpReaction != null) tmpRule.addReaction(tmpReaction);
+                        }
+                        
+                        // finalize rule
+                        if (words[0].equals(Parser.endRule))
+                        {
+                        	theRules.add(tmpRule);
+                        	break;
+                        }
+        			}
+            	}
+			}
+		}  catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return theRules;
+	}
+	
+//	public void readActiveRoomFromFile()
+//	{
+//		readActiveRoomFromFile(getName()+"/"+levelStructure.getActiveGrid().getName()+".rm");
+//	}
+//	
+//	public LevelStructure readActiveRoomFromFile(String name)
+//	{
+//		LevelStructure tmpLevelStructure = null;
+//		ObjectInputStream ois = null;
+//		FileInputStream fis = null;
+//		
+//		String fileName = getName()+"/"+name+".rm";
+//		
+//		Print.outln("load room file: "+fileName);
+//		try {
+//			  fis = new FileInputStream(fileName);
+//			  ois = new ObjectInputStream(fis);
+//
+//			  
+//			  levelStructure.setActiveGrid((Room)ois.readObject());
+//
+//			}
+//			catch (Exception e) {
+//				Print.err("error loading file: "+fileName);
+//				e.printStackTrace();
+//			}
+//			finally {
+//			  if (ois != null) try { ois.close(); } catch (IOException e) {}
+//			  if (fis != null) try { fis.close(); } catch (IOException e) {}
+//			}
+//		return tmpLevelStructure;
+//	}
 	
 //	public Grid readGridFromFile(String fileName)
 //	{
