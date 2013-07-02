@@ -1,7 +1,7 @@
 package darklord.ui;
 
+import darklord.enemies.Enemy;
 import darklord.game.Block;
-import darklord.game.Enemy;
 import darklord.media.TextureRegion;
 
 public class ButtonEnemy extends Button

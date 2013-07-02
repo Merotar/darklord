@@ -2,14 +2,16 @@ package darklord.ui;
 
 import org.lwjgl.opengl.GL11;
 
+import darklord.enemies.ChasingBlockEnemy;
+import darklord.enemies.Enemy;
+import darklord.enemies.EnemyRandomMove;
+import darklord.enemies.StaticEnemyCrystal;
+import darklord.enemies.StaticEnemyOneShot;
 import darklord.game.Block;
 import darklord.game.BlockType;
 import darklord.game.Buildable;
 import darklord.game.Darklord;
-import darklord.game.Enemy;
-import darklord.game.EnemyRandomMove;
 import darklord.game.GameEngine;
-import darklord.game.StaticEnemyCrystal;
 import darklord.math.Vector2f;
 import darklord.media.SpriteSheet;
 import darklord.media.TextureRegion;
@@ -67,6 +69,11 @@ public class DevUIEnemies extends UI
         ButtonEnemy buttonBuildStaticEnemyCrystal = new ButtonEnemy(new TextureRegion(0*128, 2*128, 128, 128), "enemy_static_crystal", new StaticEnemyCrystal());
         buildOptions.addUIObject(buttonBuildStaticEnemyCrystal, aspectRatio);
         
+        ButtonEnemy buttonBuildStaticEnemyOneShot = new ButtonEnemy(new TextureRegion(0*128, 3*128, 128, 128), "enemy_static_one_shot", new StaticEnemyOneShot());
+        buildOptions.addUIObject(buttonBuildStaticEnemyOneShot, aspectRatio);
+        
+        ButtonEnemy buttonBuildChasingBlockEnemy = new ButtonEnemy(new TextureRegion(3*128, 4*128, 128, 128), "enemy_chasing_block", new ChasingBlockEnemy());
+        buildOptions.addUIObject(buttonBuildChasingBlockEnemy, aspectRatio);
         
 //        Button buttonBuildWall = new Button(new TextureRegion(1*128, 7*128, 128, 128), "build_wall");
 //        buttonBuildWall.setSize(new Vector2f(.05f, .05f*aspectRatio));

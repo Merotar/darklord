@@ -483,7 +483,7 @@ public class LevelStructure implements Serializable
 	
 	public Vector2f generateStartPosition()
 	{
-		return new Vector2f(activeRoom.getPosX()*gridSizeX+gridSizeX/2.f, activeRoom.getPosY()*gridSizeY+gridSizeY/2.f);
+		return new Vector2f(activeRoom.getPosX()*gridSizeX+gridSizeX/2.f, activeRoom.getPosY()*gridSizeY+gridSizeY-1.f);
 	}
 	
 	public void update(GameEngine engine)

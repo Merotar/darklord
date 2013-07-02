@@ -2,11 +2,11 @@ package darklord.ui;
 
 import org.lwjgl.opengl.GL11;
 
+import darklord.enemies.Enemy;
 import darklord.game.Block;
 import darklord.game.Buildable;
 import darklord.game.CountdownTimer;
 import darklord.game.Darklord;
-import darklord.game.Enemy;
 import darklord.game.GameEngine;
 import darklord.game.LevelStructure;
 import darklord.game.Print;

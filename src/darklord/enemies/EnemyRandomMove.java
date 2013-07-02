@@ -1,10 +1,11 @@
-package darklord.game;
+package darklord.enemies;
 
 
 import java.io.Serializable;
 
 import org.lwjgl.opengl.GL11;
 
+import darklord.game.Timer;
 import darklord.media.Animation;
 import darklord.media.Drawable;
 import darklord.media.TextureRegion;

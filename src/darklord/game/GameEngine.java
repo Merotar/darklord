@@ -2,6 +2,11 @@ package darklord.game;
 
 import org.lwjgl.opengl.GL11;
 
+import darklord.enemies.ChasingBlockEnemy;
+import darklord.enemies.Enemy;
+import darklord.enemies.EnemyRandomMove;
+import darklord.enemies.StaticEnemyCrystal;
+import darklord.enemies.StaticEnemyOneShot;
 import darklord.media.MovingSprite;
 import darklord.media.MovingText;
 import darklord.media.TextureRegion;
@@ -1412,6 +1417,8 @@ public class GameEngine
 			
 			// special update for StaticEnemyCrystal to be able to spawn projectiles
 			if (e instanceof StaticEnemyCrystal) ((StaticEnemyCrystal) e).update(dt, this);
+			if (e instanceof StaticEnemyOneShot) ((StaticEnemyOneShot) e).update(dt, this);
+			if (e instanceof ChasingBlockEnemy) ((ChasingBlockEnemy) e).update(dt, this);
 		}
 	}
 	

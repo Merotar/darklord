@@ -14,6 +14,7 @@ import java.util.Vector;
 
 import org.lwjgl.opengl.GL11;
 
+import darklord.enemies.Enemy;
 import darklord.rules.Condition;
 import darklord.rules.Reaction;
 import darklord.rules.Rule;

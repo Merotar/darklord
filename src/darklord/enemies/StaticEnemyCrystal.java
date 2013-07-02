@@ -1,7 +1,10 @@
-package darklord.game;
+package darklord.enemies;
 
 import org.lwjgl.opengl.GL11;
 
+import darklord.game.GameEngine;
+import darklord.game.Projectile;
+import darklord.game.TimeStore;
 import darklord.media.Animation;
 import darklord.media.Drawable;
 import darklord.media.TextureRegion;
@@ -65,7 +68,7 @@ public class StaticEnemyCrystal extends Enemy
 			tmpProjectile.setDirection(dir);
 			level.hostileProjectiles.add(tmpProjectile);
 			
-			// add up projectile
+			// add down projectile
 			tmpProjectile = new Projectile(3);
 			pos = this.getCenter().sub(new Vector2f(tmpProjectile.getSize()/2.f, tmpProjectile.getSize()/2.f));
 			dir = new Vector2f(0.f, -1.f);
@@ -73,7 +76,7 @@ public class StaticEnemyCrystal extends Enemy
 			tmpProjectile.setDirection(dir);
 			level.hostileProjectiles.add(tmpProjectile);
 			
-			// add down projectile
+			// add up projectile
 			tmpProjectile = new Projectile(3);
 			pos = this.getCenter().sub(new Vector2f(tmpProjectile.getSize()/2.f, tmpProjectile.getSize()/2.f));
 			dir = new Vector2f(0.f, 1.f);

@@ -2,6 +2,9 @@ package darklord.game;
 
 
 //import java.awt.List;
+import darklord.enemies.Enemy;
+import darklord.enemies.EnemyRandomMove;
+import darklord.enemies.StaticEnemyCrystal;
 import darklord.math.Vector2f;
 import darklord.rules.Condition;
 import darklord.rules.Reaction;

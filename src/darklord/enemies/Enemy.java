@@ -1,4 +1,4 @@
-package darklord.game;
+package darklord.enemies;
 
 
 import java.io.Serializable;
@@ -6,6 +6,11 @@ import java.io.Serializable;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 
+import darklord.game.Collidable;
+import darklord.game.Darklord;
+import darklord.game.Projectile;
+import darklord.game.RefillingStore;
+import darklord.game.Venom;
 import darklord.math.Vector2f;
 import darklord.media.Drawable;
 
@@ -95,7 +100,7 @@ public abstract class Enemy extends Collidable implements Serializable
 //		return position;
 //	}
 	
-	void draw()
+	public void draw()
 	{
 		Darklord.chars.begin();
 		GL11.glPushMatrix();

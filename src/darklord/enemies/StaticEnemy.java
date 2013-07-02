@@ -1,5 +1,6 @@
-package darklord.game;
+package darklord.enemies;
 
+import darklord.game.Darklord;
 import darklord.media.Drawable;
 import darklord.media.Sprite;
 

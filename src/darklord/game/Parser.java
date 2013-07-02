@@ -1,5 +1,10 @@
 package darklord.game;
 
+import darklord.enemies.ChasingBlockEnemy;
+import darklord.enemies.Enemy;
+import darklord.enemies.EnemyRandomMove;
+import darklord.enemies.StaticEnemyCrystal;
+import darklord.enemies.StaticEnemyOneShot;
 import darklord.media.SoundLoader;
 import darklord.rules.AddCrystalsReaction;
 import darklord.rules.AllEnemiesDestroyedCondition;
@@ -112,6 +117,7 @@ public class Parser
 	{
 		if (string.equals("BLOCK_NONE")) return BlockType.BLOCK_NONE;
 		if (string.equals("BLOCK_ROCK")) return BlockType.BLOCK_ROCK;
+		if (string.equals("BLOCK_DIRT")) return BlockType.BLOCK_DIRT;
 		if (string.equals("BLOCK_RED")) return BlockType.BLOCK_RED;
 		if (string.equals("BLOCK_BLUE")) return BlockType.BLOCK_BLUE;
 		if (string.equals("BLOCK_GREEN")) return BlockType.BLOCK_GREEN;
@@ -130,6 +136,8 @@ public class Parser
 		
 		if (string[3].equals("EnemyRandomMove")) return new EnemyRandomMove(posX, posY);
 		if (string[3].equals("StaticEnemyCrystal")) return new StaticEnemyCrystal(posX, posY);
+		if (string[3].equals("StaticEnemyOneShot")) return new StaticEnemyOneShot(posX, posY);
+		if (string[3].equals("ChasingBlockEnemy")) return new ChasingBlockEnemy(posX, posY);
 		
 		return null;
 	}

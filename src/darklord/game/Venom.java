@@ -2,6 +2,8 @@ package darklord.game;
 
 import java.io.Serializable;
 
+import darklord.enemies.Enemy;
+
 public class Venom implements Serializable
 {
 //	protected long id;

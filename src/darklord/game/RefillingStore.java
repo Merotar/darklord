@@ -15,10 +15,16 @@ public class RefillingStore extends StoreObject<Float> implements Serializable
 {
 	float amountPerSecond;
 	
-	public RefillingStore(float value, float amount)
+	public RefillingStore(float maxValue, float amountPersecond)
 	{
-		super(value, value);
-		setAmountPerSecond(amount);
+		super(maxValue, maxValue);
+		setAmountPerSecond(amountPersecond);
+	}
+	
+	public RefillingStore(float startValue, float maxValue, float amountPersecond)
+	{
+		super(startValue, maxValue);
+		setAmountPerSecond(amountPersecond);
 	}
 
 	public boolean decrease(float amount)
@@ -31,10 +37,15 @@ public class RefillingStore extends StoreObject<Float> implements Serializable
 		return false;
 	}
 	
-	public void increase(float dt)
+	public boolean increase(float dt)
 	{
 		current += getAmountPerSecond()*dt;
-		if (current > max) current = max;
+		if (current > max)
+		{
+			current = max;
+			return false;
+		}
+		return true;
 	}
 	
 //	public void increase()

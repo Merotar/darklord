@@ -12,7 +12,7 @@ import darklord.math.Vector2f;
  * @since 12-05-2013
  * 
  */
-abstract class Collidable implements Serializable
+public abstract class Collidable implements Serializable
 {
 	protected float posX;
 	protected float posY;

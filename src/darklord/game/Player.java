@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
 
+import darklord.enemies.Enemy;
 import darklord.media.Animation;
 import darklord.media.Drawable;
 import darklord.media.Sprite;

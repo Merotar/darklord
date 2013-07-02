@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import org.lwjgl.opengl.GL11;
 
+import darklord.enemies.Enemy;
 import darklord.media.Drawable;
 import darklord.media.Sprite;
 import darklord.media.TextureRegion;

@@ -3,8 +3,8 @@ import java.io.Serializable;
 
 import org.lwjgl.opengl.GL11;
 
+import darklord.enemies.Enemy;
 import darklord.game.Darklord;
-import darklord.game.Enemy;
 import darklord.game.TimeStore;
 import darklord.math.Vector2f;
 import darklord.media.Animation;
