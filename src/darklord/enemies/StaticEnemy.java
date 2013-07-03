@@ -1,6 +1,7 @@
 package darklord.enemies;
 
 import darklord.game.Darklord;
+import darklord.game.GameEngine;
 import darklord.media.Drawable;
 import darklord.media.Sprite;
 
@@ -38,9 +39,9 @@ public class StaticEnemy extends Enemy
 		Darklord.sprites01.end();
 	}
 	
-	public void update(float dt)
+	public void update(float dt, GameEngine engine)
 	{
-		super.update(dt);
+		super.update(dt, engine);
 	}
 
 	public StaticEnemy createNew()

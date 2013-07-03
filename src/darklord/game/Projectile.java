@@ -188,14 +188,14 @@ public class Projectile extends Collidable
 //		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
 	
-	public boolean collideWithBlock(float x, float y)
-	{
-		boolean collision;
-		
-		collision = Collider.collideBorders(getPosX(), getPosX()+getSize(), getPosY(), getPosY()+getSize(), x, x+1.f, y, y+1.f);
-		
-		return collision;
-	}
+//	public boolean collideWithBlock(float x, float y)
+//	{
+//		boolean collision;
+//		
+//		collision = Collider.collideBorders(getPosX(), getPosX()+getSize(), getPosY(), getPosY()+getSize(), x, x+1.f, y, y+1.f);
+//		
+//		return collision;
+//	}
 	
 	public void update(float dt)
 	{
@@ -207,7 +207,7 @@ public class Projectile extends Collidable
 		}
 		if (active)
 		{
-			setPos(getPosition().add(direction.mul(dt*speed)));
+			setPosition(getPosition().add(direction.mul(dt*speed)));
 		}
 		
 		// move

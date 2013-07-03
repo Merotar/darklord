@@ -869,7 +869,7 @@ public class GameEngine
 //			position = position.add(dir.mul(0.5f));
 			
 			Projectile tmpProjectile = new ShockWave(position, dir, 0);
-			tmpProjectile.setPos(position.sub(new Vector2f(tmpProjectile.getSizeX()/2.f, tmpProjectile.getSizeY()/2.f)));
+			tmpProjectile.setPosition(position.sub(new Vector2f(tmpProjectile.getSizeX()/2.f, tmpProjectile.getSizeY()/2.f)));
 			
 			projectiles.add(tmpProjectile);
 			mainPlayer.decreaseEnergyGreen(tmpProjectile.getEnergyCosts());
@@ -1303,6 +1303,7 @@ public class GameEngine
 			tmpProjectileY = projectileY;
 			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
 			{
+				Print.outln("remove1");
 				object.remove();
 				destroyed = true;
 				continue;
@@ -1321,6 +1322,7 @@ public class GameEngine
 			tmpProjectileY = projectileY;
 			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
 			{
+				Print.outln("remove2");
 				object.remove();
 				destroyed = true;
 				continue;
@@ -1331,6 +1333,7 @@ public class GameEngine
 			tmpProjectileY = projectileY+1;
 			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
 			{
+				Print.outln("remove3");
 				object.remove();
 				destroyed = true;
 				continue;
@@ -1341,6 +1344,7 @@ public class GameEngine
 			tmpProjectileY = projectileY+1;
 			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
 			{
+				Print.outln("remove4");
 				object.remove();
 				destroyed = true;
 				continue;
@@ -1378,6 +1382,9 @@ public class GameEngine
 //			if (e.collideWithRotation(testEnemy)) Print.outln("collide test!");
 //			Print.outln("e.canGenerateBubble(): "+e.canGenerateBubble());
 			
+			// continue if enemy is too far away from player
+			if((e.getPosition().sub(mainPlayer.getPosition())).length() > maxUpdateDistance) continue;
+			
 			if (e.isDamaged() && e.canGenerateBubble())
 			{
 				// generate "BAM" bubble
@@ -1388,16 +1395,6 @@ public class GameEngine
 			{
 				obj2.remove();
 				continue;
-			}
-			
-			if((e.getPosition().sub(mainPlayer.getPosition())).length() > maxUpdateDistance) continue;
-			
-			if (e instanceof EnemyRandomMove)
-			{
-				if(!((EnemyRandomMove)e).isMoving())
-				{
-					moveRandom((EnemyRandomMove)e);
-				}
 			}
 			
 			if (mainPlayer.collide(e))
@@ -1413,12 +1410,7 @@ public class GameEngine
 				}
 			}
 			
-			e.update(dt);
-			
-			// special update for StaticEnemyCrystal to be able to spawn projectiles
-			if (e instanceof StaticEnemyCrystal) ((StaticEnemyCrystal) e).update(dt, this);
-			if (e instanceof StaticEnemyOneShot) ((StaticEnemyOneShot) e).update(dt, this);
-			if (e instanceof ChasingBlockEnemy) ((ChasingBlockEnemy) e).update(dt, this);
+			e.update(dt, this);
 		}
 	}
 	
@@ -1744,28 +1736,6 @@ public class GameEngine
 
 	public void setPlayerBorderY(float playerBorderY) {
 		this.playerBorderY = playerBorderY;
-	}
-	
-	/**
-	 * moves an EnemyRandomMove in a random direction
-	 * @param e enemy to move
-	 */
-	void moveRandom(EnemyRandomMove e)
-	{
-		int posX = (int)Math.round(e.getPosX());
-		int posY = (int)Math.round(e.getPosY());
-//		e.getPos().print();
-		
-		Vector2f dir = RandomGenerator.getRandomDirection();
-		
-//		System.out.print("move to dir: ");dir.print();
-		
-		Block tmpBlock = map.getBlockAt(posX+(int)dir.getX(), posY+(int)dir.getY());
-		if (tmpBlock != null && !tmpBlock.isSolid())
-		{
-//			System.out.println("test");
-			e.startMotion(dir);
-		}
 	}
 
 	public int getResX() {

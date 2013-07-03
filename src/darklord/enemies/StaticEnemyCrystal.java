@@ -44,9 +44,9 @@ public class StaticEnemyCrystal extends Enemy
 		this.setPosY(y);
 	}
 	
-	public void update(float dt, GameEngine level)
+	public void update(float dt, GameEngine engine)
 	{
-		super.update(dt);
+		super.update(dt, engine);
 		if (time.add(dt))
 		{
 			Vector2f pos, dir;
@@ -56,33 +56,33 @@ public class StaticEnemyCrystal extends Enemy
 			tmpProjectile = new Projectile(3);
 			pos = this.getCenter().sub(new Vector2f(tmpProjectile.getSize()/2.f, tmpProjectile.getSize()/2.f));
 			dir = new Vector2f(1.f, 0.f);
-			tmpProjectile.setPos(pos);
+			tmpProjectile.setPosition(pos);
 			tmpProjectile.setDirection(dir);
-			level.hostileProjectiles.add(tmpProjectile);
+			engine.hostileProjectiles.add(tmpProjectile);
 			
 			// add left projectile
 			tmpProjectile = new Projectile(3);
 			pos = this.getCenter().sub(new Vector2f(tmpProjectile.getSize()/2.f, tmpProjectile.getSize()/2.f));
 			dir = new Vector2f(-1.f, 0.f);
-			tmpProjectile.setPos(pos);
+			tmpProjectile.setPosition(pos);
 			tmpProjectile.setDirection(dir);
-			level.hostileProjectiles.add(tmpProjectile);
+			engine.hostileProjectiles.add(tmpProjectile);
 			
 			// add down projectile
 			tmpProjectile = new Projectile(3);
 			pos = this.getCenter().sub(new Vector2f(tmpProjectile.getSize()/2.f, tmpProjectile.getSize()/2.f));
 			dir = new Vector2f(0.f, -1.f);
-			tmpProjectile.setPos(pos);
+			tmpProjectile.setPosition(pos);
 			tmpProjectile.setDirection(dir);
-			level.hostileProjectiles.add(tmpProjectile);
+			engine.hostileProjectiles.add(tmpProjectile);
 			
 			// add up projectile
 			tmpProjectile = new Projectile(3);
 			pos = this.getCenter().sub(new Vector2f(tmpProjectile.getSize()/2.f, tmpProjectile.getSize()/2.f));
 			dir = new Vector2f(0.f, 1.f);
-			tmpProjectile.setPos(pos);
+			tmpProjectile.setPosition(pos);
 			tmpProjectile.setDirection(dir);
-			level.hostileProjectiles.add(tmpProjectile);
+			engine.hostileProjectiles.add(tmpProjectile);
 			
 //			Print.outln("crystal: shoot!");
 		}

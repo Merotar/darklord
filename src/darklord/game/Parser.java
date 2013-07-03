@@ -1,5 +1,6 @@
 package darklord.game;
 
+import darklord.enemies.BounceEnemy;
 import darklord.enemies.ChasingBlockEnemy;
 import darklord.enemies.Enemy;
 import darklord.enemies.EnemyRandomMove;
@@ -138,6 +139,7 @@ public class Parser
 		if (string[3].equals("StaticEnemyCrystal")) return new StaticEnemyCrystal(posX, posY);
 		if (string[3].equals("StaticEnemyOneShot")) return new StaticEnemyOneShot(posX, posY);
 		if (string[3].equals("ChasingBlockEnemy")) return new ChasingBlockEnemy(posX, posY);
+		if (string[3].equals("BounceEnemy")) return new BounceEnemy(posX, posY);
 		
 		return null;
 	}

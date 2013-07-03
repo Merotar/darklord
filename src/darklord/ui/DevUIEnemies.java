@@ -2,6 +2,7 @@ package darklord.ui;
 
 import org.lwjgl.opengl.GL11;
 
+import darklord.enemies.BounceEnemy;
 import darklord.enemies.ChasingBlockEnemy;
 import darklord.enemies.Enemy;
 import darklord.enemies.EnemyRandomMove;
@@ -74,6 +75,9 @@ public class DevUIEnemies extends UI
         
         ButtonEnemy buttonBuildChasingBlockEnemy = new ButtonEnemy(new TextureRegion(3*128, 4*128, 128, 128), "enemy_chasing_block", new ChasingBlockEnemy());
         buildOptions.addUIObject(buttonBuildChasingBlockEnemy, aspectRatio);
+        
+        ButtonEnemy buttonBuildBounceEnemy = new ButtonEnemy(new TextureRegion(0*128, 5*128, 128, 128), "enemy_bounce", new BounceEnemy());
+        buildOptions.addUIObject(buttonBuildBounceEnemy, aspectRatio);
         
 //        Button buttonBuildWall = new Button(new TextureRegion(1*128, 7*128, 128, 128), "build_wall");
 //        buttonBuildWall.setSize(new Vector2f(.05f, .05f*aspectRatio));

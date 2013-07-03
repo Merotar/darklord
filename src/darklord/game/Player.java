@@ -339,18 +339,7 @@ public class Player extends Collidable implements Serializable
 		return new Vector2f(getPosX(), getPosY());
 	}
 	
-	public Vector2f getLocalPosition(LevelStructure level)
-	{
-		float x = (posX) % level.getGridSizeX();
-		float y = (posY) % level.getGridSizeY();
-		
-		if (x < 0) x += level.getGridSizeX();
-		if (y < 0) y += level.getGridSizeY();
-		
-		return new Vector2f(x, y);
-	}
-	
-	public void setPos(Vector2f v)
+	public void setPosition(Vector2f v)
 	{
 		setPosX(v.getX());
 		setPosY(v.getY());

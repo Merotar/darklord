@@ -3,8 +3,13 @@ package darklord.enemies;
 
 import java.io.Serializable;
 
+import javax.print.attribute.standard.MediaSize.Engineering;
+
 import org.lwjgl.opengl.GL11;
 
+import darklord.game.Block;
+import darklord.game.GameEngine;
+import darklord.game.RandomGenerator;
 import darklord.game.Timer;
 import darklord.media.Animation;
 import darklord.media.Drawable;
@@ -92,9 +97,15 @@ public class EnemyRandomMove extends Enemy implements Serializable
 	/**
 	 * updates position
 	 */
-	public void update(float dt)
+	public void update(float dt, GameEngine engine)
 	{
-		super.update(dt);
+		super.update(dt, engine);
+		
+		if(!this.isMoving())
+		{
+			moveRandom(engine);
+		}
+		
 		if (motionTimer.getTimeDelta() > motionTime)
 		{
 			this.stopMotion();
@@ -103,7 +114,41 @@ public class EnemyRandomMove extends Enemy implements Serializable
 		if (this.isMoving())
 		{
 			float path = 1.f*motionTimer.getTimeDelta()/motionTime;
-			setPos(oldPos.add(direction.mul(path)));
+			setPosition(oldPos.add(direction.mul(path)));
+		}
+	}
+	
+	/**
+	 * moves an EnemyRandomMove in a random direction
+	 * @param e enemy to move
+	 */
+	void moveRandom(GameEngine engine)
+	{
+		int posX = (int)Math.round(this.getPosX());
+		int posY = (int)Math.round(this.getPosY());
+//		e.getPos().print();
+		
+//		System.out.print("move to dir: ");dir.print();
+		
+		float localX = getLocalPosition(engine.map.levelStructure).getX();
+		float localY = getLocalPosition(engine.map.levelStructure).getY();
+		
+		
+		Vector2f dir = RandomGenerator.getRandomDirection();
+		
+		// make sure that enemy doesn't leave the room
+		float newX = localX + dir.getX();
+		float newY = localY + dir.getY();
+		if (newX < 0) dir.setX(1);
+		if (newY < 0) dir.setY(1);
+		if (newX > engine.map.levelStructure.getGridSizeX()-1) dir.setX(-1);
+		if (newY > engine.map.levelStructure.getGridSizeY()-1) dir.setY(-1);
+		
+		Block tmpBlock = engine.map.getBlockAt(posX+(int)dir.getX(), posY+(int)dir.getY());
+		if (tmpBlock != null && !tmpBlock.isSolid())
+		{
+//			System.out.println("test");
+			this.startMotion(dir);
 		}
 	}
 	

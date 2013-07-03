@@ -43,9 +43,9 @@ public class StaticEnemyOneShot extends Enemy
 		this.setPosY(y);
 	}
 	
-	public void update(float dt, GameEngine level)
+	public void update(float dt, GameEngine engine)
 	{
-		super.update(dt);
+		super.update(dt, engine);
 		if (time.add(dt))
 		{
 			Vector2f pos, dir;
@@ -71,9 +71,9 @@ public class StaticEnemyOneShot extends Enemy
 			tmpProjectile = new Projectile(2);
 			pos = this.getCenter().sub(new Vector2f(tmpProjectile.getSize()/2.f, tmpProjectile.getSize()/2.f));
 			dir = new Vector2f(0.f, -1.f);
-			tmpProjectile.setPos(pos);
+			tmpProjectile.setPosition(pos);
 			tmpProjectile.setDirection(dir);
-			level.hostileProjectiles.add(tmpProjectile);
+			engine.hostileProjectiles.add(tmpProjectile);
 //			
 //			// add up projectile
 //			tmpProjectile = new Projectile(3);

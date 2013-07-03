@@ -8,6 +8,7 @@ import org.newdawn.slick.Color;
 
 import darklord.game.Collidable;
 import darklord.game.Darklord;
+import darklord.game.GameEngine;
 import darklord.game.Projectile;
 import darklord.game.RefillingStore;
 import darklord.game.Venom;
@@ -31,6 +32,7 @@ public abstract class Enemy extends Collidable implements Serializable
 	protected Drawable appearance;
 	RefillingStore bubbleTimer;
 	private Venom venom;
+	private float visibility;
 	
 	public Enemy()
 	{
@@ -42,6 +44,7 @@ public abstract class Enemy extends Collidable implements Serializable
 		setSizeY(1.f);
 		damaged = false;
 		dead = false;
+		visibility = 1.f;
 		bubbleTimer = new RefillingStore(0.5f, 1.f);
 	}
 	
@@ -61,7 +64,7 @@ public abstract class Enemy extends Collidable implements Serializable
 	public Enemy(Enemy e)
 	{
 		this();
-		this.setPos(e.getPosition());
+		this.setPosition(e.getPosition());
 		this.setSizeX(e.getSizeX());
 		this.setSizeY(e.getSizeY());
 		this.setType(e.getType());
@@ -110,7 +113,7 @@ public abstract class Enemy extends Collidable implements Serializable
 		GL11.glScaled(getSizeX(), getSizeY(), 1.f);
 		if (venom == null)
 		{
-			appearance.draw();
+			appearance.drawColor(1.f, 1.f, 1.f, visibility);
 		} else
 		{
 			float intensityGreen = 0.3f;
@@ -170,7 +173,7 @@ public abstract class Enemy extends Collidable implements Serializable
 		this.dmgOnContact = dmgOnContact;
 	}
 	
-	public void update(float dt)
+	public void update(float dt, GameEngine engine)
 	{
 		damaged = false;
 		bubbleTimer.increase(dt);
@@ -235,5 +238,22 @@ public abstract class Enemy extends Collidable implements Serializable
 
 	public void setDead(boolean dead) {
 		this.dead = dead;
+	}
+
+	public float getVisibility() {
+		return visibility;
+	}
+
+	public void setVisibility(float visibility) {
+		this.visibility = visibility;
+	}
+
+	public float getMaxHp() {
+		return maxHp;
+	}
+
+	public void setMaxHp(float maxHp) {
+		this.maxHp = maxHp;
+		this.hp = maxHp;
 	}
 }

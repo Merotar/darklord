@@ -27,7 +27,7 @@ public abstract class Collidable implements Serializable
 		return new Vector2f(posX, posY);
 	}
 	
-	public void setPos(Vector2f pos)
+	public void setPosition(Vector2f pos)
 	{
 		posX = pos.getX();
 		posY = pos.getY();
@@ -87,6 +87,17 @@ public abstract class Collidable implements Serializable
 		return new Vector2f(getPosX()+getSizeX()/2.f, getPosY()+getSizeY()/2.f);
 	}
 	
+	public Vector2f getLocalPosition(LevelStructure level)
+	{
+		float x = (posX) % level.getGridSizeX();
+		float y = (posY) % level.getGridSizeY();
+		
+		if (x < 0) x += level.getGridSizeX();
+		if (y < 0) y += level.getGridSizeY();
+		
+		return new Vector2f(x, y);
+	}
+	
 //	public boolean collideWithBlock(int x, int y)
 //	{
 //		// TODO: implementieren
@@ -107,6 +118,66 @@ public abstract class Collidable implements Serializable
 	public boolean collide(Collidable obj)
 	{
 		return collide(getPosX()+getSizeX()/2.f, getPosY()+getSizeY()/2.f, getSizeX()/2.f, getSizeY()/2.f, obj.getPosX()+obj.getSizeX()/2.f, obj.getPosY()+obj.getSizeY()/2.f, obj.getSizeX()/2.f, obj.getSizeY()/2.f);
+	}
+	
+	/**
+	 * not yet tested!
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean collideWithBlock(int x, int y)
+	{
+		boolean collision = false;
+
+		collision = collide(getPosX()+getSizeX()/2.f, getPosY()+getSizeY()/2.f, getSizeX()/2.f, getSizeY()/2.f, x+0.5f, y+0.5f, 0.5f, 0.5f);
+
+		return collision;
+	}
+	
+	public Vector2f collideOverlapWithBlock(int x, int y)
+	{
+		return collideOverlap(getPosX(), getPosY(), getSizeX(), getSizeY(), x, y, 1.f, 1.f);
+	}
+	
+	public static Vector2f collideOverlap(float x1, float y1, float sX1, float sY1, float x2, float y2, float sX2, float sY2)
+	{
+		Vector2f overlap = new Vector2f(0.f, 0.f);
+		
+		float overlapX = Math.min(x1+sX1, x2+sX2) - Math.max(x1, x2);
+		float overlapY = Math.min(y1+sY1, y2+sY2) - Math.max(y1, y2);
+		
+		// if the two objects overlap
+		if (overlapX > 0 && overlapY > 0)
+		{
+			if (x1+sX1/2.f > x2+sX2/2.f)
+			{
+				if (overlapX > 0) overlap.setX(-overlapX);
+			} else
+			{
+				if (overlapX > 0) overlap.setX(overlapX);
+			}
+			
+			if (y1+sY1/2.f > y2+sY2/2.f)
+			{
+				if (overlapY > 0) overlap.setY(-overlapY);
+			} else
+			{
+				if (overlapY > 0) overlap.setY(overlapY);
+			}
+		}
+		
+		return overlap;		
+	}
+	
+	/**
+	 * 
+	 * @param obj
+	 * @return vector which describes overlap in the directions
+	 */
+	public Vector2f collideOverlap(Collidable obj)
+	{
+		return collideOverlap(getPosX(), getPosY(), getSizeX(), getSizeY(), obj.getPosX(), obj.getPosY(), obj.getSizeX(), obj.getSizeY());
 	}
 	
 	public boolean collideWithRotation(Collidable obj)
