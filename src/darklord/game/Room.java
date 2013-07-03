@@ -78,7 +78,7 @@ public class Room implements Serializable
 		name ="defaultRoom";
 //		rules = readRulesFromTextFile(name+"Rules.txt");
 	}
-	
+
 	public Room(int x, int y)
 	{
 		this(x, y, 0, 0, BlockType.BLOCK_NONE);
@@ -117,10 +117,10 @@ public class Room implements Serializable
 				{
 					theGrid[i][j] = new Block(t);
 				}
-				if (i == 0 && j == gridSizeY/2) theGrid[i][j].setType(BlockType.BLOCK_NONE);
-				if (i == gridSizeX-1 && j == gridSizeY/2) theGrid[i][j].setType(BlockType.BLOCK_NONE);
-				if (i == gridSizeX/2 && j == 0) theGrid[i][j].setType(BlockType.BLOCK_NONE);
-				if (i == gridSizeX/2 && j == gridSizeY-1) theGrid[i][j].setType(BlockType.BLOCK_NONE);
+				if (i == 0 && j == gridSizeY/2) theGrid[i][j].setType(BlockType.BLOCK_DIRT);
+				if (i == gridSizeX-1 && j == gridSizeY/2) theGrid[i][j].setType(BlockType.BLOCK_DIRT);
+				if (i == gridSizeX/2 && j == 0) theGrid[i][j].setType(BlockType.BLOCK_DIRT);
+				if (i == gridSizeX/2 && j == gridSizeY-1) theGrid[i][j].setType(BlockType.BLOCK_DIRT);
 			}
 		}
 	}

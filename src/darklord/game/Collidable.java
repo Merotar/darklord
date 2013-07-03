@@ -87,6 +87,16 @@ public abstract class Collidable implements Serializable
 		return new Vector2f(getPosX()+getSizeX()/2.f, getPosY()+getSizeY()/2.f);
 	}
 	
+	/**
+	 * angle in degree
+	 * @param rotAngle
+	 */
+	public void rotate(float rotAngle)
+	{
+		angle += rotAngle;
+		while (angle > 360) angle -=360;
+	}
+	
 	public Vector2f getLocalPosition(LevelStructure level)
 	{
 		float x = (posX) % level.getGridSizeX();

@@ -14,7 +14,7 @@ public class KeyboardSettings
 {
 	int KEY_1, KEY_2, KEY_3, KEY_4, KEY_8, KEY_W, KEY_A, KEY_S, KEY_D, KEY_ESCAPE, KEY_PERIOD,
 	KEY_COMMA, KEY_F1, KEY_F2, KEY_F5, KEY_Q, KEY_E, KEY_LSHIFT, KEY_C, KEY_LCONTROL,
-	KEY_N, KEY_O, KEY_TAB, KEY_NUMPAD2, KEY_NUMPAD4, KEY_NUMPAD6, KEY_NUMPAD8;
+	KEY_N, KEY_O, KEY_R, KEY_TAB, KEY_NUMPAD2, KEY_NUMPAD4, KEY_NUMPAD6, KEY_NUMPAD8;
 	
 	public KeyboardSettings()
 	{
@@ -40,6 +40,7 @@ public class KeyboardSettings
 		KEY_E = Keyboard.KEY_E;
 		KEY_N = Keyboard.KEY_N;
 		KEY_O = Keyboard.KEY_O;
+		KEY_R = Keyboard.KEY_R;
 		KEY_LSHIFT = Keyboard.KEY_LSHIFT;
 		KEY_C = Keyboard.KEY_C;
 		KEY_LCONTROL = Keyboard.KEY_LCONTROL;

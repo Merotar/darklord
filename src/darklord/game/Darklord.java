@@ -1234,22 +1234,22 @@ public class Darklord {
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_NUMPAD2))
 				{
-					world.map.levelStructure.addGridBottom();
+					world.map.levelStructure.addRoomBottom();
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_NUMPAD8))
 				{
-					world.map.levelStructure.addGridTop();
+					world.map.levelStructure.addRoomTop();
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_NUMPAD4))
 				{
-					world.map.levelStructure.addGridLeft();
+					world.map.levelStructure.addRoomLeft();
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_NUMPAD6))
 				{
-					world.map.levelStructure.addGridRight();
+					world.map.levelStructure.addRoomRight();
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_1))
@@ -1260,6 +1260,12 @@ public class Darklord {
 				if (Keyboard.isKeyDown(myKeyboard.KEY_2))
 				{
 					devUI.setEnemiesUI();
+				}
+				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_R))
+				{
+					mousePos.set(Mouse.getX(), Mouse.getY());
+					world.rotateActiveEnemy(globalToGamescreen(mousePos));
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_LCONTROL) && Keyboard.isKeyDown(myKeyboard.KEY_S))

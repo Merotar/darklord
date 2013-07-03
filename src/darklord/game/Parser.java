@@ -130,16 +130,16 @@ public class Parser
 		return BlockType.BLOCK_NONE;
 	}
 
-	public static Enemy parseEnemy(String[] string)
+	public static Enemy parseEnemy(String[] string, int offsetX ,int offsetY)
 	{
 		float posX = Float.parseFloat(string[1]);
 		float posY = Float.parseFloat(string[2]);
 		
-		if (string[3].equals("EnemyRandomMove")) return new EnemyRandomMove(posX, posY);
-		if (string[3].equals("StaticEnemyCrystal")) return new StaticEnemyCrystal(posX, posY);
-		if (string[3].equals("StaticEnemyOneShot")) return new StaticEnemyOneShot(posX, posY);
-		if (string[3].equals("ChasingBlockEnemy")) return new ChasingBlockEnemy(posX, posY);
-		if (string[3].equals("BounceEnemy")) return new BounceEnemy(posX, posY);
+		if (string[3].equals("EnemyRandomMove")) return new EnemyRandomMove(offsetX+posX, offsetY+posY);
+		if (string[3].equals("StaticEnemyCrystal")) return new StaticEnemyCrystal(offsetX+posX, offsetY+posY);
+		if (string[3].equals("StaticEnemyOneShot")) return new StaticEnemyOneShot(offsetX+posX, offsetY+posY);
+		if (string[3].equals("ChasingBlockEnemy")) return new ChasingBlockEnemy(offsetX+posX, offsetY+posY);
+		if (string[3].equals("BounceEnemy")) return new BounceEnemy(offsetX+posX, offsetY+posY);
 		
 		return null;
 	}

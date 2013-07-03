@@ -2,18 +2,13 @@ package darklord.enemies;
 
 
 import java.io.Serializable;
-import java.util.Vector;
-
 import darklord.game.GameEngine;
-import darklord.game.Print;
-import darklord.game.Timer;
 import darklord.media.Animation;
-import darklord.media.Drawable;
 import darklord.media.TextureRegion;
 import darklord.math.Vector2f;
 
 /**
- * description of an enemy which moves along streight line and bounces at walls
+ * description of an enemy which moves along straight line and bounces at walls
  * 
  * @author Sebastian Artz
  * @version 0.1
@@ -310,7 +305,6 @@ public class BounceEnemy extends Enemy implements Serializable
 				// down left
 				overlapX = checkCollisionLeft(engine);
 				overlapY = checkCollisionDown(engine);
-				Print.outln("down left: "+overlapX+", "+overlapY);
 			}
 		}
 
@@ -322,12 +316,10 @@ public class BounceEnemy extends Enemy implements Serializable
 				{
 					direction.setX(-direction.getX());
 					setPosX(getPosX()-overlapX);
-					Print.outln("X: "+overlapX);
 				} else
 				{
 					direction.setY(-direction.getY());
 					setPosY(getPosY()-overlapY);
-					Print.outln("Y: "+overlapY);
 				}
 
 			} else
@@ -336,12 +328,10 @@ public class BounceEnemy extends Enemy implements Serializable
 				{
 					direction.setY(-direction.getY());
 					setPosY(getPosY()-overlapY);
-					Print.outln("Y: "+overlapY);
 				} else
 				{
 					direction.setX(-direction.getX());
 					setPosX(getPosX()-overlapX);
-					Print.outln("X: "+overlapX);
 				}
 			}
 		}		

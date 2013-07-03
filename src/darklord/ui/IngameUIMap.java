@@ -68,8 +68,8 @@ public class IngameUIMap extends UI
 //		center.setX((level.getActiveGrid().getPosX()+level.getGridCenter().getPosX())/2.f);
 //		center.setY((level.getActiveGrid().getPosY()+level.getGridCenter().getPosY())/2.f);
 		
-		center.setX(-level.getActiveGrid().getPosX());
-		center.setY(-level.getActiveGrid().getPosY());
+		center.setX(-level.getActiveRoom().getPosX());
+		center.setY(-level.getActiveRoom().getPosY());
 		
 		for (int i=0;i<level.getGridMapSize();i++)
 		{
@@ -93,7 +93,7 @@ public class IngameUIMap extends UI
 					
 					if (level.getGridMap()[i][j] == level.getGridCenter()) map[i][j].setType(MapButton.TYPE_CENTER);
 					
-					if (level.getGridMap()[i][j] == level.getActiveGrid())
+					if (level.getGridMap()[i][j] == level.getActiveRoom())
 					{
 						map[i][j].setType(MapButton.TYPE_ACTIVE);
 						// set potential map tile right
@@ -246,21 +246,21 @@ public class IngameUIMap extends UI
 					{
 						if (button == 0 && map[i][j].getType() == MapButton.TYPE_ACTIVE_POTENTIAL)
 						{
-							if (i-1 >= 0 &&	level.getGridMap()[i-1][j] == level.getActiveGrid())
+							if (i-1 >= 0 &&	level.getGridMap()[i-1][j] == level.getActiveRoom())
 							{
-								level.addGridRight();
+								level.addRoomRight();
 							}
-							if (i+1 < level.getGridMapSize() && level.getGridMap()[i+1][j] == level.getActiveGrid())
+							if (i+1 < level.getGridMapSize() && level.getGridMap()[i+1][j] == level.getActiveRoom())
 							{
-								level.addGridLeft();
+								level.addRoomLeft();
 							}
-							if (j-1 >= 0 &&	level.getGridMap()[i][j-1] == level.getActiveGrid())
+							if (j-1 >= 0 &&	level.getGridMap()[i][j-1] == level.getActiveRoom())
 							{
-								level.addGridTop();
+								level.addRoomTop();
 							}
-							if (j+1 < level.getGridMapSize() && level.getGridMap()[i][j+1] == level.getActiveGrid())
+							if (j+1 < level.getGridMapSize() && level.getGridMap()[i][j+1] == level.getActiveRoom())
 							{
-								level.addGridBottom();
+								level.addRoomBottom();
 							}
 						}
 					}

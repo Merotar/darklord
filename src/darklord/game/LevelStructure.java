@@ -1,8 +1,17 @@
 package darklord.game;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.Scanner;
+import java.util.Vector;
 
+import darklord.enemies.Enemy;
 import darklord.math.Vector2f;
+import darklord.rules.Condition;
+import darklord.rules.Reaction;
+import darklord.rules.Rule;
 
 public class LevelStructure implements Serializable
 {
@@ -14,6 +23,7 @@ public class LevelStructure implements Serializable
 	private int gridMapSize, centerX, centerY;
 	Room[][] roomMap;
 //	boolean[][] isDiscovered;
+	private int roomCounter;
 	
 	public LevelStructure(int sizeX, int sizeY)
 	{
@@ -27,6 +37,7 @@ public class LevelStructure implements Serializable
 		centerY = gridMapSize / 2;
 		roomMap = new Room[gridMapSize][gridMapSize];
 		roomMap[centerX][centerY] = gridCenter;
+		roomCounter = 0;
 		
 //		grids = new Grid[levelStructureSize][levelStructureSize];
 //		isDiscovered = new boolean[levelStructureSize][levelStructureSize];
@@ -71,13 +82,250 @@ public class LevelStructure implements Serializable
 //		return false;
 	}
 	
-	public boolean addGridTop()
+//	public void readRoomFromTextFile(String name, Room theRoom)
+//	{
+//		theRoom = readRoomFromTextFile(name, 0, 0);
+//	}
+	
+	public void readActiveRoomFromTextFile(String name)
+	{
+		activeRoom = readRoomFromTextFile(name, 0, 0);
+	}
+	
+	public Room readRoomFromTextFile(String name, int offsetX, int offsetY)
+	{
+		Room tmpRoom = null;
+		int sizeX = 0;
+		int sizeY = 0;
+		String fileName = name;//getRoomFileName(name); //getName()+"/"+name+".txt";
+		String roomName = null;
+		File file = new File(fileName);
+		if (!file.exists())
+		{
+			Print.err("file "+fileName+" does not exist!");
+			return null;
+		}
+		try
+		{
+			Scanner s = new Scanner(file);
+			String line;
+			String[] words;
+			
+            line = s.nextLine();
+            words = line.split("\\s+");
+            
+            if (words[0].equals("Name"))
+            {
+                roomName = words[0];
+            } else
+            {
+            	Print.err("room name not specified");
+            	return null;
+            }
+            
+            line = s.nextLine();
+            words = line.split("\\s+");
+
+            if (words[0].equals("SizeX"))
+            {
+            	sizeX = Integer.parseInt(words[1]);
+                line = s.nextLine();
+                words = line.split("\\s+");
+            	
+                if (words[0].equals("SizeY"))
+                {
+                	sizeY = Integer.parseInt(words[1]);
+                	
+                } else
+                {
+                	Print.err("SizeY not specified");
+                	return null;
+                }
+            } else
+            {
+            	Print.err("SizeX not specified");
+            	return null;
+            }
+            if (sizeX > 0 && sizeY > 0)
+            {
+                tmpRoom = new Room(sizeX, sizeY);
+                tmpRoom.setName(roomName);
+            } else
+            {
+            	return null;
+            }
+
+			while (s.hasNextLine())
+			{
+                line = s.nextLine();
+                words = line.split("\\s+");
+                	
+                // scan Blocks
+            	if (words[0].equals(Parser.Block))
+            	{
+            		int x = Integer.parseInt(words[1]);
+            		int y = Integer.parseInt(words[2]);
+            		BlockType type = Parser.parseBlockType(words[3]);
+            		if (x >= 0 && y >= 0 && x < sizeX && y < sizeY)
+            		{
+                		tmpRoom.getBlockAt(x, y).setType(type);
+            		} else
+            		{
+            			Print.err("wrong coordinates: ("+x+","+y+")");
+            		}
+            	}
+                
+            	// scan enemies
+            	if (words[0].equals(Parser.Enemy))
+            	{
+            		Enemy tmpEnemy = Parser.parseEnemy(words, offsetX, offsetY);
+            		if (tmpEnemy != null) tmpRoom.addEnemy(tmpEnemy);
+            	}
+			}
+		}  catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return tmpRoom;
+	}
+	
+	public void readRulesFromTextFile(String name,Room theRoom)
+	{
+		theRoom.setRules(readRulesFromTextFile(name));
+	}
+	
+	public void readActiveRoomRulesFromTextFile(String name)
+	{
+		activeRoom.setRules(readRulesFromTextFile(name));
+	}
+	
+	public Vector<Rule> readRulesFromTextFile(String name)
+	{
+		Vector<Rule> theRules = new Vector<Rule>();
+		String fileName = name; //getRuleFileName(name); //getName()+"/"+name+"Rules.txt";
+		File file = new File(fileName);
+		
+		try
+		{
+			if (!file.exists())
+			{
+				file.createNewFile();
+			}
+			
+			Scanner s = new Scanner(file);
+			String line;
+			String[] words;
+
+			while (s.hasNextLine())
+			{
+                line = s.nextLine();
+                words = line.split("\\s+");
+
+            	if (words[0].equals(Parser.newRule))
+            	{
+            		Rule tmpRule = new Rule();
+            		
+        			while (s.hasNextLine())
+        			{
+                        line = s.nextLine();
+                        words = line.split("\\s+");
+                        
+                        // new condition
+                        if (words[0].equals(Parser.Condition))
+                        {
+                        	Condition tmpCondition = Parser.parseCondition(words);
+                        	if (tmpCondition != null) tmpRule.addCondition(tmpCondition);
+                        }
+                        
+                        // new reaction
+                        if (words[0].equals(Parser.Reaction))
+                        {
+                        	Reaction tmpReaction = Parser.parseReaction(words);
+                        	if (tmpReaction != null) tmpRule.addReaction(tmpReaction);
+                        }
+                        
+                        // finalize rule
+                        if (words[0].equals(Parser.endRule))
+                        {
+                        	theRules.add(tmpRule);
+                        	break;
+                        }
+        			}
+            	}
+			}
+		}  catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return theRules;
+	}
+	
+	public void writeActiveRoomToTextFile(String name)
+	{
+		getActiveRoom().setName(name);
+		String fileName = name; //getRoomFileName(name); //getName()+"/"+levelStructure.getActiveGrid().getName()+".txt";
+
+		Print.outln("write room to file: "+fileName);
+		
+		PrintStream stream = null;
+		try
+		{
+			stream = new PrintStream(fileName);
+			
+			stream.println("Name "+getActiveRoom().getName());
+			
+			stream.println("SizeX "+getGridSizeX());
+			stream.println("SizeY "+getGridSizeY());
+
+			for (int j=0;j<getGridSizeY();j++)
+			{
+				for (int i=0;i<getGridSizeX();i++)
+				{
+					stream.println("Block "+i+" "+j+" "+getActiveRoom().getBlockAt(i, j).getType());
+				}
+			}
+			stream.println();
+			
+			for (Enemy tmpEnemy : getActiveRoom().getEnemies())
+			{
+				String[] tmpString = tmpEnemy.getClass().toString().split("\\.");
+				stream.println("Enemy "+tmpEnemy.getPosX()+" "+tmpEnemy.getPosY()+" "+tmpString[tmpString.length-1]);
+			}
+			stream.println();
+			
+			// TODO: write collectables & rules
+		}
+		catch (IOException e) {
+		  e.printStackTrace();
+		}
+		finally {
+		  if (stream != null) try { stream.close(); } catch (Exception e) {e.printStackTrace();}
+		}
+	}
+	
+	private Room newRoomByRoomNumber(int newPosX, int newPosY, int offsetX, int offsetY)
+	{
+		String filename = "rooms/room"+roomCounter+".txt";
+		Room tmpRoom = readRoomFromTextFile(filename, offsetX, offsetY);
+		if (tmpRoom != null)
+		{
+			roomCounter++;
+			String ruleFileName = "rooms/room"+roomCounter+"Rule.txt";
+			tmpRoom.setRules(readRulesFromTextFile(ruleFileName));
+			tmpRoom.setPosX(newPosX);
+			tmpRoom.setPosY(newPosY);
+			return tmpRoom;
+		}
+		return new Room(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_NONE);
+	}
+	
+	public boolean addRoomTop()
 	{
 		if (activeRoom.getGridTop() == null)
 		{
 			int newPosX = activeRoom.getPosX();
 			int newPosY = activeRoom.getPosY()+1;
-			Room tmpGrid = new Room(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_NONE);
+			Room tmpGrid = newRoomByRoomNumber(newPosX, newPosY, newPosX*getGridSizeX(), newPosY*getGridSizeY());
 			
 			if (newPosX+centerX-1 < 0 || newPosX+centerX+1 >= gridMapSize || newPosY+centerY-1 < 0 || newPosY+centerY+1 >= gridMapSize)
 			{
@@ -96,13 +344,13 @@ public class LevelStructure implements Serializable
 //		return true;
 	}
 	
-	public boolean addGridBottom()
+	public boolean addRoomBottom()
 	{
 		if (activeRoom.getGridBottom() == null)
 		{
 			int newPosX = activeRoom.getPosX();
 			int newPosY = activeRoom.getPosY()-1;
-			Room tmpGrid = new Room(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_NONE);
+			Room tmpGrid = newRoomByRoomNumber(newPosX, newPosY, newPosX*getGridSizeX(), newPosY*getGridSizeY());
 			
 			if (newPosX+centerX-1 < 0 || newPosX+centerX+1 >= gridMapSize || newPosY+centerY-1 < 0 || newPosY+centerY+1 >= gridMapSize)
 			{
@@ -121,13 +369,13 @@ public class LevelStructure implements Serializable
 //		return true;
 	}
 	
-	public boolean addGridLeft()
+	public boolean addRoomLeft()
 	{
 		if (activeRoom.getGridLeft() == null)
 		{
 			int newPosX = activeRoom.getPosX()-1;
 			int newPosY = activeRoom.getPosY();
-			Room tmpGrid = new Room(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_NONE);
+			Room tmpGrid = newRoomByRoomNumber(newPosX, newPosY, newPosX*getGridSizeX(), newPosY*getGridSizeY());
 			
 			if (newPosX+centerX-1 < 0 || newPosX+centerX+1 >= gridMapSize || newPosY+centerY-1 < 0 || newPosY+centerY+1 >= gridMapSize)
 			{
@@ -146,13 +394,13 @@ public class LevelStructure implements Serializable
 //		return true;
 	}
 	
-	public boolean addGridRight()
+	public boolean addRoomRight()
 	{
 		if (activeRoom.getGridRight() == null)
 		{
 			int newPosX = activeRoom.getPosX()+1;
 			int newPosY = activeRoom.getPosY();
-			Room tmpGrid = new Room(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_NONE);
+			Room tmpGrid = newRoomByRoomNumber(newPosX, newPosY, newPosX*getGridSizeX(), newPosY*getGridSizeY());
 			
 			if (newPosX+centerX-1 < 0 || newPosX+centerX+1 >= gridMapSize || newPosY+centerY-1 < 0 || newPosY+centerY+1 >= gridMapSize)
 			{
@@ -468,11 +716,11 @@ public class LevelStructure implements Serializable
 		this.gridSizeY = gridSizeY;
 	}
 
-	public Room getActiveGrid() {
+	public Room getActiveRoom() {
 		return activeRoom;
 	}
 	
-	public void setActiveGrid(Room theRoom)
+	public void setActiveRoom(Room theRoom)
 	{
 		activeRoom = theRoom;
 	}

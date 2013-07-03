@@ -431,17 +431,17 @@ public class Map implements Serializable
 //		if (currentGrid[0][1] != null) tmp.addAll(currentGrid[0][1].getEnemies());
 //		if (currentGrid[1][1] != null) tmp.addAll(currentGrid[0][1].getEnemies());
 
-		return levelStructure.getActiveGrid().getEnemies();
+		return levelStructure.getActiveRoom().getEnemies();
 	}
 	
 	Vector<Collectable> getCollectableObjects()
 	{
-		return levelStructure.getActiveGrid().getCollectableObjects();
+		return levelStructure.getActiveRoom().getCollectableObjects();
 	}
 	
 	Vector<Chest> getChests()
 	{
-		return levelStructure.getActiveGrid().getChests();
+		return levelStructure.getActiveRoom().getChests();
 	}
 	
 	public int getMapSizeX()
@@ -729,7 +729,7 @@ public class Map implements Serializable
 	
 	public int getFogDensity()
 	{
-		return levelStructure.getActiveGrid().getFogDensity();
+		return levelStructure.getActiveRoom().getFogDensity();
 	}
 	
 //	public void writeToFile(String fileName, Vector2f startPos)
@@ -1425,12 +1425,12 @@ public class Map implements Serializable
 	
 	public String getRoomFileName(String name)
 	{
-		return getName()+"/rooms/"+name+".txt";
+		return "rooms/"+name+".txt";
 	}
 	
 	public String getRuleFileName(String name)
 	{
-		return getName()+"/rooms/"+name+"Rule.txt";
+		return "rooms/"+name+"Rule.txt";
 	}
 	
 	public LevelStructure readLevelStructureFromFile()
@@ -1518,241 +1518,18 @@ public class Map implements Serializable
 //		}
 //	}
 	
-	public void writeActiveRoomToTextFile(String name)
-	{
-		levelStructure.getActiveGrid().setName(name);
-		String fileName = getRoomFileName(name); //getName()+"/"+levelStructure.getActiveGrid().getName()+".txt";
-
-		Print.outln("write room to file: "+fileName);
-		
-		PrintStream stream = null;
-		try
-		{
-			stream = new PrintStream(fileName);
-			
-			stream.println("Name "+levelStructure.getActiveGrid().getName());
-			
-			stream.println("SizeX "+levelStructure.getGridSizeX());
-			stream.println("SizeY "+levelStructure.getGridSizeY());
-
-			for (int j=0;j<levelStructure.getGridSizeY();j++)
-			{
-				for (int i=0;i<levelStructure.getGridSizeX();i++)
-				{
-					stream.println("Block "+i+" "+j+" "+levelStructure.getActiveGrid().getBlockAt(i, j).getType());
-				}
-			}
-			stream.println();
-			
-			for (Enemy tmpEnemy : levelStructure.getActiveGrid().getEnemies())
-			{
-				String[] tmpString = tmpEnemy.getClass().toString().split("\\.");
-				stream.println("Enemy "+tmpEnemy.getPosX()+" "+tmpEnemy.getPosY()+" "+tmpString[tmpString.length-1]);
-			}
-			stream.println();
-			
-			// TODO: write collectables & rules
-		}
-		catch (IOException e) {
-		  e.printStackTrace();
-		}
-		finally {
-		  if (stream != null) try { stream.close(); } catch (Exception e) {e.printStackTrace();}
-		}
-	}
 	
 	public void loadActiveRoom(String name)
 	{
-		levelStructure.setActiveGrid(readRoomFromTextFile(name));
-		levelStructure.getActiveGrid().setRules(readRulesFromTextFile(name));
+		levelStructure.readActiveRoomFromTextFile(getRoomFileName(name));
+		levelStructure.readActiveRoomRulesFromTextFile(getRuleFileName(name));
 	}
 	
-	public Room readRoomFromTextFile(String name)
+	public void writeActiveRoomToTextFile(String name)
 	{
-		Room tmpRoom = null;
-		int sizeX = 0;
-		int sizeY = 0;
-		String fileName = getRoomFileName(name); //getName()+"/"+name+".txt";
-		String roomName = null;
-		Vector<Rule> theRules = new Vector<Rule>();
-		File file = new File(fileName);
-		try
-		{
-			Scanner s = new Scanner(file);
-			String line;
-			String[] words;
-			
-            line = s.nextLine();
-            words = line.split("\\s+");
-            
-            if (words[0].equals("Name"))
-            {
-                roomName = words[0];
-            } else
-            {
-            	Print.err("room name not specified");
-            	return null;
-            }
-            
-            line = s.nextLine();
-            words = line.split("\\s+");
-
-            if (words[0].equals("SizeX"))
-            {
-            	sizeX = Integer.parseInt(words[1]);
-                line = s.nextLine();
-                words = line.split("\\s+");
-            	
-                if (words[0].equals("SizeY"))
-                {
-                	sizeY = Integer.parseInt(words[1]);
-                	
-                } else
-                {
-                	Print.err("SizeY not specified");
-                	return null;
-                }
-            } else
-            {
-            	Print.err("SizeX not specified");
-            	return null;
-            }
-            if (sizeX > 0 && sizeY > 0)
-            {
-                tmpRoom = new Room(sizeX, sizeY);
-                tmpRoom.setName(roomName);
-            } else
-            {
-            	return null;
-            }
-
-			while (s.hasNextLine())
-			{
-                line = s.nextLine();
-                words = line.split("\\s+");
-                	
-                // scan Blocks
-            	if (words[0].equals(Parser.Block))
-            	{
-            		int x = Integer.parseInt(words[1]);
-            		int y = Integer.parseInt(words[2]);
-            		BlockType type = Parser.parseBlockType(words[3]);
-            		if (x >= 0 && y >= 0 && x < sizeX && y < sizeY)
-            		{
-                		tmpRoom.getBlockAt(x, y).setType(type);
-            		} else
-            		{
-            			Print.err("wrong coordinates: ("+x+","+y+")");
-            		}
-            	}
-                
-            	// scan enemies
-            	if (words[0].equals(Parser.Enemy))
-            	{
-            		Enemy tmpEnemy = Parser.parseEnemy(words);
-            		if (tmpEnemy != null) tmpRoom.addEnemy(tmpEnemy);
-            	}
-                
-//                // new rule
-//            	if (words[0].equals(Parser.newRule))
-//            	{
-//            		Rule tmpRule = new Rule();
-//            		
-//        			while (s.hasNextLine())
-//        			{
-//                        line = s.nextLine();
-//                        words = line.split("\\s+");
-//                        
-//                        // new condition
-//                        if (words[0].equals(Parser.Condition))
-//                        {
-//                        	Condition tmpCondition = Parser.parseCondition(words);
-//                        	if (tmpCondition != null) tmpRule.addCondition(tmpCondition);
-//                        }
-//                        
-//                        // new reaction
-//                        if (words[0].equals(Parser.Reaction))
-//                        {
-//                        	Reaction tmpReaction = Parser.parseReaction(words);
-//                        	if (tmpReaction != null) tmpRule.addReaction(tmpReaction);
-//                        }
-//                        
-//                        // finalize rule
-//                        if (words[0].equals(Parser.endRule))
-//                        {
-//                        	tmpRoom.addRule(tmpRule);
-//                        	break;
-//                        }
-//        			}
-//            	}
-			}
-		}  catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		return tmpRoom;
+		levelStructure.writeActiveRoomToTextFile(getRoomFileName(name));
 	}
-	
-	public Vector<Rule> readRulesFromTextFile(String name)
-	{
-		Vector<Rule> theRules = new Vector<Rule>();
-		String fileName = getRuleFileName(name); //getName()+"/"+name+"Rules.txt";
-		File file = new File(fileName);
-		
-		try
-		{
-			if (!file.exists())
-			{
-				file.createNewFile();
-			}
-			
-			Scanner s = new Scanner(file);
-			String line;
-			String[] words;
 
-			while (s.hasNextLine())
-			{
-                line = s.nextLine();
-                words = line.split("\\s+");
-
-            	if (words[0].equals(Parser.newRule))
-            	{
-            		Rule tmpRule = new Rule();
-            		
-        			while (s.hasNextLine())
-        			{
-                        line = s.nextLine();
-                        words = line.split("\\s+");
-                        
-                        // new condition
-                        if (words[0].equals(Parser.Condition))
-                        {
-                        	Condition tmpCondition = Parser.parseCondition(words);
-                        	if (tmpCondition != null) tmpRule.addCondition(tmpCondition);
-                        }
-                        
-                        // new reaction
-                        if (words[0].equals(Parser.Reaction))
-                        {
-                        	Reaction tmpReaction = Parser.parseReaction(words);
-                        	if (tmpReaction != null) tmpRule.addReaction(tmpReaction);
-                        }
-                        
-                        // finalize rule
-                        if (words[0].equals(Parser.endRule))
-                        {
-                        	theRules.add(tmpRule);
-                        	break;
-                        }
-        			}
-            	}
-			}
-		}  catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		return theRules;
-	}
 	
 //	public void readActiveRoomFromFile()
 //	{

@@ -1,5 +1,6 @@
 package darklord.game;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import darklord.enemies.ChasingBlockEnemy;
@@ -980,9 +981,27 @@ public class GameEngine
 					Enemy tmpEnemy = hitEnemy(mouseGrid);
 					map.getEnemies().remove(tmpEnemy);
 				}
-
 			}
 		}
+	}
+	
+	public void rotateActiveEnemy(Vector2f mousePos)
+	{
+		Vector2f mouseGrid = new Vector2f(mousePos.getX()/this.gridSize, mousePos.getY()/this.gridSize);
+		// translate grid
+//		mouseGrid.print();
+		mouseGrid.setX(mouseGrid.getX()-this.getPosX());
+		mouseGrid.setY(mouseGrid.getY()-this.getPosY());
+//		mouseGrid.print();
+		
+		// apply zoom (center is main player)
+		mouseGrid = mouseGrid.sub(mainPlayer.getPosition());
+		mouseGrid = mouseGrid.mul(1.f/zoom);
+		mouseGrid = mouseGrid.add(mainPlayer.getPosition());
+
+		Enemy tmpEnemy = hitEnemy(mouseGrid);
+		if (tmpEnemy != null) tmpEnemy.rotate(90);
+
 	}
 	
 	public Enemy hitEnemy(Vector2f thePosition)

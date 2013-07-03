@@ -43,7 +43,7 @@ public class Projectile extends Collidable
 		active = true;
 		
 		range = 7.f;	// use variable instead of modifying lifetime
-		speed = 4.f;
+		speed = 7.f;
 		time = new TimeStore(range/speed);
 		setSize(0.3f);
 		setDamage(1);

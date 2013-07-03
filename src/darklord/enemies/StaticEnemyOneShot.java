@@ -70,7 +70,7 @@ public class StaticEnemyOneShot extends Enemy
 			// add down projectile
 			tmpProjectile = new Projectile(2);
 			pos = this.getCenter().sub(new Vector2f(tmpProjectile.getSize()/2.f, tmpProjectile.getSize()/2.f));
-			dir = new Vector2f(0.f, -1.f);
+			dir = new Vector2f((float)(Math.cos((angle-90)*Math.PI/180)), (float)(Math.sin((angle-90)*Math.PI/180)));
 			tmpProjectile.setPosition(pos);
 			tmpProjectile.setDirection(dir);
 			engine.hostileProjectiles.add(tmpProjectile);
