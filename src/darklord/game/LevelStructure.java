@@ -7,7 +7,9 @@ import java.io.Serializable;
 import java.util.Scanner;
 import java.util.Vector;
 
+import darklord.blocks.Block;
 import darklord.enemies.Enemy;
+import darklord.enemies.StaticEnemyOneShot;
 import darklord.math.Vector2f;
 import darklord.rules.Condition;
 import darklord.rules.Reaction;
@@ -165,10 +167,10 @@ public class LevelStructure implements Serializable
             	{
             		int x = Integer.parseInt(words[1]);
             		int y = Integer.parseInt(words[2]);
-            		BlockType type = Parser.parseBlockType(words[3]);
+            		Block tmpBlock = Parser.parseBlockType(words[3]);
             		if (x >= 0 && y >= 0 && x < sizeX && y < sizeY)
             		{
-                		tmpRoom.getBlockAt(x, y).setType(type);
+                		tmpRoom.setBlockAt(x, y, tmpBlock);
             		} else
             		{
             			Print.err("wrong coordinates: ("+x+","+y+")");
@@ -281,7 +283,8 @@ public class LevelStructure implements Serializable
 			{
 				for (int i=0;i<getGridSizeX();i++)
 				{
-					stream.println("Block "+i+" "+j+" "+getActiveRoom().getBlockAt(i, j).getType());
+					String[] tmpString = getActiveRoom().getBlockAt(i, j).getClass().toString().split("\\.");
+					stream.println("Block "+i+" "+j+" "+tmpString[tmpString.length-1]);
 				}
 			}
 			stream.println();
@@ -289,7 +292,7 @@ public class LevelStructure implements Serializable
 			for (Enemy tmpEnemy : getActiveRoom().getEnemies())
 			{
 				String[] tmpString = tmpEnemy.getClass().toString().split("\\.");
-				stream.println("Enemy "+tmpEnemy.getPosX()+" "+tmpEnemy.getPosY()+" "+tmpString[tmpString.length-1]);
+				stream.println("Enemy "+tmpEnemy.getPosX()+" "+tmpEnemy.getPosY()+" "+tmpString[tmpString.length-1]+" "+tmpEnemy.getAngle());
 			}
 			stream.println();
 			
@@ -309,11 +312,11 @@ public class LevelStructure implements Serializable
 		Room tmpRoom = readRoomFromTextFile(filename, offsetX, offsetY);
 		if (tmpRoom != null)
 		{
-			roomCounter++;
 			String ruleFileName = "rooms/room"+roomCounter+"Rule.txt";
 			tmpRoom.setRules(readRulesFromTextFile(ruleFileName));
 			tmpRoom.setPosX(newPosX);
 			tmpRoom.setPosY(newPosY);
+			roomCounter++;
 			return tmpRoom;
 		}
 		return new Room(gridSizeX, gridSizeY, newPosX, newPosY, BlockType.BLOCK_NONE);
@@ -537,6 +540,15 @@ public class LevelStructure implements Serializable
 		return null;
 	}
 	
+	public void setLocalBlockAt(int x, int y, Block theBlock)
+	{
+		if (x >= 0 && x < gridSizeX && y >= 0 && y < gridSizeY)
+		{
+			activeRoom.setBlockAt(x, y, theBlock);
+		}
+		return;
+	}
+	
 	public Block getBlockAt(int x, int y)
 	{
 		int gridX = (int)Math.floor(1.f * x / getGridSizeX());
@@ -676,6 +688,145 @@ public class LevelStructure implements Serializable
 		return null;
 	}
 	
+	public void setBlockAt(int x, int y, Block theBlock)
+	{
+		int gridX = (int)Math.floor(1.f * x / getGridSizeX());
+		int gridY = (int)Math.floor(1.f * y / getGridSizeY());
+		
+		int localX =  x - gridX*getGridSizeX();
+		int localY =  y - gridY*getGridSizeY();
+		
+		if (localX < 0) localX += getGridSizeX();
+		if (localY < 0) localY += getGridSizeY();
+		
+		gridX = gridX - activeRoom.getPosX();
+		gridY = gridY - activeRoom.getPosY();
+		
+//		Print.outln("x: "+x+ ", y: "+y);
+//		Print.outln("gridX: "+gridX+ ", gridY: "+gridY);
+//		Print.outln("localX: "+localX+ ", localY: "+localY);
+		
+//		if (gridX >= 0 && gridX <levelStructureSize && gridY >=0 && gridY < levelStructureSize)
+//		{
+//			if (grids[gridX][gridY] != null)
+//			{
+//				return grids[gridX][gridY].getBlockAt(localX, localY);
+//			}
+//		}
+//		return null;
+		
+		
+		if (localX >= getGridSizeX() || localY >= getGridSizeY())
+		{
+			Print.err("local variable too big ("+localX+", "+localY+")");
+			return;
+		}
+		
+		if (gridX == 0 && gridY == 0) activeRoom.setBlockAt(localX, localY, theBlock);
+		
+		if (gridX == -1 && gridY == 0)
+		{
+			getGridLeft(activeRoom).setBlockAt(localX, localY, theBlock);
+		}
+		
+		if (gridX == 1 && gridY == 0)
+		{
+			getGridRight(activeRoom).setBlockAt(localX, localY, theBlock);
+		}
+		
+		if (gridX == 0 && gridY == -1)
+		{
+			getGridBottom(activeRoom).setBlockAt(localX, localY, theBlock);
+		}
+		
+		if (gridX == 0 && gridY == 1)
+		{
+			getGridTop(activeRoom).setBlockAt(localX, localY, theBlock);
+		}
+		
+		if (gridX == -1 && gridY == -1)
+		{
+			if (isGridLeft())
+			{
+				Room tmpGrid = getGridLeft(activeRoom).getGridBottom();
+				if (tmpGrid != null)
+				{
+					tmpGrid.setBlockAt(localX, localY, theBlock);
+				}
+			}
+			if (isGridBottom())
+			{
+				Room tmpGrid = getGridBottom(activeRoom).getGridLeft();
+				if (tmpGrid != null)
+				{
+					tmpGrid.setBlockAt(localX, localY, theBlock);
+				}
+			}
+		}
+		
+		if (gridX == -1 && gridY == 1)
+		{
+			if (isGridLeft())
+			{
+				Room tmpGrid = getGridLeft(activeRoom).getGridTop();
+				if (tmpGrid != null)
+				{
+					tmpGrid.setBlockAt(localX, localY, theBlock);
+				}
+			}
+			if (isGridTop())
+			{
+				Room tmpGrid = getGridTop(activeRoom).getGridLeft();
+				if (tmpGrid != null)
+				{
+					tmpGrid.setBlockAt(localX, localY, theBlock);
+				}
+			}
+		}
+		
+		if (gridX == 1 && gridY == -1)
+		{
+			if (isGridRight())
+			{
+				Room tmpGrid = getGridRight(activeRoom).getGridBottom();
+				if (tmpGrid != null)
+				{
+					tmpGrid.setBlockAt(localX, localY, theBlock);
+				}
+			}
+			if (isGridBottom())
+			{
+				Room tmpGrid = getGridBottom(activeRoom).getGridRight();
+				if (tmpGrid != null)
+				{
+					tmpGrid.setBlockAt(localX, localY, theBlock);
+				}
+			}
+		}
+		
+		if (gridX == 1 && gridY == 1)
+		{
+			if (isGridTop())
+			{
+				Room tmpGrid = getGridTop(activeRoom).getGridRight();
+				if (tmpGrid != null)
+				{
+					tmpGrid.setBlockAt(localX, localY, theBlock);
+				}
+			}
+			if (isGridRight())
+			{
+				Room tmpGrid = getGridRight(activeRoom).getGridTop();
+				if (tmpGrid != null)
+				{
+					tmpGrid.setBlockAt(localX, localY, theBlock);
+				}
+			}
+		}
+
+		return;
+	}
+	
 	public float getFogAt(int x, int y)
 	{
 		Block tmpBlock = getBlockAt(x, y);
@@ -731,7 +882,7 @@ public class LevelStructure implements Serializable
 	
 	public Vector2f generateStartPosition()
 	{
-		return new Vector2f(activeRoom.getPosX()*gridSizeX+gridSizeX/2.f, activeRoom.getPosY()*gridSizeY+gridSizeY-1.f);
+		return new Vector2f(activeRoom.getPosX()*gridSizeX+gridSizeX/2.f, activeRoom.getPosY()*gridSizeY+gridSizeY-2.f);
 	}
 	
 	public void update(GameEngine engine)

@@ -29,9 +29,10 @@ public class RefillingStore extends StoreObject<Float> implements Serializable
 
 	public boolean decrease(float amount)
 	{
-		if (getCurrent() >= amount)
+		current -= amount;
+		if (current <= 0)
 		{
-			current -= amount;
+			current = 0.f;
 			return true;
 		}
 		return false;
@@ -46,6 +47,12 @@ public class RefillingStore extends StoreObject<Float> implements Serializable
 			return false;
 		}
 		return true;
+	}
+	
+	public void addConstant(float theAmount)
+	{
+		current += theAmount;
+		if (current > max) current = max;
 	}
 	
 //	public void increase()

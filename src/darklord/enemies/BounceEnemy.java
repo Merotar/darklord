@@ -2,7 +2,12 @@ package darklord.enemies;
 
 
 import java.io.Serializable;
+import java.util.Random;
+
+import darklord.collectables.Collectable;
+import darklord.collectables.CollectableType;
 import darklord.game.GameEngine;
+import darklord.game.RandomGenerator;
 import darklord.media.Animation;
 import darklord.media.TextureRegion;
 import darklord.math.Vector2f;
@@ -40,6 +45,7 @@ public class BounceEnemy extends Enemy implements Serializable
 		speed = 4.f;
 		setDmgOnContact(5);
 		setMaxHp(5);
+		setDropItem(RandomGenerator.getRandomOrb());
 		
 		appearance = new Animation();
 		((Animation)appearance).addTextureRegion(new TextureRegion(0, 5, 128));

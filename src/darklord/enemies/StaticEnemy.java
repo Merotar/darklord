@@ -34,9 +34,9 @@ public class StaticEnemy extends Enemy
 	
 	public void draw()
 	{
-		Darklord.sprites01.begin();
+		Darklord.textures.begin();
 		appearance.draw();
-		Darklord.sprites01.end();
+		Darklord.textures.end();
 	}
 	
 	public void update(float dt, GameEngine engine)

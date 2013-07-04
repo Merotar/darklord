@@ -52,7 +52,7 @@ public class Animation implements Drawable
 		}
 		
 		// TODO: implement size and position in draw
-		Darklord.sprites01.draw(textureRegion.get(textureNum));
+		Darklord.textures.draw(textureRegion.get(textureNum));
 	}
 	
 	public void drawColor(float r, float g, float b, float a)
@@ -67,7 +67,7 @@ public class Animation implements Drawable
 		}
 		
 		// TODO: implement size and position in draw
-		Darklord.sprites01.draw(textureRegion.get(textureNum), 0.f, 0.f, 1.f, 1.f, r, g, b, a);
+		Darklord.textures.draw(textureRegion.get(textureNum), 0.f, 0.f, 1.f, 1.f, r, g, b, a);
 	}
 	
 	public void draw(float posX, float posY, float sizeX, float sizeY)
@@ -82,7 +82,7 @@ public class Animation implements Drawable
 		}
 		
 		// TODO: implement size and position in draw
-		Darklord.sprites01.draw(textureRegion.get(textureNum), posX, posY, sizeX, sizeY);
+		Darklord.textures.draw(textureRegion.get(textureNum), posX, posY, sizeX, sizeY);
 	}
 	
 

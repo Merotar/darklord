@@ -7,7 +7,10 @@ import javax.print.attribute.standard.MediaSize.Engineering;
 
 import org.lwjgl.opengl.GL11;
 
-import darklord.game.Block;
+import darklord.blocks.Block;
+import darklord.collectables.Collectable;
+import darklord.collectables.CollectableType;
+import darklord.collectables.UncoverMapCollectable;
 import darklord.game.GameEngine;
 import darklord.game.RandomGenerator;
 import darklord.game.Timer;
@@ -56,6 +59,7 @@ public class EnemyRandomMove extends Enemy implements Serializable
 		motionTimer = new Timer();
 		motionTime = 500;
 		oldPos = getPosition();
+		setDropItem(new UncoverMapCollectable());
 		
 		appearance = new Animation();
 		((Animation)appearance).addTextureRegion(new TextureRegion(0, 1, 128));

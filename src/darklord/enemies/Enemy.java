@@ -2,13 +2,17 @@ package darklord.enemies;
 
 
 import java.io.Serializable;
+import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 
+import darklord.collectables.Collectable;
+import darklord.collectables.CollectableType;
 import darklord.game.Collidable;
 import darklord.game.Darklord;
 import darklord.game.GameEngine;
+import darklord.game.Print;
 import darklord.game.Projectile;
 import darklord.game.RefillingStore;
 import darklord.game.Venom;
@@ -33,6 +37,7 @@ public abstract class Enemy extends Collidable implements Serializable
 	RefillingStore bubbleTimer;
 	private Venom venom;
 	private float visibility;
+	private Collectable dropItem;
 	
 	public Enemy()
 	{
@@ -46,15 +51,16 @@ public abstract class Enemy extends Collidable implements Serializable
 		dead = false;
 		visibility = 1.f;
 		bubbleTimer = new RefillingStore(0.5f, 1.f);
+		dropItem = null;
 	}
 	
 	public boolean isInside(Vector2f thePosition)
 	{
 		boolean inside = true;
 		
-		if (thePosition.getX()>getPosition().getX()+1.f) inside = false;
+		if (thePosition.getX()>getPosition().getX()+getSizeX()) inside = false;
 		if (thePosition.getX()<getPosition().getX()) inside = false;
-		if (thePosition.getY()>getPosition().getY()+1.f) inside = false;
+		if (thePosition.getY()>getPosition().getY()+getSizeY()) inside = false;
 		if (thePosition.getY()<getPosition().getY()) inside = false;
 //		if (inside) Print.outln("inside of button "+getName());
 		
@@ -153,6 +159,7 @@ public abstract class Enemy extends Collidable implements Serializable
 		if (hp<=0)
 		{
 			dead = true;
+			
 			return true;
 		}
 		return false;
@@ -173,6 +180,22 @@ public abstract class Enemy extends Collidable implements Serializable
 		this.dmgOnContact = dmgOnContact;
 	}
 	
+	public void finalAction(GameEngine engine)
+	{
+		// drop item
+		if (isDead() && dropItem != null)
+		{
+			Random rnd = new Random();
+			float rndX = 0.10f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
+			float rndY = 0.10f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
+//			System.out.println(rndX);
+			
+			dropItem.setPosX(getPosX()+0.1f+rndX);
+			dropItem.setPosY(getPosY()+0.1f+rndY);
+			engine.map.getCollectableObjects().add(dropItem);
+		}
+	}
+	
 	public void update(float dt, GameEngine engine)
 	{
 		damaged = false;
@@ -182,6 +205,8 @@ public abstract class Enemy extends Collidable implements Serializable
 			venom.update(dt, this);
 			if (!venom.isActive()) venom = null;
 		}
+		
+		if (dead) finalAction(engine);
 	}
 
 	public boolean canGenerateBubble()
@@ -255,5 +280,13 @@ public abstract class Enemy extends Collidable implements Serializable
 	public void setMaxHp(float maxHp) {
 		this.maxHp = maxHp;
 		this.hp = maxHp;
+	}
+
+	public Collectable getDropItem() {
+		return dropItem;
+	}
+
+	public void setDropItem(Collectable dropItem) {
+		this.dropItem = dropItem;
 	}
 }

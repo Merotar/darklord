@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
 
+import darklord.collectables.CollectableType;
 import darklord.enemies.Enemy;
 import darklord.media.Animation;
 import darklord.media.Drawable;
@@ -155,9 +156,9 @@ public class Player extends Collidable implements Serializable
 		buildRadius = 2.f;
 		
 		energyRed = new RefillingStore(3.f, 1.f);
-		energyBlue = new RefillingStore(2.f, 0.2f);
-		energyGreen = new RefillingStore(3.f, 1.f);
-		energyYellow = new RefillingStore(1.f, 0.5f);
+		energyBlue = new RefillingStore(2.f, 0.f);
+		energyGreen = new RefillingStore(3.f, 0.f);
+		energyYellow = new RefillingStore(2.f, 0.f);
 		
 		crystalsRed = 10;
 		crystalsBlue = 10;
@@ -481,6 +482,7 @@ public class Player extends Collidable implements Serializable
 		
 		this.beam.update();
 		
+		if (getEnergyBlue() <= 0) setElectricAttackActive(false);
 		if (!electricAttackActive) electricAttacs.clear();
 		if (electricAttackActive)
 		{
@@ -702,47 +704,76 @@ public class Player extends Collidable implements Serializable
 		}
 	}
 
-	public void addItem(CollectableType type)
-	{
-		
-		switch (type)
-		{
-		case BLOCK_RED:
-			Darklord.sounds.pling.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
-			crystalsRed++;
-			break;
-		case BLOCK_BLUE:
-			Darklord.sounds.pling.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
-			crystalsBlue++;
-			break;
-		case BLOCK_GREEN:
-			Darklord.sounds.pling.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
-			crystalsGreen++;
-			break;
-		case BLOCK_YELLOW:
-			Darklord.sounds.pling.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
-			crystalsYellow++;
-			break;
-		case ABILITY_TELEPORT:
-			abilities[0]++;
-			break;
-		case ABILITY_DIGGING:
-			abilities[5]++;
-			break;
-		case DIAMOND:
-			score += 100;
-			System.out.println("score: "+getScore());
-			break;
-		default:
-			break;
-		}
-	}
+//	public void addItem(CollectableType type)
+//	{
+//		
+//		switch (type)
+//		{
+//		case BLOCK_RED:
+//			Darklord.sounds.pling.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
+//			crystalsRed++;
+//			break;
+//		case BLOCK_BLUE:
+//			Darklord.sounds.pling.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
+//			crystalsBlue++;
+//			break;
+//		case BLOCK_GREEN:
+//			Darklord.sounds.pling.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
+//			crystalsGreen++;
+//			break;
+//		case BLOCK_YELLOW:
+//			Darklord.sounds.pling.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
+//			crystalsYellow++;
+//			break;
+//		case ABILITY_TELEPORT:
+//			abilities[0]++;
+//			break;
+//		case ABILITY_DIGGING:
+//			abilities[5]++;
+//			break;
+//		case DIAMOND:
+//			score += 100;
+//			System.out.println("score: "+getScore());
+//			break;
+//		case ORB_BLUE:
+//			energyBlue.addConstant(1);
+//			break;
+//		case ORB_GREEN:
+//			energyGreen.addConstant(1);
+//			break;
+//		case ORB_YELLOW:
+//			energyYellow.addConstant(1);
+//			break;
+//		default:
+//			break;
+//		}
+//	}
 
 	public void decreaseDiggingCount()
 	{
 		if (abilities[5] > 0) abilities[5]--;
 	}
 
+	public void addEnergyRed(float theEnergy)
+	{
+		energyRed.addConstant(theEnergy);
+	}
+	
+	public void addEnergyBlue(float theEnergy)
+	{
+		energyBlue.addConstant(theEnergy);
+	}
+	
+	public void addEnergyGreen(float theEnergy)
+	{
+		energyGreen.addConstant(theEnergy);
+	}
+	
+	public void addEnergyYellow(float theEnergy)
+	{
+		energyYellow.addConstant(theEnergy);
+	}
+	
 	/**
 	 * 
 	 * @param f
@@ -899,9 +930,10 @@ public class Player extends Collidable implements Serializable
 	}
 	
 	public boolean decreaseEnergyBlue(float decrease) {
-		if (getEnergyBlue() >= decrease)
+		
+		this.energyBlue.decrease(decrease);
+		if (getEnergyBlue() == 0)
 		{
-			this.energyBlue.decrease(decrease);
 			return true;
 		}
 		return false;

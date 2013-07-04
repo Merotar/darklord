@@ -16,7 +16,7 @@ public class ShockWave extends Projectile
 		((Sprite)appearance).setTextureRegion(0*128, 3*128+64, 256, 64);
 		setDamage(0.5f);
 		setRange(3.f);
-		setEnergyCosts(2.f);
+		setEnergyCosts(1.f);
 		basicSize = (new Vector2f(getSizeVec())).mul(0.5f);
 		setAngle((float) (Math.atan2(dir.getY(), dir.getX())*180./Math.PI-90.f));
 		id = System.nanoTime();
@@ -30,9 +30,9 @@ public class ShockWave extends Projectile
 		GL11.glRotated(getAngle(), 0., 0., 1.);
 //		GL11.glTranslated(-getSizeX()/2.f, -getSizeX()/2.f, 0.);
 //		GL11.glScaled(getSizeX(), getSizeY(), 1.);
-		Darklord.sprites01.begin();
+		Darklord.textures.begin();
 		appearance.draw(-getSizeX()/2.f, -getSizeY()/2.f, getSizeX(), getSizeY());
-		Darklord.sprites01.end();
+		Darklord.textures.end();
 		GL11.glPopMatrix();
 	}
 	

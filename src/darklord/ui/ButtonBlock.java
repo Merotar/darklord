@@ -1,6 +1,6 @@
 package darklord.ui;
 
-import darklord.game.Block;
+import darklord.blocks.Block;
 import darklord.media.TextureRegion;
 
 public class ButtonBlock extends Button

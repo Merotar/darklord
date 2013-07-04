@@ -66,7 +66,7 @@ public class Darklord {
 	int locResX, locResY;
 	Vector2f gameScreenPos; // (0, 0) ist top left
 	float gameScreenScale, musicPosition;
-	public static SpriteSheet sprites01, chars, ui;
+	public static SpriteSheet textures, chars, ui;
 	GameStatus gameStatus;
 	UI mainMenu;
 	DevUI devUI;
@@ -320,7 +320,7 @@ public class Darklord {
         
         // init other stuff
         
-        sprites01 = new SpriteSheet("darklord/img/textures.png");
+        textures = new SpriteSheet("darklord/img/textures.png");
         chars = new SpriteSheet("darklord/img/chars.png");
         ui = new SpriteSheet("darklord/img/ui.png");
         
@@ -461,13 +461,13 @@ public class Darklord {
 
 		if (isLeftMouseDown)
 		{
-			world.mouseDownReactionDev(globalToGamescreen(posMouseDown), 0, devUI);
-			devUI.mouseDownReaction(screenToWorld(posMouseDown), 0, world.map.levelStructure);
+			world.mouseDownReactionDev(globalToGamescreen(mousePos), 0, devUI);
+			devUI.mouseDownReaction(screenToWorld(mousePos), 0, world.map.levelStructure);
 		}
 		if (isRightMouseDown)
 		{
-			world.mouseDownReactionDev(globalToGamescreen(posRightMouseDown), 1, devUI);
-			isRightMouseDown = false;
+			world.mouseDownReactionDev(globalToGamescreen(mousePos), 1, devUI);
+//			isRightMouseDown = false;
 		}
 
 		world.mousePositionReaction(globalToGamescreen(mousePos));
@@ -1196,7 +1196,16 @@ public class Darklord {
 				}
 			} else
 			{
+				// dev mouse release action
+			}
+			
+			if (!Mouse.getEventButtonState() && !Mouse.isButtonDown(0))
+			{
 				isLeftMouseDown = false;
+			}
+			
+			if (!Mouse.getEventButtonState() && !Mouse.isButtonDown(1))
+			{
 				isRightMouseDown = false;
 			}
 		}
@@ -1260,6 +1269,11 @@ public class Darklord {
 				if (Keyboard.isKeyDown(myKeyboard.KEY_2))
 				{
 					devUI.setEnemiesUI();
+				}
+				
+				if (Keyboard.isKeyDown(myKeyboard.KEY_3))
+				{
+					devUI.setCollectablesUI();
 				}
 				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_R))

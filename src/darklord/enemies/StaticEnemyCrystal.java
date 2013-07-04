@@ -2,6 +2,9 @@ package darklord.enemies;
 
 import org.lwjgl.opengl.GL11;
 
+import darklord.collectables.Collectable;
+import darklord.collectables.CollectableType;
+import darklord.collectables.OrbBlueCollectable;
 import darklord.game.GameEngine;
 import darklord.game.Projectile;
 import darklord.game.TimeStore;
@@ -31,6 +34,8 @@ public class StaticEnemyCrystal extends Enemy
 		setXp(2);
 		setType(2);
 		appearance = new Animation();
+		setDropItem(new OrbBlueCollectable());
+		
 //		((Animation)appearance).addTextureRegion(new TextureRegion(5*128, 0*128, 128, 128));
 		((Animation)appearance).addTextureRegion(new TextureRegion(0*128, 2*128, 128, 128));
 		((Animation)appearance).addTextureRegion(new TextureRegion(1*128, 2*128, 128, 128));

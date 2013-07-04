@@ -3,6 +3,11 @@ package darklord.game;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import darklord.blocks.Block;
+import darklord.blocks.EmptyBlock;
+import darklord.blocks.StoneBlock;
+import darklord.collectables.Collectable;
+import darklord.collectables.CollectableType;
 import darklord.enemies.ChasingBlockEnemy;
 import darklord.enemies.Enemy;
 import darklord.enemies.EnemyRandomMove;
@@ -132,7 +137,7 @@ public class GameEngine
 		{
 			dir.mkdir();
 			mainPlayer = new Player(map.start.getX(), map.start.getY());
-			map.getBlockAt((int) mainPlayer.getPosX(), (int) mainPlayer.getPosY()).setType(BlockType.BLOCK_NONE);
+			map.setBlockAt((int) mainPlayer.getPosX(), (int) mainPlayer.getPosY(), new EmptyBlock());
 
 		} else
 		{
@@ -279,23 +284,7 @@ public class GameEngine
 			Block tmpBlock = map.getBlockAt(x, y);
 			if (tmpBlock != null)
 			{
-				CollectableType tmpCollectableType = tmpBlock.dropOnDestroy();
-				
-				if (tmpBlock.isDestroyable() && tmpBlock.attack())
-				{
-					//destroyed
-//					System.out.println("Block destroyed!");
-//					if (type == BlockType.BLOCK_ROCK) mainPlayer.decreaseDiggingCount();
-					Random rnd = new Random();
-					float rndX = 0.10f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
-					float rndY = 0.10f*(1.f*rnd.nextInt()/Integer.MAX_VALUE);
-//					System.out.println(rndX);
-					
-					if (tmpCollectableType != CollectableType.NONE)
-					{
-						map.getCollectableObjects().add(new Collectable(tmpCollectableType, x+0.1f+rndX, y+0.1f+rndY));
-					}
-				}
+				tmpBlock.attack(this, x, y);
 				mainPlayer.startAttackBlockTimer();
 			}
 		}
@@ -340,7 +329,7 @@ public class GameEngine
 		
 		// draw blocks
 		
-		Block backgroundBlock = new Block(BlockType.BLOCK_NONE);
+		Block backgroundBlock = new EmptyBlock();
 		
 		
 //		int minX = (int)mainPlayer.getPosX()-drawSize;
@@ -355,7 +344,7 @@ public class GameEngine
 		int minY =(int)-posY-tmpDrawSize/2;
 		int maxY =(int)-posY+tmpDrawSize;
 		
-		Darklord.sprites01.begin();
+		Darklord.textures.begin();
 		
 		// draw blocks
 		for (int i=minX;i<maxX;i++)
@@ -384,7 +373,7 @@ public class GameEngine
 			}
 		}
 		
-		Darklord.sprites01.end();
+		Darklord.textures.end();
 		
 		// draw electric attacks
 		for (ElectricAttack att : mainPlayer.getElectricAttacs())
@@ -702,7 +691,7 @@ public class GameEngine
 			switch (mainPlayer.getActiveAbility())
 			{
 				case DIG:
-					if (((mainPlayer.getDiggingNum()!=0) || map.getBlockAt(x_int, y_int).getType() != BlockType.BLOCK_ROCK) && (Math.abs(this.mainPlayer.getPosX()+0.5f-mouseGrid.getX()) < 1.5f) && (Math.abs(this.mainPlayer.getPosY()+0.5f-mouseGrid.getY()) < 1.5f))
+					if (map.getBlockAt(x_int, y_int).isDestroyable() && (Math.abs(this.mainPlayer.getPosX()+0.5f-mouseGrid.getX()) < 1.5f) && (Math.abs(this.mainPlayer.getPosY()+0.5f-mouseGrid.getY()) < 1.5f))
 					{
 						this.attackBlock(x_int, y_int);
 					}
@@ -834,7 +823,7 @@ public class GameEngine
 
 //		if (mainPlayer.getActiveProjectile() == 2) ammo = mainPlayer.getEnergyGreen();
 		
-		if (mainPlayer.getMaxProjectiles() > getNumerOfPojectiles() && ammo >= 1)
+		if (mainPlayer.getMaxProjectiles() > getNumerOfPojectiles() && ammo >= BulletProjectile.energyCosts)
 		{
 			// shoot
 			Vector2f dir = new Vector2f();
@@ -859,7 +848,7 @@ public class GameEngine
 
 //		if (mainPlayer.getActiveProjectile() == 2) ammo = mainPlayer.getEnergyGreen();
 		
-		if (mainPlayer.getMaxProjectiles() > getNumerOfPojectiles() && ammo >= 1)
+		if (mainPlayer.getMaxProjectiles() > getNumerOfPojectiles() && ammo >= ShockWave.energyCosts)
 		{
 			// shoot
 			Vector2f dir = new Vector2f();
@@ -882,13 +871,18 @@ public class GameEngine
 	
 	public void startElectricAttack()
 	{
-		for (Enemy e : map.getEnemies())
+		float ammo = mainPlayer.getEnergyBlue();
+		if (ammo > 0)
 		{
-			if ((e.getCenter().sub(mainPlayer.getCenter())).length() < mainPlayer.getElectricAttackRange())
+			for (Enemy e : map.getEnemies())
 			{
-				mainPlayer.addElectrixAttack(e);
+				if ((e.getCenter().sub(mainPlayer.getCenter())).length() < mainPlayer.getElectricAttackRange())
+				{
+					mainPlayer.addElectrixAttack(e);
+				}
 			}
 		}
+
 		mainPlayer.setElectricAttackActive(true);
 	}
 	
@@ -898,9 +892,9 @@ public class GameEngine
 		{
 			float ammo = mainPlayer.getEnergyYellow();
 			
-			if (ammo >= 1)
+			if (ammo >= Beam.energyCosts)
 			{
-				mainPlayer.decreaseEnergyYellow(1);
+				mainPlayer.decreaseEnergyYellow(Beam.energyCosts);
 				// start beam
 				Darklord.sounds.laser.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
 				Vector2f dir = pos.sub(mainPlayer.getCenter());
@@ -948,9 +942,9 @@ public class GameEngine
 			{
 				if (devUI.isBlockMode())
 				{
-					if (devUI.getActiveBuildable() != null)
+					if (devUI.getActiveBlock() != null)
 					{
-						this.map.getBlockAt(x_int, y_int).setType(((Block)devUI.getActiveBuildable()).getType());
+						this.map.setBlockAt(x_int, y_int, devUI.getActiveBlock().createNew());
 					}
 				}
 				
@@ -965,6 +959,18 @@ public class GameEngine
 						map.getEnemies().add(tmpEnemy);
 					}
 				}
+				
+				if (devUI.isCollectableMode())
+				{
+					if (devUI.getActiveCollectable() != null && hitCollectable(mouseGrid) == null)
+					{
+						Collectable tmpCollectable = devUI.getActiveCollectable().createNew();
+						tmpCollectable.setPosX(mouseGrid.getX()-tmpCollectable.getSizeX()/2.f);
+						tmpCollectable.setPosY(mouseGrid.getY()-tmpCollectable.getSizeY()/2.f);
+						
+						map.getCollectableObjects().add(tmpCollectable);
+					}
+				}
 			}
 			
 			// right mouse button
@@ -972,7 +978,7 @@ public class GameEngine
 			{
 				if (devUI.isBlockMode())
 				{
-					this.map.getBlockAt(x_int, y_int).setType(BlockType.BLOCK_NONE);
+					this.map.setBlockAt(x_int, y_int, new EmptyBlock());
 
 				}
 				
@@ -980,6 +986,12 @@ public class GameEngine
 				{
 					Enemy tmpEnemy = hitEnemy(mouseGrid);
 					map.getEnemies().remove(tmpEnemy);
+				}
+				
+				if (devUI.isCollectableMode())
+				{
+					Collectable tmpCollectable = hitCollectable(mouseGrid);
+					map.getCollectableObjects().remove(tmpCollectable);
 				}
 			}
 		}
@@ -1009,6 +1021,15 @@ public class GameEngine
 		for (Enemy tmpEnemy : map.getEnemies())
 		{
 			if (tmpEnemy.isInside(thePosition)) return tmpEnemy;
+		}
+		return null;
+	}
+
+	public Collectable hitCollectable(Vector2f thePosition)
+	{
+		for (Collectable tmpCollectable : map.getCollectableObjects())
+		{
+			if (tmpCollectable.collide(thePosition)) return tmpCollectable;
 		}
 		return null;
 	}
@@ -1133,19 +1154,19 @@ public class GameEngine
 					destroyed = true;
 					
 
-					if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
-					{
-						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-//						System.out.println("ice crystal destroyed");
-//						mainPlayer.decreaseBlocksBlue();
-					}
-					
-					if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
-					{
-						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-//						System.out.println("plants destroyed");
-//						mainPlayer.decreaseBlocksGreen();
-					}
+//					if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
+//					{
+//						map.setBlock(tmpProjectileX, tmpProjectileY, new EmptyBlock());
+////						System.out.println("ice crystal destroyed");
+////						mainPlayer.decreaseBlocksBlue();
+//					}
+//					
+//					if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
+//					{
+//						map.setBlock(tmpProjectileX, tmpProjectileY, new EmptyBlock());
+////						System.out.println("plants destroyed");
+////						mainPlayer.decreaseBlocksGreen();
+//					}
 					continue;
 				}
 				
@@ -1158,19 +1179,19 @@ public class GameEngine
 					destroyed = true;
 					
 
-					if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
-					{
-						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-//						System.out.println("ice crystal destroyed");
-//						mainPlayer.decreaseBlocksBlue();
-					}
-					
-					if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
-					{
-						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-						System.out.println("plants destroyed");
-//						mainPlayer.decreaseBlocksGreen();
-					}
+//					if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
+//					{
+//						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
+////						System.out.println("ice crystal destroyed");
+////						mainPlayer.decreaseBlocksBlue();
+//					}
+//					
+//					if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
+//					{
+//						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
+//						System.out.println("plants destroyed");
+////						mainPlayer.decreaseBlocksGreen();
+//					}
 					continue;
 				}
 				
@@ -1183,19 +1204,19 @@ public class GameEngine
 					destroyed = true;
 					
 
-					if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
-					{
-						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-//						System.out.println("ice crystal destroyed");
-//						mainPlayer.decreaseBlocksBlue();
-					}
-					
-					if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
-					{
-						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-//						System.out.println("plants destroyed");
-//						mainPlayer.decreaseBlocksGreen();
-					}
+//					if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
+//					{
+//						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
+////						System.out.println("ice crystal destroyed");
+////						mainPlayer.decreaseBlocksBlue();
+//					}
+//					
+//					if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
+//					{
+//						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
+////						System.out.println("plants destroyed");
+////						mainPlayer.decreaseBlocksGreen();
+//					}
 					continue;
 				}
 				
@@ -1208,19 +1229,19 @@ public class GameEngine
 					destroyed = true;
 					
 
-					if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
-					{
-						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-//						System.out.println("ice crystal destroyed");
-//						mainPlayer.decreaseBlocksBlue();
-					}
-					
-					if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
-					{
-						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
-//						System.out.println("plants destroyed");
-//						mainPlayer.decreaseBlocksGreen();
-					}
+//					if (tmp.getType() == 1 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_CRYSTAL)	// blue projectile
+//					{
+//						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
+////						System.out.println("ice crystal destroyed");
+////						mainPlayer.decreaseBlocksBlue();
+//					}
+//					
+//					if (tmp.getType() == 2 && map.getBlockAt(tmpProjectileX, tmpProjectileY).getType() == BlockType.BLOCK_PLANTS)	// green projectile
+//					{
+//						map.setBlock(tmpProjectileX, tmpProjectileY, BlockType.BLOCK_NONE);
+////						System.out.println("plants destroyed");
+////						mainPlayer.decreaseBlocksGreen();
+//					}
 					continue;
 				}
 			}
@@ -1262,7 +1283,7 @@ public class GameEngine
 								Vector2f tmpPos = new Vector2f(mainPlayer.getCenter());
 								tmpPos.addY(-1.0f);
 								movingTexts.add(new MovingText("+"+e.getXp()+"XP", tmpPos));
-								obj2.remove();
+//								obj2.remove();
 							}
 							
 //							if (tmp.getType() == 0 && e instanceof StaticEnemyCrystal)	// red projectile
@@ -1371,7 +1392,7 @@ public class GameEngine
 		}
 	}
 	
-	public void updateCollectibles()
+	public void updateCollectables()
 	{
 		// collect Collectables
 		for (Iterator<Collectable> object = map.getCollectableObjects().iterator(); object.hasNext();)
@@ -1385,7 +1406,8 @@ public class GameEngine
 			if (mainPlayer.collide(tmp))
 			{
 //				System.out.println("collide with collectable");
-				mainPlayer.addItem(tmp.getType());
+//				mainPlayer.addItem(tmp.getType());
+				tmp.onCollect(this);
 				object.remove();
 			}
 		}
@@ -1410,12 +1432,6 @@ public class GameEngine
 				addBamBubble(e);
 			}
 			
-			if (e.isDead())
-			{
-				obj2.remove();
-				continue;
-			}
-			
 			if (mainPlayer.collide(e))
 			{
 				if (!mainPlayer.isInvulnerable())
@@ -1430,6 +1446,12 @@ public class GameEngine
 			}
 			
 			e.update(dt, this);
+			
+			if (e.isDead())
+			{
+				obj2.remove();
+				continue;
+			}
 		}
 	}
 	
@@ -1446,9 +1468,15 @@ public class GameEngine
 			for (int j=minY;j<maxY;j++)
 			{
 				Block tmpBlock = map.getBlockAt(i, j);
+				
 				if (tmpBlock != null)
-				{
-					tmpBlock.update();
+				{			
+					tmpBlock.update(this, i, j);
+					
+					if (tmpBlock.isDestroyed())
+					{
+						map.setBlockAt(i, j, new EmptyBlock());
+					}
 				}
 			}
 		}
@@ -1687,7 +1715,7 @@ public class GameEngine
 //			}
 //		}
 
-		updateCollectibles();
+		updateCollectables();
 		
 		// collide with chests
 		for (Iterator<Chest> object = map.getChests().iterator(); object.hasNext();)

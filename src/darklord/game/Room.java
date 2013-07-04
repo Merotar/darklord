@@ -14,6 +14,11 @@ import java.util.Vector;
 
 import org.lwjgl.opengl.GL11;
 
+import darklord.blocks.Block;
+import darklord.blocks.DirtBlock;
+import darklord.blocks.EmptyBlock;
+import darklord.blocks.StoneBlock;
+import darklord.collectables.Collectable;
 import darklord.enemies.Enemy;
 import darklord.rules.Condition;
 import darklord.rules.Reaction;
@@ -74,7 +79,7 @@ public class Room implements Serializable
 		collectableObjects = new Vector<Collectable>();
 		chests = new Vector<Chest>();
 		
-		initDefault(t);
+		initDefault();
 		name ="defaultRoom";
 //		rules = readRulesFromTextFile(name+"Rules.txt");
 	}
@@ -104,7 +109,7 @@ public class Room implements Serializable
 		enemies.add(theEnemy);
 	}
 	
-	private void initDefault(BlockType t)
+	private void initDefault()
 	{
 		for (int i=0;i<gridSizeX;i++)
 		{
@@ -112,15 +117,15 @@ public class Room implements Serializable
 			{
 				if ((i==0) || (j==0) || (i==gridSizeX-1) || (j==gridSizeY-1))
 				{
-					theGrid[i][j] = new Block(BlockType.BLOCK_ROCK);
+					theGrid[i][j] = new StoneBlock();
 				} else // inner level
 				{
-					theGrid[i][j] = new Block(t);
+					theGrid[i][j] = new EmptyBlock();
 				}
-				if (i == 0 && j == gridSizeY/2) theGrid[i][j].setType(BlockType.BLOCK_DIRT);
-				if (i == gridSizeX-1 && j == gridSizeY/2) theGrid[i][j].setType(BlockType.BLOCK_DIRT);
-				if (i == gridSizeX/2 && j == 0) theGrid[i][j].setType(BlockType.BLOCK_DIRT);
-				if (i == gridSizeX/2 && j == gridSizeY-1) theGrid[i][j].setType(BlockType.BLOCK_DIRT);
+				if (i == 0 && j == gridSizeY/2) theGrid[i][j] = new DirtBlock();
+				if (i == gridSizeX-1 && j == gridSizeY/2) theGrid[i][j] = new DirtBlock();
+				if (i == gridSizeX/2 && j == 0) theGrid[i][j] = new DirtBlock();
+				if (i == gridSizeX/2 && j == gridSizeY-1) theGrid[i][j] = new DirtBlock();
 			}
 		}
 	}
@@ -186,15 +191,15 @@ public class Room implements Serializable
 ////		collectableObjects.add(new Collectable(CollectableType.ABILITY_DIGGING, 6.25f, 2.25f));
 //	}
 
-	public boolean setTypeAt(int x_int, int y_int, BlockType t)
-	{
-		if (x_int > 0 && x_int < getGridSizeX() && y_int > 0 && y_int < getGridSizeY())
-		{
-			theGrid[x_int][y_int].setType(t);
-			return true;
-		}
-		return false;
-	}
+//	public boolean setTypeAt(int x_int, int y_int, BlockType t)
+//	{
+//		if (x_int > 0 && x_int < getGridSizeX() && y_int > 0 && y_int < getGridSizeY())
+//		{
+//			theGrid[x_int][y_int].setType(t);
+//			return true;
+//		}
+//		return false;
+//	}
 	
 	public void update(GameEngine engine, Player thePlayer)
 	{	

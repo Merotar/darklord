@@ -28,6 +28,7 @@ public class Beam implements Serializable
 	boolean active;
 	private TimeStore lifetime;
 	private float damage;
+	public static float energyCosts;
 	
 	public Beam(Vector2f theStart, Vector2f theDirection)
 	{
@@ -43,6 +44,7 @@ public class Beam implements Serializable
 		((Sprite)appearance).setTextureRegion(new TextureRegion(0*128, 3*128, 2*128, 32));
 		setActive(false);
 		damage = 2.f;
+		energyCosts = 1.f;
 	}
 	
 	public Beam()
@@ -143,9 +145,9 @@ public class Beam implements Serializable
 		GL11.glRotatef(angle, 0.f, 0.f, 1.f);
 		GL11.glScaled(length, width, 1.f);
 		GL11.glTranslatef(0.f, -0.5f, 0.f);
-		Darklord.sprites01.begin();
+		Darklord.textures.begin();
 		((Sprite)appearance).draw((float)(1.f-lifetime.getFraction()));
-		Darklord.sprites01.end();
+		Darklord.textures.end();
 		GL11.glPopMatrix();
 	}
 

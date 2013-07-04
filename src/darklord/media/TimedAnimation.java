@@ -55,17 +55,17 @@ public class TimedAnimation implements Drawable
 	
 	public void draw()
 	{
-		Darklord.sprites01.draw(currentTextureRegion);
+		Darklord.textures.draw(currentTextureRegion);
 	}
 	
 	public void drawColor(float r, float g, float b, float a)
 	{
-		Darklord.sprites01.draw(currentTextureRegion, 0.f, 0.f, 1.f, 1.f, r, g, b, a);
+		Darklord.textures.draw(currentTextureRegion, 0.f, 0.f, 1.f, 1.f, r, g, b, a);
 	}
 	
 	public void draw(float posX, float posY, float sizeX, float sizeY)
 	{
-		Darklord.sprites01.draw(currentTextureRegion, posX, posY, sizeX, sizeY);
+		Darklord.textures.draw(currentTextureRegion, posX, posY, sizeX, sizeY);
 	}
 	
 

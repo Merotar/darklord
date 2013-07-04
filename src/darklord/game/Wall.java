@@ -27,7 +27,7 @@ public class Wall extends Buildable
 			GL11.glTranslated(0.5, 0.5, 0.);
 			GL11.glRotated(180, 0., 0., 1.);
 			GL11.glTranslated(-0.5, -0.5, 0.);
-			Darklord.sprites01.draw(getTextureRegion());
+			Darklord.textures.draw(getTextureRegion());
 			GL11.glPopMatrix();
 		}
 		if (right)
@@ -36,7 +36,7 @@ public class Wall extends Buildable
 			GL11.glTranslated(0.5, 0.5, 0.);
 			GL11.glRotated(90, 0., 0., 1.);
 			GL11.glTranslated(-0.5, -0.5, 0.);
-			Darklord.sprites01.draw(getTextureRegion());
+			Darklord.textures.draw(getTextureRegion());
 			GL11.glPopMatrix();
 		}
 		if (left)
@@ -45,13 +45,13 @@ public class Wall extends Buildable
 			GL11.glTranslated(0.5, 0.5, 0.);
 			GL11.glRotated(270, 0., 0., 1.);
 			GL11.glTranslated(-0.5, -0.5, 0.);
-			Darklord.sprites01.draw(getTextureRegion());
+			Darklord.textures.draw(getTextureRegion());
 			GL11.glPopMatrix();
 		}
 		if (bottom)
 		{
 			GL11.glPushMatrix();
-			Darklord.sprites01.draw(getTextureRegion());
+			Darklord.textures.draw(getTextureRegion());
 			GL11.glPopMatrix();
 		}
 	}

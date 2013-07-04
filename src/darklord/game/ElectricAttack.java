@@ -42,9 +42,9 @@ public class ElectricAttack implements Serializable
 		GL11.glScaled(sizeEnd.getX(), sizeEnd.getY(), 1.f);
 		GL11.glTranslatef(-0.5f, -0.5f, 0.f);
 //		Print.outln("draw!");
-		Darklord.sprites01.begin();
+		Darklord.textures.begin();
 		((Sprite)appearance).draw();
-		Darklord.sprites01.end();
+		Darklord.textures.end();
 		GL11.glPopMatrix();
 	}
 

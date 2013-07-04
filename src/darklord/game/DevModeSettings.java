@@ -1,5 +1,7 @@
 package darklord.game;
 
+import darklord.collectables.CollectableType;
+
 
 /**
  * Settings for the developer mode

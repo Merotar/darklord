@@ -99,7 +99,7 @@ public class UISelectionListType<T extends Button>
 		// draw elements
 		for (T tmp: elements)
 		{
-			Darklord.sprites01.draw(tmp.getTextureRegion(), 
+			Darklord.textures.draw(tmp.getTextureRegion(), 
 					tmp.getPosition().getX(), 
 					tmp.getPosition().getY(), 
 					tmp.getSize().getX(), 

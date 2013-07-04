@@ -2,6 +2,12 @@ package darklord.game;
 
 
 import java.util.Random;
+
+import darklord.collectables.Collectable;
+import darklord.collectables.CollectableType;
+import darklord.collectables.OrbBlueCollectable;
+import darklord.collectables.OrbGreenCollectable;
+import darklord.collectables.OrbYellowCollectable;
 import darklord.math.Vector2f;
 
 /**
@@ -34,6 +40,16 @@ public class RandomGenerator
 	{
 		float angle = (float)(Math.PI*(rnd.nextInt()*1.f/Integer.MAX_VALUE+1.f));
 		return new Vector2f((float)Math.cos(angle), (float)Math.sin(angle));
+	}
+	
+	public static Collectable getRandomOrb()
+	{
+		float rndVar = getRandomZeroToOne();
+		
+		if (rndVar < 1.f/3) return new OrbBlueCollectable();
+		if (rndVar < 2.f/3) return new OrbGreenCollectable();
+		
+		return new OrbYellowCollectable();
 	}
 	
 	public static Vector2f getRandomDirection(Vector2f vec)

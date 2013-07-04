@@ -30,7 +30,7 @@ public class Projectile extends Collidable
 	private int type;
 	private float damage;
 	protected Drawable appearance;
-	private float energyCosts;
+	public static float energyCosts;
 	private float range;
 	
 	public Projectile()
@@ -165,10 +165,10 @@ public class Projectile extends Collidable
 	
 	public void draw()
 	{
-		Darklord.sprites01.begin();
+		Darklord.textures.begin();
 		GL11.glTranslated(getPosX(), getPosY(), 0.);
 		appearance.draw(0, 0, getSizeX(), getSizeY());
-		Darklord.sprites01.end();
+		Darklord.textures.end();
 //		GL11.glEnable(GL11.GL_TEXTURE_2D);  
 //		Color.white.bind();
 //		

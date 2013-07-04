@@ -44,8 +44,8 @@ public class Chest extends Collidable implements Serializable
 	
 	public void draw()
 	{
-		Darklord.sprites01.begin();
+		Darklord.textures.begin();
 		appearance.draw();
-		Darklord.sprites01.end();
+		Darklord.textures.end();
 	}
 }

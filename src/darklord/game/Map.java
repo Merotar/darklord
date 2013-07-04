@@ -2,6 +2,15 @@ package darklord.game;
 
 
 //import java.awt.List;
+import darklord.blocks.Block;
+import darklord.blocks.BlueBlock;
+import darklord.blocks.EmptyBlock;
+import darklord.blocks.GlassBlock;
+import darklord.blocks.GreenBlock;
+import darklord.blocks.RedBlock;
+import darklord.blocks.WhiteBlock;
+import darklord.blocks.YellowBlock;
+import darklord.collectables.Collectable;
 import darklord.enemies.Enemy;
 import darklord.enemies.EnemyRandomMove;
 import darklord.enemies.StaticEnemyCrystal;
@@ -178,7 +187,7 @@ public class Map implements Serializable
 	{
 		Block tmpBlock = getBlockAt(x, y);
 		
-		if (tmpBlock.getType() != BlockType.BLOCK_NONE)
+		if (!(tmpBlock instanceof EmptyBlock))
 		{
 			Wall tmpWall;
 			
@@ -205,7 +214,7 @@ public class Map implements Serializable
 			{
 			case Wall.WALL_LEFT:
 				if (tmpWall.isLeft()) return false;
-				if (getBlockAt(x-1, y).getType() == BlockType.BLOCK_NONE)
+				if (getBlockAt(x-1, y) instanceof EmptyBlock)
 				{
 					tmpWall.setLeft(true);
 					newWallBuild = true;
@@ -213,7 +222,7 @@ public class Map implements Serializable
 				break;
 			case Wall.WALL_RIGHT:
 				if (tmpWall.isRight()) return false;
-				if (getBlockAt(x+1, y).getType() == BlockType.BLOCK_NONE)
+				if (getBlockAt(x+1, y) instanceof EmptyBlock)
 				{
 					tmpWall.setRight(true);
 					newWallBuild = true;
@@ -221,7 +230,7 @@ public class Map implements Serializable
 				break;
 			case Wall.WALL_TOP:
 				if (tmpWall.isTop()) return false;
-				if (getBlockAt(x, y+1).getType() == BlockType.BLOCK_NONE)
+				if (getBlockAt(x, y+1) instanceof EmptyBlock)
 				{
 					tmpWall.setTop(true);
 					newWallBuild = true;
@@ -229,7 +238,7 @@ public class Map implements Serializable
 				break;
 			case Wall.WALL_BOTTOM:
 				if (tmpWall.isBottom()) return false;
-				if (getBlockAt(x, y-1).getType() == BlockType.BLOCK_NONE)
+				if (getBlockAt(x, y-1) instanceof EmptyBlock)
 				{
 					tmpWall.setBottom(true);
 					newWallBuild = true;
@@ -253,7 +262,7 @@ public class Map implements Serializable
 	{
 		Block tmpBlock = getBlockAt(x, y);
 		
-		if (tmpBlock.getType() == BlockType.BLOCK_NONE && tmpBlock.getBackground() != null)
+		if (tmpBlock instanceof EmptyBlock && tmpBlock.getBackground() != null)
 		{
 			tmpBlock.setBackground(new FloorStone());
 			return true;
@@ -265,7 +274,7 @@ public class Map implements Serializable
 	{
 		Block tmpBlock = getBlockAt(x, y);
 		
-		if (tmpBlock.getType() == BlockType.BLOCK_NONE)
+		if (tmpBlock instanceof EmptyBlock)
 		{
 			tmpBlock.setOverlay(new FloorCrystalRed());
 			return true;
@@ -276,9 +285,9 @@ public class Map implements Serializable
 	public boolean buildBlockGlass(int x, int y)
 	{
 		Block tmpBlock = getBlockAt(x, y);
-		if (tmpBlock.getType() == BlockType.BLOCK_NONE)
+		if (tmpBlock instanceof EmptyBlock)
 		{
-			tmpBlock.setType(BlockType.BLOCK_GLASS);
+			tmpBlock = new GlassBlock();
 			return true;
 		}
 		return false;
@@ -317,49 +326,49 @@ public class Map implements Serializable
 				//generate glass
 				if (rnd < glassPropability)
 				{
-					generateVein(theGrid, new Vector2f(x, y), 3, BlockType.BLOCK_GLASS);
+					generateVein(theGrid, new Vector2f(x, y), 3, new GlassBlock());
 				}
 				
 				//generate red veins
 				rnd = RandomGenerator.getRandomZeroToOne();
 				if (rnd < whiteBlockPropability)
 				{
-					theGrid.setTypeAt(x, y, BlockType.BLOCK_WHITE);
+					theGrid.setBlockAt(x, y, new WhiteBlock());
 				}
 				
 				//generate red veins
 				rnd = RandomGenerator.getRandomZeroToOne();
 				if (rnd < veinProbabilityRed)
 				{
-					generateVein(theGrid, new Vector2f(x, y), 7, BlockType.BLOCK_RED);
+					generateVein(theGrid, new Vector2f(x, y), 7, new RedBlock());
 				}
 				
 				//generate blue veins
 				rnd = RandomGenerator.getRandomZeroToOne();
 				if (rnd < veinProbabilityBlue)
 				{
-					generateVein(theGrid, new Vector2f(x, y), 5, BlockType.BLOCK_BLUE);
+					generateVein(theGrid, new Vector2f(x, y), 5, new BlueBlock());
 				}
 				
 				//generate green veins
 				rnd = RandomGenerator.getRandomZeroToOne();
 				if (rnd < veinProbabilityGreen)
 				{
-					generateVein(theGrid, new Vector2f(x, y), 3, BlockType.BLOCK_GREEN);
+					generateVein(theGrid, new Vector2f(x, y), 3, new GreenBlock());
 				}
 				
 				//generate yellow veins
 				rnd = RandomGenerator.getRandomZeroToOne();
 				if (rnd < veinProbabilityYellow)
 				{
-					generateVein(theGrid, new Vector2f(x, y), 3, BlockType.BLOCK_YELLOW);
+					generateVein(theGrid, new Vector2f(x, y), 3, new YellowBlock());
 				}
 				
 				//generate enemies
 				rnd = RandomGenerator.getRandomZeroToOne();
 				if (rnd < enemyRandomMovePropability)
 				{
-					if (theGrid.getBlockAt(x, y).getType() == BlockType.BLOCK_NONE)
+					if (theGrid.getBlockAt(x, y) instanceof EmptyBlock)
 					{
 						theGrid.getEnemies().add(new EnemyRandomMove(x+theX*getGridSizeX(), y+theY*getGridSizeY()));
 					}
@@ -368,7 +377,7 @@ public class Map implements Serializable
 				rnd = RandomGenerator.getRandomZeroToOne();
 				if (rnd < staticEnemyPropability)
 				{
-					if (theGrid.getBlockAt(x, y).getType() == BlockType.BLOCK_NONE)
+					if (theGrid.getBlockAt(x, y) instanceof EmptyBlock)
 					{
 						theGrid.getEnemies().add(new StaticEnemyCrystal(x+theX*getGridSizeX(), y+theY*getGridSizeY()));
 					}
@@ -378,7 +387,7 @@ public class Map implements Serializable
 				//generate chests
 				if (rnd > 0.5 && rnd < chestPropability+0.5)
 				{
-					if (theGrid.getBlockAt(x, y).getType() == BlockType.BLOCK_NONE)
+					if (theGrid.getBlockAt(x, y) instanceof EmptyBlock)
 					{
 						theGrid.addChest(new Chest(x+theX*getGridSizeX(), y+theY*getGridSizeY()));
 					}
@@ -393,7 +402,7 @@ public class Map implements Serializable
 		int length = (int)Math.round(RandomGenerator.getRandomZeroToOne()*maxLength);
 		Vector2f direction = null;
 		
-		theGrid.setTypeAt((int)position.getX(), (int)position.getY(), BlockType.BLOCK_NONE);
+		theGrid.setBlockAt((int)position.getX(), (int)position.getY(), new EmptyBlock());
 		
 		for (int step=0;step<length;step++)
 		{
@@ -401,17 +410,17 @@ public class Map implements Serializable
 			position = position.add(direction);
 			position.round();
 //			path.print();
-			theGrid.setTypeAt((int)position.getX(), (int)position.getY(), BlockType.BLOCK_NONE);
+			theGrid.setBlockAt((int)position.getX(), (int)position.getY(), new EmptyBlock());
 		}
 
 	}
 	
-	void generateVein(Room theGrid, Vector2f position, int maxLength, BlockType type)
+	void generateVein(Room theGrid, Vector2f position, int maxLength, Block theBlock)
 	{
 		int length = (int)Math.round(RandomGenerator.getRandomZeroToOne()*maxLength);
 		Vector2f direction = null;
 		
-		theGrid.setTypeAt((int)position.getX(), (int)position.getY(), BlockType.BLOCK_NONE);
+		theGrid.setBlockAt((int)position.getX(), (int)position.getY(), new EmptyBlock());
 		
 		for (int step=0;step<length;step++)
 		{
@@ -419,7 +428,7 @@ public class Map implements Serializable
 			position = position.add(direction);
 			position.round();
 //			path.print();
-			theGrid.setTypeAt((int)position.getX(), (int)position.getY(), type);
+			theGrid.setBlockAt((int)position.getX(), (int)position.getY(), theBlock);
 		}
 	}
 	
@@ -434,7 +443,7 @@ public class Map implements Serializable
 		return levelStructure.getActiveRoom().getEnemies();
 	}
 	
-	Vector<Collectable> getCollectableObjects()
+	public Vector<Collectable> getCollectableObjects()
 	{
 		return levelStructure.getActiveRoom().getCollectableObjects();
 	}
@@ -580,6 +589,11 @@ public class Map implements Serializable
 	public Block getBlockAt(int x, int y)
 	{
 		return levelStructure.getBlockAt(x, y);
+	}
+	
+	public void setBlockAt(int x, int y, Block theBlock)
+	{
+		levelStructure.setBlockAt(x, y, theBlock);
 	}
 	
 //	public Block getBlockAt(int x, int y)
@@ -1124,9 +1138,9 @@ public class Map implements Serializable
 //		readFile("defaultMap.map");
 	}
 
-	public void setLocalBlockAt(int x, int y, BlockType t)
+	public void setLocalBlockAt(int x, int y, Block theBlock)
 	{
-		levelStructure.getLocalBlockAt(x, y).setType(t);
+		levelStructure.setLocalBlockAt(x, y, theBlock);
 	}
 	
 	public Block getLocalBlockAt(int x, int y)
@@ -1134,9 +1148,9 @@ public class Map implements Serializable
 		return levelStructure.getLocalBlockAt(x, y);
 	}
 	
-	public void setBlock(int x_int, int y_int, BlockType t)
+	public void setBlock(int x_int, int y_int, Block theBlock)
 	{
-		levelStructure.getBlockAt(x_int, y_int).setType(t);
+		levelStructure.setBlockAt(x_int, y_int, theBlock);
 //		if ((x_int > 0) && (x_int < currentGrid[currentGridX][currentGridY].gridSizeX) && (y_int > 0) && (y_int < currentGrid[currentGridX][currentGridY].gridSizeY))
 //		{
 //			currentGrid[currentGridX][currentGridY].setTypeAt(x_int, y_int, t);

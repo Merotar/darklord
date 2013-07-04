@@ -176,19 +176,19 @@ public class IngameUIStatus extends UI
 		
 		// draw UIObjects
 		
-		Darklord.sprites01.begin();
+		Darklord.textures.begin();
 		for (Iterator<UIObject> object = uiObjectsIngame.iterator();object.hasNext();)
 		{
 			UIObject tmp = object.next();
 			
-			Darklord.sprites01.draw(tmp.getTextureRegion(), 
+			Darklord.textures.draw(tmp.getTextureRegion(), 
 						getPosition().getX()+tmp.getPosition().getX()*getSize().getX(), 
 						getPosition().getY()+tmp.getPosition().getY()*getSize().getY(), 
 						tmp.getSize().getX()*getSize().getX(), 
 						tmp.getSize().getY()*getSize().getY());
 
 		}
-		Darklord.sprites01.end();
+		Darklord.textures.end();
 		
 		// draw texts
 		

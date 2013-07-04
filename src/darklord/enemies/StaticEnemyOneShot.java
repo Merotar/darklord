@@ -2,6 +2,9 @@ package darklord.enemies;
 
 import org.lwjgl.opengl.GL11;
 
+import darklord.collectables.Collectable;
+import darklord.collectables.CollectableType;
+import darklord.collectables.OrbGreenCollectable;
 import darklord.game.GameEngine;
 import darklord.game.Print;
 import darklord.game.Projectile;
@@ -32,8 +35,15 @@ public class StaticEnemyOneShot extends Enemy
 		setXp(2);
 		setType(2);
 		appearance = new Animation();
+		setDropItem(new OrbGreenCollectable());
 //		((Animation)appearance).addTextureRegion(new TextureRegion(5*128, 0*128, 128, 128));
 		((Animation)appearance).addTextureRegion(new TextureRegion(0*128, 3*128, 128, 128));
+	}
+	
+	public StaticEnemyOneShot(float x, float y, float theAngle)
+	{
+		this(x, y);
+		setAngle(theAngle);
 	}
 	
 	public StaticEnemyOneShot(float x, float y)

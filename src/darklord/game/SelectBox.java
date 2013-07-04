@@ -81,9 +81,9 @@ public class SelectBox
 	
 	public void draw()
 	{
-		Darklord.sprites01.begin();
+		Darklord.textures.begin();
 		appearance.draw();
-		Darklord.sprites01.end();
+		Darklord.textures.end();
 		
 //		GL11.glEnable(GL11.GL_TEXTURE_2D); 
 //		Color.white.bind();

@@ -2,8 +2,9 @@ package darklord.ui;
 
 import org.lwjgl.opengl.GL11;
 
+import darklord.blocks.Block;
+import darklord.collectables.Collectable;
 import darklord.enemies.Enemy;
-import darklord.game.Block;
 import darklord.game.Buildable;
 import darklord.game.CountdownTimer;
 import darklord.game.Darklord;
@@ -19,6 +20,7 @@ public class DevUI
 	private Vector2f position, size;
 	private DevUIBlocks blocksUI;
 	private DevUIEnemies enemiesUI;
+	private DevUICollectables collectableUI;
 	private UI activeUI;
 	private SpriteSheet uiSpriteSheet;
 	private CountdownTimer clickTimer;
@@ -32,6 +34,7 @@ public class DevUI
 		uiSpriteSheet = Darklord.ui;//new SpriteSheet("darklord/img/ui.png");
 		blocksUI = new DevUIBlocks(uiSpriteSheet, theRatio);
 		enemiesUI = new DevUIEnemies(uiSpriteSheet, theRatio);
+		collectableUI = new DevUICollectables(uiSpriteSheet, theRatio);
 		activeUI = blocksUI;
 		cursorPositionText = new StaticText<Float>("00", 0.f);
 	}
@@ -71,13 +74,19 @@ public class DevUI
 		return (activeUI instanceof DevUIEnemies);
 	}
 	
-	public void init(GameEngine world)
+	public boolean isCollectableMode()
+	{
+		return (activeUI instanceof DevUICollectables);
+	}
+	
+	public void init(GameEngine engine)
 	{
 		cursorPositionText.setPosition(new Vector2f(0.1f, 0.05f));
 		cursorPositionText.setSize(new Vector2f(0.05f, 0.05f));
 		
-		blocksUI.init(world);
-		enemiesUI.init(world);
+		blocksUI.init(engine);
+		enemiesUI.init(engine);
+		collectableUI.init(engine);
 	}
 	
 	public void setBlocksUI()
@@ -90,6 +99,11 @@ public class DevUI
 		activeUI = enemiesUI;
 	}
 	
+	public void setCollectablesUI()
+	{
+		activeUI = collectableUI;
+	}
+	
 	public Vector2f globalToLocal(Vector2f globalPos)
 	{
 		Vector2f localPos = globalPos.sub(position);
@@ -99,11 +113,11 @@ public class DevUI
 		return localPos;
 	}
 	
-	public Buildable getActiveBuildable()
+	public Block getActiveBlock()
 	{
 		if (activeUI == blocksUI)
 		{
-			return blocksUI.getActiveBuildable();
+			return blocksUI.getActiveBlock();
 		}
 		return null;
 	}
@@ -113,6 +127,15 @@ public class DevUI
 		if (activeUI == enemiesUI)
 		{
 			return enemiesUI.getActiveEnemy();
+		}
+		return null;
+	}
+	
+	public Collectable getActiveCollectable()
+	{
+		if (activeUI == collectableUI)
+		{
+			return collectableUI.getActiveCollectable();
 		}
 		return null;
 	}

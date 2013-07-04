@@ -45,10 +45,10 @@ public class MovingSprite extends Sprite
 	
 	public void draw()
 	{
-		Darklord.sprites01.begin();
-		Darklord.sprites01.draw(getTextureRegion(), getPosition().getX()-getSize().getX()/2.f, 
+		Darklord.textures.begin();
+		Darklord.textures.draw(getTextureRegion(), getPosition().getX()-getSize().getX()/2.f, 
 				getPosition().getY()-getSize().getY()/2.f, getSize().getX(), getSize().getY(), getIntensity());
-		Darklord.sprites01.end();
+		Darklord.textures.end();
 	}
 	
 //	public void draw(float posX, float posY, float sizeX, float sizeY)

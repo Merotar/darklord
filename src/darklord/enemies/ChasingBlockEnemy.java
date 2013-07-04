@@ -2,6 +2,9 @@ package darklord.enemies;
 
 import java.io.Serializable;
 
+import darklord.collectables.Collectable;
+import darklord.collectables.CollectableType;
+import darklord.collectables.OrbYellowCollectable;
 import darklord.game.GameEngine;
 import darklord.game.RefillingStore;
 import darklord.game.Timer;
@@ -47,6 +50,7 @@ public class ChasingBlockEnemy extends Enemy implements Serializable
 		direction = new Vector2f(0.f, 0.f);
 		speed = 4.f;
 		visibility = 1.f;
+		setDropItem(new OrbYellowCollectable());
 		
 //		appearance = new Animation();
 		sleeping = new Sprite();

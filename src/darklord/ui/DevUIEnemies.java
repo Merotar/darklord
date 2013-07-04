@@ -2,13 +2,13 @@ package darklord.ui;
 
 import org.lwjgl.opengl.GL11;
 
+import darklord.blocks.Block;
 import darklord.enemies.BounceEnemy;
 import darklord.enemies.ChasingBlockEnemy;
 import darklord.enemies.Enemy;
 import darklord.enemies.EnemyRandomMove;
 import darklord.enemies.StaticEnemyCrystal;
 import darklord.enemies.StaticEnemyOneShot;
-import darklord.game.Block;
 import darklord.game.BlockType;
 import darklord.game.Buildable;
 import darklord.game.Darklord;
@@ -79,24 +79,5 @@ public class DevUIEnemies extends UI
         ButtonEnemy buttonBuildBounceEnemy = new ButtonEnemy(new TextureRegion(0*128, 5*128, 128, 128), "enemy_bounce", new BounceEnemy());
         buildOptions.addUIObject(buttonBuildBounceEnemy, aspectRatio);
         
-//        Button buttonBuildWall = new Button(new TextureRegion(1*128, 7*128, 128, 128), "build_wall");
-//        buttonBuildWall.setSize(new Vector2f(.05f, .05f*aspectRatio));
-//        buttonBuildWall.setPosition(new Vector2f(0.025f, .8f));
-//        buildOptions.addUIObject(buttonBuildWall);
-//        
-//        Button buttonBuildStoneFloor = new Button(new TextureRegion(1*128, 7*128, 128, 128), "build_floor_stone");
-//        buttonBuildStoneFloor.setSize(new Vector2f(.05f, .05f*aspectRatio));
-//        buttonBuildStoneFloor.setPosition(new Vector2f(0.025f+0.05f+0.025f, .8f));
-//        buildOptions.addUIObject(buttonBuildStoneFloor);
-//        
-//        Button buttonBuildGlassBlock = new Button(new TextureRegion(1*128, 7*128, 128, 128), "build_block_glass");
-//        buttonBuildGlassBlock.setSize(new Vector2f(.05f, .05f*aspectRatio));
-//        buttonBuildGlassBlock.setPosition(new Vector2f(0.025f+2.f*(0.05f+0.025f), .8f));
-//        buildOptions.addUIObject(buttonBuildGlassBlock);
-//        
-//        Button buttonBuildFloorCrystalRed = new Button(new TextureRegion(1*128, 7*128, 128, 128), "build_floor_crystal_red");
-//        buttonBuildFloorCrystalRed.setSize(new Vector2f(.05f, .05f*aspectRatio));
-//        buttonBuildFloorCrystalRed.setPosition(new Vector2f(0.025f, .8f-.05f*aspectRatio-0.025f));
-//        buildOptions.addUIObject(buttonBuildFloorCrystalRed);
 	}
 }

@@ -1,5 +1,14 @@
 package darklord.game;
 
+import darklord.blocks.BlueBlock;
+import darklord.blocks.DirtBlock;
+import darklord.blocks.EmptyBlock;
+import darklord.blocks.GlassBlock;
+import darklord.blocks.GreenBlock;
+import darklord.blocks.RedBlock;
+import darklord.blocks.StoneBlock;
+import darklord.blocks.WhiteBlock;
+import darklord.blocks.YellowBlock;
 import darklord.enemies.BounceEnemy;
 import darklord.enemies.ChasingBlockEnemy;
 import darklord.enemies.Enemy;
@@ -15,6 +24,7 @@ import darklord.rules.PlayerCollideBlockCondition;
 import darklord.rules.PlayerInsideBlockCondition;
 import darklord.rules.Reaction;
 import darklord.rules.SetBlockTypeReaction;
+import darklord.blocks.Block;
 
 public class Parser
 {
@@ -98,8 +108,8 @@ public class Parser
 		// set block type
 		if (words[1].equals(setBlockType))
 		{
-			int tmpType = Integer.parseInt(words[4]);
-			tmpReaction = new SetBlockTypeReaction(Integer.parseInt(words[2]),Integer.parseInt(words[3]), BlockType.values()[tmpType]);
+			Block tmpBlock = parseBlockType(words[4]);
+			tmpReaction = new SetBlockTypeReaction(Integer.parseInt(words[2]),Integer.parseInt(words[3]), tmpBlock);
 		}
 		
 		// play sound
@@ -114,20 +124,20 @@ public class Parser
 		return tmpReaction;
 	}
 
-	public static BlockType parseBlockType(String string)
+	public static Block parseBlockType(String string)
 	{
-		if (string.equals("BLOCK_NONE")) return BlockType.BLOCK_NONE;
-		if (string.equals("BLOCK_ROCK")) return BlockType.BLOCK_ROCK;
-		if (string.equals("BLOCK_DIRT")) return BlockType.BLOCK_DIRT;
-		if (string.equals("BLOCK_RED")) return BlockType.BLOCK_RED;
-		if (string.equals("BLOCK_BLUE")) return BlockType.BLOCK_BLUE;
-		if (string.equals("BLOCK_GREEN")) return BlockType.BLOCK_GREEN;
-		if (string.equals("BLOCK_YELLOW")) return BlockType.BLOCK_YELLOW;
-		if (string.equals("BLOCK_WHITE")) return BlockType.BLOCK_WHITE;
-		if (string.equals("BLOCK_GLASS")) return BlockType.BLOCK_GLASS;
+		if (string.equals("EmptyBlock")) return new EmptyBlock();
+		if (string.equals("StoneBlock")) return new StoneBlock();
+		if (string.equals("DirtBlock")) return new DirtBlock();
+		if (string.equals("RedBlock")) return new RedBlock();
+		if (string.equals("BlueBlock")) return new BlueBlock();
+		if (string.equals("GreenBlock")) return new GreenBlock();
+		if (string.equals("YellowBlock")) return new YellowBlock();
+		if (string.equals("WhiteBlock")) return new WhiteBlock();
+		if (string.equals("GlassBlock")) return new GlassBlock();
 		
 		Print.err("could not find block type: "+string);
-		return BlockType.BLOCK_NONE;
+		return new EmptyBlock();
 	}
 
 	public static Enemy parseEnemy(String[] string, int offsetX ,int offsetY)
@@ -137,7 +147,7 @@ public class Parser
 		
 		if (string[3].equals("EnemyRandomMove")) return new EnemyRandomMove(offsetX+posX, offsetY+posY);
 		if (string[3].equals("StaticEnemyCrystal")) return new StaticEnemyCrystal(offsetX+posX, offsetY+posY);
-		if (string[3].equals("StaticEnemyOneShot")) return new StaticEnemyOneShot(offsetX+posX, offsetY+posY);
+		if (string[3].equals("StaticEnemyOneShot")) return new StaticEnemyOneShot(offsetX+posX, offsetY+posY, Float.parseFloat(string[4]));
 		if (string[3].equals("ChasingBlockEnemy")) return new ChasingBlockEnemy(offsetX+posX, offsetY+posY);
 		if (string[3].equals("BounceEnemy")) return new BounceEnemy(offsetX+posX, offsetY+posY);
 		

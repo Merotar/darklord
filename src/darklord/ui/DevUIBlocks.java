@@ -2,7 +2,16 @@ package darklord.ui;
 
 import org.lwjgl.opengl.GL11;
 
-import darklord.game.Block;
+import darklord.blocks.Block;
+import darklord.blocks.BlueBlock;
+import darklord.blocks.DirtBlock;
+import darklord.blocks.EmptyBlock;
+import darklord.blocks.GlassBlock;
+import darklord.blocks.GreenBlock;
+import darklord.blocks.RedBlock;
+import darklord.blocks.StoneBlock;
+import darklord.blocks.WhiteBlock;
+import darklord.blocks.YellowBlock;
 import darklord.game.BlockType;
 import darklord.game.Buildable;
 import darklord.game.Darklord;
@@ -35,7 +44,7 @@ public class DevUIBlocks extends UI
 		buildOptions.mouseDownReaction(globalToLocal(globalPos), button);
 	}
 	
-	public Buildable getActiveBuildable()
+	public Block getActiveBlock()
 	{
 		if (buildOptions.getActiveElement() != null ) return buildOptions.getActiveElement().getBlock();
 		return null;
@@ -47,7 +56,7 @@ public class DevUIBlocks extends UI
 		GL11.glPushMatrix();
 		GL11.glTranslated(getPosition().getX(), getPosition().getY(), 0.);
 		GL11.glScaled(getSize().getX(), getSize().getY(), 1.);
-		buildOptions.draw(Darklord.sprites01);
+		buildOptions.draw(Darklord.textures);
 		GL11.glPopMatrix();
 	}
 	
@@ -58,35 +67,35 @@ public class DevUIBlocks extends UI
         panelLeft.setPosition(new Vector2f(0.f, 0.f));
         addUIObject(panelLeft);
         
-        ButtonBlock buttonBuildBlockNone = new ButtonBlock(new TextureRegion(0*128, 0*128, 128, 128), "build_block_none", new Block(BlockType.BLOCK_NONE));
+        ButtonBlock buttonBuildBlockNone = new ButtonBlock(new TextureRegion(0*128, 0*128, 128, 128), "build_block_none", new EmptyBlock());
 //        buttonBuildBlockNone.setSize(new Vector2f(.05f, .05f*aspectRatio));
 //        buttonBuildBlockNone.setPosition(new Vector2f(0.025f, .8f));
         buildOptions.addUIObject(buttonBuildBlockNone, aspectRatio);
         
-        ButtonBlock buttonBuildBlockDirt = new ButtonBlock(new TextureRegion(1*128, 0*128, 128, 128), "build_block_rock", new Block(BlockType.BLOCK_ROCK));
+        ButtonBlock buttonBuildBlockDirt = new ButtonBlock(new TextureRegion(1*128, 0*128, 128, 128), "build_block_rock", new StoneBlock());
         buildOptions.addUIObject(buttonBuildBlockDirt, aspectRatio);
         
-        ButtonBlock buttonBuildBlockRock = new ButtonBlock(new TextureRegion(2*128, 0*128, 128, 128), "build_block_dirt", new Block(BlockType.BLOCK_DIRT));
+        ButtonBlock buttonBuildBlockRock = new ButtonBlock(new TextureRegion(2*128, 0*128, 128, 128), "build_block_dirt", new DirtBlock());
         buildOptions.addUIObject(buttonBuildBlockRock, aspectRatio);
         
         
-        ButtonBlock buttonBuildBlockRed = new ButtonBlock(new TextureRegion(3*128, 0*128, 128, 128), "build_block_red", new Block(BlockType.BLOCK_RED));
+        ButtonBlock buttonBuildBlockRed = new ButtonBlock(new TextureRegion(3*128, 0*128, 128, 128), "build_block_red", new RedBlock());
         buildOptions.addUIObject(buttonBuildBlockRed, aspectRatio);
         
-        ButtonBlock buttonBuildBlockBlue = new ButtonBlock(new TextureRegion(4*128, 0*128, 128, 128), "build_block_blue", new Block(BlockType.BLOCK_BLUE));
+        ButtonBlock buttonBuildBlockBlue = new ButtonBlock(new TextureRegion(4*128, 0*128, 128, 128), "build_block_blue", new BlueBlock());
         buildOptions.addUIObject(buttonBuildBlockBlue, aspectRatio);
         
-        ButtonBlock buttonBuildBlockGreen = new ButtonBlock(new TextureRegion(5*128, 0*128, 128, 128), "build_block_green", new Block(BlockType.BLOCK_GREEN));
+        ButtonBlock buttonBuildBlockGreen = new ButtonBlock(new TextureRegion(5*128, 0*128, 128, 128), "build_block_green", new GreenBlock());
         buildOptions.addUIObject(buttonBuildBlockGreen, aspectRatio);
         
         
-        ButtonBlock buttonBuildBlockYellow = new ButtonBlock(new TextureRegion(0*128, 1*128, 128, 128), "build_block_yellow", new Block(BlockType.BLOCK_YELLOW));
+        ButtonBlock buttonBuildBlockYellow = new ButtonBlock(new TextureRegion(0*128, 1*128, 128, 128), "build_block_yellow", new YellowBlock());
         buildOptions.addUIObject(buttonBuildBlockYellow, aspectRatio);
         
-        ButtonBlock buttonBuildBlockWhite = new ButtonBlock(new TextureRegion(6*128, 0*128, 128, 128), "build_block_white", new Block(BlockType.BLOCK_WHITE));
+        ButtonBlock buttonBuildBlockWhite = new ButtonBlock(new TextureRegion(6*128, 0*128, 128, 128), "build_block_white", new WhiteBlock());
         buildOptions.addUIObject(buttonBuildBlockWhite, aspectRatio);
         
-        ButtonBlock buttonBuildBlockGlass = new ButtonBlock(new TextureRegion(6*128, 1*128, 128, 128), "build_block_glass", new Block(BlockType.BLOCK_GLASS));
+        ButtonBlock buttonBuildBlockGlass = new ButtonBlock(new TextureRegion(6*128, 1*128, 128, 128), "build_block_glass", new GlassBlock());
         buildOptions.addUIObject(buttonBuildBlockGlass, aspectRatio);
         
 //        Button buttonBuildWall = new Button(new TextureRegion(1*128, 7*128, 128, 128), "build_wall");
