@@ -47,7 +47,7 @@ public class IngameUIBuild extends UI
 	
 	public void init(GameEngine world)
 	{       
-        UIObject panelLeft = new UIObject(new TextureRegion(0.f, 0.f, 3*128, 6*128), "panel left");
+        UIObject panelLeft = new UIObject(new TextureRegion(0, 0, 3*128, 6*128), "panel left");
         panelLeft.setSize(new Vector2f(0.25f, 2.f));
         panelLeft.setPosition(new Vector2f(0.f, 0.f));
         addUIObject(panelLeft);

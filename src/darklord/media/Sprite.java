@@ -26,12 +26,13 @@ public class Sprite implements Drawable
 		return textureRegion;
 	}
 	
-	public void setTextureRegion(float theX, float theY, float theWidth, float theHeight)
+	public void setTextureRegion(int theX, int theY, int theWidth, int theHeight)
 	{
-		textureRegion.setX(theX);
-		textureRegion.setY(theY);
-		textureRegion.setWidth(theWidth);
-		textureRegion.setHeight(theHeight);
+		// TODO: workaround
+		textureRegion.setX(theX+1);
+		textureRegion.setY(theY+1);
+		textureRegion.setWidth(theWidth-2);
+		textureRegion.setHeight(theHeight-2);
 	}
 
 	public void setTextureRegion(TextureRegion textureRegion) {

@@ -9,6 +9,8 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
+import darklord.game.Print;
+
 /**
  * handles a sprite sheet
  * 
@@ -63,24 +65,24 @@ public class SpriteSheet
 		draw(region, 0.f, 0.f, 1.f, 1.f);
 	}
 	
-	public void draw(TextureRegion region, float posX, float posY, float sizeX, float sizeY, float a)
+	public void draw(TextureRegion region, double posX, double posY, double sizeX, double sizeY, double a)
 	{
 		draw(region, posX, posY, sizeX, sizeY, 1.f, 1.f, 1.f, a);
 	}
 	
-	public void draw(TextureRegion region, float posX, float posY, float sizeX, float sizeY)
+	public void draw(TextureRegion region, double posX, double posY, double sizeX, double sizeY)
 	{
 		draw(region, posX, posY, sizeX, sizeY, 1.f, 1.f, 1.f, 1.f);
 	}
 
-	public void draw(TextureRegion region, float posX, float posY, float sizeX, float sizeY, float r, float g, float b, float intensity)
+	public void draw(TextureRegion region, double posX, double posY, double sizeX, double sizeY, double r, double g, double b, double intensity)
 	{	
 		if (region != null)
 		{
-			float x = 1.f*region.getX()/width;
-			float y = 1.f*region.getY()/height;
-			float dx = 1.f*region.getWidth()/width;
-			float dy = 1.f*region.getHeight()/height;		
+			double x = 1.*region.getX()/width;
+			double y = 1.*region.getY()/height;
+			double dx = 1.*region.getWidth()/width;
+			double dy = 1.*region.getHeight()/height;
 			
 			// FIXME: workaround
 //			GL11.glColor4f(red, green, blue, intensity);
@@ -95,20 +97,20 @@ public class SpriteSheet
 //			GL11.glVertex2f(posX, posY);
 //			GL11.glEnd();
 			
-			GL11.glColor4f(r, g, b, intensity);
+			GL11.glColor4d(r, g, b, intensity);
 			GL11.glBegin(GL11.GL_QUADS);
 
-			GL11.glTexCoord2f(x, y+dy);
-			GL11.glVertex2f(posX, posY);
+			GL11.glTexCoord2d(x, y+dy);
+			GL11.glVertex2d(posX, posY);
 			
-			GL11.glTexCoord2f(x+dx, y+dy);
-			GL11.glVertex2f(posX+sizeX, posY);
+			GL11.glTexCoord2d(x+dx, y+dy);
+			GL11.glVertex2d(posX+sizeX, posY);
 			
-			GL11.glTexCoord2f(x+dx, y);
-			GL11.glVertex2f(posX+sizeX, posY+sizeY);
+			GL11.glTexCoord2d(x+dx, y);
+			GL11.glVertex2d(posX+sizeX, posY+sizeY);
 
-			GL11.glTexCoord2f(x, y);
-			GL11.glVertex2f(posX, posY+sizeY);
+			GL11.glTexCoord2d(x, y);
+			GL11.glVertex2d(posX, posY+sizeY);
 
 			GL11.glEnd();
 			

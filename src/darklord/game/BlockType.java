@@ -9,6 +9,7 @@ import java.io.Serializable;
  * @author Sebastian Artz
  * @version 0.1
  * @since 12-05-2013
+ * @deprecated no longer needed
  * 
  */
 public enum BlockType implements Serializable

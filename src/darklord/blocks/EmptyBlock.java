@@ -1,5 +1,6 @@
 package darklord.blocks;
 
+import darklord.game.Print;
 import darklord.media.Sprite;
 
 public class EmptyBlock extends Block

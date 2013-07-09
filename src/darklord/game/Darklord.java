@@ -24,6 +24,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 
+import darklord.blocks.EmptyBlock;
 import darklord.media.SoundLoader;
 import darklord.media.SpriteSheet;
 import darklord.media.TextDrawer;
@@ -207,7 +208,7 @@ public class Darklord {
 	public void initMainMenu()
 	{
         mainMenu = new UI("darklord/img/main_menu.png");
-        mainMenu.setBackground(new TextureRegion(0.f, 0.f, 800, 600));
+        mainMenu.setBackground(new TextureRegion(0, 0, 800, 600));
         mainMenu.setPosition(new Vector2f(-1.f, -1.f));
         mainMenu.setSize(new Vector2f(2.f, 2.f));
         
@@ -344,7 +345,7 @@ public class Darklord {
 //		Timer fpsTimer = new Timer();
 		worldTimer.start();
 		dt = 0;
-//		sounds.mainTheme.playAsMusic(1.f, sounds.volumeMusic, true);
+		sounds.mainTheme.playAsMusic(1.f, sounds.volumeMusic, true);
 //		fpsTimer.start();
 		
 		while (!Display.isCloseRequested())
@@ -1300,8 +1301,8 @@ public class Darklord {
 					}
 				}
 //				
-//				if (Keyboard.isKeyDown(myKeyboard.KEY_LCONTROL) && Keyboard.isKeyDown(myKeyboard.KEY_N))
-//				{
+				if (Keyboard.isKeyDown(myKeyboard.KEY_LCONTROL) && Keyboard.isKeyDown(myKeyboard.KEY_N))
+				{
 //					System.out.println("Generating new level");
 //					
 //					Scanner s = new Scanner(System.in);
@@ -1312,7 +1313,8 @@ public class Darklord {
 //					
 //					world = null;
 //					world = new Level(sizeX, sizeY);
-//				}
+					world.map.levelStructure.setActiveRoom(new Room(world.map.levelStructure.getGridSizeX(), world.map.levelStructure.getGridSizeY()));
+				}
 //				
 				if (Keyboard.isKeyDown(myKeyboard.KEY_LCONTROL) && Keyboard.isKeyDown(myKeyboard.KEY_O))
 				{

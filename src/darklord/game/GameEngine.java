@@ -312,16 +312,16 @@ public class GameEngine
 	{
 		GL11.glPushMatrix();
 		
-		float posXgrid = posX*(gridSize/Darklord.resX)*2.f;
-		float posYgrid = posY*(gridSize/Darklord.resY)*2.f;
-		GL11.glTranslatef(posXgrid, posYgrid, 0.f);
+		double posXgrid = posX*(gridSize/Darklord.resX)*2.;
+		double posYgrid = posY*(gridSize/Darklord.resY)*2.;
+		GL11.glTranslated(posXgrid, posYgrid, 0.);
 		
 		// TODO: fix orientation
 //		GL11.glScaled(1., -1., 1.);
 		GL11.glTranslated(-1., -1., 0.);
 //		GL11.glTranslated(-2.f*posX/(Darklords.resX), -2.f*posY/(Darklords.resY), 0.);
 		
-		GL11.glScaled(2.f*gridSize/(Darklord.resX), 2.f*gridSize/(Darklord.resY), 1.);
+		GL11.glScaled(2.*gridSize/(Darklord.resX), 2.*gridSize/(Darklord.resY), 1.);
 
 		GL11.glTranslated(mainPlayer.getPosX(), mainPlayer.getPosY(), 0.);
 		GL11.glScaled(zoom,  zoom, 1.);
@@ -329,7 +329,7 @@ public class GameEngine
 		
 		// draw blocks
 		
-		Block backgroundBlock = new EmptyBlock();
+//		Block backgroundBlock = new EmptyBlock();
 		
 		
 //		int minX = (int)mainPlayer.getPosX()-drawSize;
@@ -691,10 +691,14 @@ public class GameEngine
 			switch (mainPlayer.getActiveAbility())
 			{
 				case DIG:
-					if (map.getBlockAt(x_int, y_int).isDestroyable() && (Math.abs(this.mainPlayer.getPosX()+0.5f-mouseGrid.getX()) < 1.5f) && (Math.abs(this.mainPlayer.getPosY()+0.5f-mouseGrid.getY()) < 1.5f))
+					if (map.getBlockAt(x_int, y_int) != null)
 					{
-						this.attackBlock(x_int, y_int);
+						if (map.getBlockAt(x_int, y_int).isDestroyable() && (Math.abs(this.mainPlayer.getPosX()+0.5f-mouseGrid.getX()) < 1.5f) && (Math.abs(this.mainPlayer.getPosY()+0.5f-mouseGrid.getY()) < 1.5f))
+						{
+							this.attackBlock(x_int, y_int);
+						}
 					}
+
 					break;
 					default:
 						// do nothing
@@ -1343,7 +1347,7 @@ public class GameEngine
 			tmpProjectileY = projectileY;
 			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
 			{
-				Print.outln("remove1");
+//				Print.outln("remove1");
 				object.remove();
 				destroyed = true;
 				continue;
@@ -1362,7 +1366,7 @@ public class GameEngine
 			tmpProjectileY = projectileY;
 			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
 			{
-				Print.outln("remove2");
+//				Print.outln("remove2");
 				object.remove();
 				destroyed = true;
 				continue;

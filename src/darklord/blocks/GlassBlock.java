@@ -8,7 +8,7 @@ public class GlassBlock extends Block
 	{
 		super();
 		setSolid(true);
-		setDestroyable(true);
+		setDestroyable(false);
 		setTransparent(true);
 //		((Sprite)background).setTextureRegion(0*128, 0*128, 128, 128);
 		((Sprite)appearance).setTextureRegion(6*128, 1*128, 128, 128);

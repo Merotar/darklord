@@ -14,11 +14,11 @@ import java.io.Serializable;
 
 public class TextureRegion implements Serializable
 {
-	private float x, y, width, height;
+	private int x, y, width, height;
 	
 	public TextureRegion()
 	{
-		this(0.f, 0.f, 1.f, 1.f);
+		this(0, 0, 1, 1);
 	}
 	
 	/**
@@ -35,7 +35,7 @@ public class TextureRegion implements Serializable
 		setHeight(size);
 	}
 	
-	public TextureRegion(float theX, float theY, float theWidth, float theHeight)
+	public TextureRegion(int theX, int theY, int theWidth, int theHeight)
 	{
 		setX(theX);
 		setY(theY);
@@ -48,7 +48,7 @@ public class TextureRegion implements Serializable
 		this(t.getX(), t.getY(), t.getWidth(), t.getHeight());
 	}
 	
-	public void set(float theX, float theY, float theWidth, float theHeight)
+	public void set(int theX, int theY, int theWidth, int theHeight)
 	{
 		setX(theX);
 		setY(theY);
@@ -56,35 +56,35 @@ public class TextureRegion implements Serializable
 		setHeight(theWidth);
 	}
 
-	public float getX() {
+	public int getX() {
 		return x;
 	}
 
-	public void setX(float x) {
+	public void setX(int x) {
 		this.x = x;
 	}
 
-	public float getY() {
+	public int getY() {
 		return y;
 	}
 
-	public void setY(float y) {
+	public void setY(int y) {
 		this.y = y;
 	}
 
-	public float getWidth() {
+	public int getWidth() {
 		return width;
 	}
 
-	public void setWidth(float width) {
+	public void setWidth(int width) {
 		this.width = width;
 	}
 
-	public float getHeight() {
+	public int getHeight() {
 		return height;
 	}
 
-	public void setHeight(float height) {
+	public void setHeight(int height) {
 		this.height = height;
 	}
 }

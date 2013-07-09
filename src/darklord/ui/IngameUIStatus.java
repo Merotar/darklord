@@ -67,27 +67,27 @@ public class IngameUIStatus extends UI
 	
 	public void init(GameEngine world)
 	{        
-        UIObject panelLeft = new UIObject(new TextureRegion(0.f, 0.f, 3*128, 6*128), "panel left");
+        UIObject panelLeft = new UIObject(new TextureRegion(0, 0, 3*128, 6*128), "panel left");
         panelLeft.setSize(new Vector2f(0.25f, 2.f));
         panelLeft.setPosition(new Vector2f(0.f, 0.f));
         addUIObject(panelLeft);
         
-        UIBar energyBarRed = new UIBar(new TextureRegion(0.f, 6*128+0*32, 2*128, 32), "energy bar red");
+        UIBar energyBarRed = new UIBar(new TextureRegion(0, 6*128+0*32, 2*128, 32), "energy bar red");
         energyBarRed.setSize(new Vector2f(0.8f*0.25f, .02f*aspectRatio));
         energyBarRed.setPosition(new Vector2f(0.1f*0.25f, 0.35f));
         setEnergyBarRed(energyBarRed);
         
-        UIBar energyBarBlue = new UIBar(new TextureRegion(0.f, 6*128+1*32, 2*128, 32), "energy bar red");
+        UIBar energyBarBlue = new UIBar(new TextureRegion(0, 6*128+1*32, 2*128, 32), "energy bar red");
         energyBarBlue.setSize(new Vector2f(0.8f*0.25f, .02f*aspectRatio));
         energyBarBlue.setPosition(new Vector2f(0.1f*0.25f, 0.3f));
         setEnergyBarBlue(energyBarBlue);
         
-        UIBar energyBarGreen = new UIBar(new TextureRegion(0.f, 6*128+2*32, 2*128, 32), "energy bar red");
+        UIBar energyBarGreen = new UIBar(new TextureRegion(0, 6*128+2*32, 2*128, 32), "energy bar red");
         energyBarGreen.setSize(new Vector2f(0.8f*0.25f, .02f*aspectRatio));
         energyBarGreen.setPosition(new Vector2f(0.1f*0.25f, 0.25f));
         setEnergyBarGreen(energyBarGreen);
         
-        UIBar energyBarYellow = new UIBar(new TextureRegion(0.f, 6*128+3*32, 2*128, 32), "energy bar red");
+        UIBar energyBarYellow = new UIBar(new TextureRegion(0, 6*128+3*32, 2*128, 32), "energy bar red");
         energyBarYellow.setSize(new Vector2f(0.8f*0.25f, .02f*aspectRatio));
         energyBarYellow.setPosition(new Vector2f(0.1f*0.25f, 0.2f));
         setEnergyBarYellow(energyBarYellow);
@@ -164,7 +164,7 @@ public class IngameUIStatus extends UI
 			if (tmpUIBar[i] != null)
 			{
 				TextureRegion tmpRegion= new TextureRegion(tmpUIBar[i].getTextureRegion());
-				tmpRegion.setWidth(tmpRegion.getWidth()*tmpUIBar[i].getScale());
+				tmpRegion.setWidth((int) (tmpRegion.getWidth()*tmpUIBar[i].getScale()));
 				spriteSheet.draw(tmpRegion, 
 						getPosition().getX()+tmpUIBar[i].getPosition().getX()*getSize().getX(), 
 						getPosition().getY()+tmpUIBar[i].getPosition().getY()*getSize().getY(), 
