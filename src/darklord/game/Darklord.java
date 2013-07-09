@@ -1085,7 +1085,7 @@ public class Darklord {
 				if (Keyboard.isKeyDown(myKeyboard.KEY_W))
 				{
 					if (Keyboard.isKeyDown(myKeyboard.KEY_LSHIFT))					{
-						world.mainPlayer.setTeleportUp(true);
+//						world.mainPlayer.setTeleportUp(true);
 					} else
 					{
 						world.mainPlayer.startUp();
@@ -1099,7 +1099,7 @@ public class Darklord {
 				{
 					if (Keyboard.isKeyDown(myKeyboard.KEY_LSHIFT))
 					{
-						world.mainPlayer.setTeleportDown(true);
+//						world.mainPlayer.setTeleportDown(true);
 					} else
 					{
 						world.mainPlayer.startDown();
@@ -1112,7 +1112,7 @@ public class Darklord {
 				if (Keyboard.isKeyDown(myKeyboard.KEY_A))
 				{
 					if (Keyboard.isKeyDown(myKeyboard.KEY_LSHIFT))					{
-						world.mainPlayer.setTeleportLeft(true);
+//						world.mainPlayer.setTeleportLeft(true);
 					} else
 					{
 						world.mainPlayer.startLeft();
@@ -1125,7 +1125,7 @@ public class Darklord {
 				if (Keyboard.isKeyDown(myKeyboard.KEY_D))
 				{
 					if (Keyboard.isKeyDown(myKeyboard.KEY_LSHIFT))					{
-						world.mainPlayer.setTeleportRight(true);
+//						world.mainPlayer.setTeleportRight(true);
 					} else
 					{
 						world.mainPlayer.startRight();
