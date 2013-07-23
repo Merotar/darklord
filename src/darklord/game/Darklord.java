@@ -1288,6 +1288,7 @@ public class Darklord {
 					Scanner s = new Scanner(System.in);
 					Print.outln("save room as: ");
 					String fileName = s.nextLine();
+					s.close();
 					if (fileName.length() > 0)
 					{
 //						world.map.writeToFile(fileName, world.mainPlayer.getPos());
@@ -1327,6 +1328,7 @@ public class Darklord {
 //					world.map.readActiveRoomFromFile(fileName);
 //					world.map.levelStructure.setActiveGrid(world.map.readRoomFromTextFile(fileName));
 					world.map.loadActiveRoom(fileName);
+					s.close();
 				}
 				
 //				if (Keyboard.isKeyDown(myKeyboard.KEY_PERIOD) && devMode)

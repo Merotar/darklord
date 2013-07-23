@@ -19,19 +19,19 @@ import darklord.math.Vector2f;
 public class Projectile extends Collidable
 {
 //	private Vector2f position, direction;
-	private Vector2f direction;
+	protected Vector2f direction;
 //	private float lifeTime;
 //	private Timer timer;
 	protected TimeStore time;
-	private boolean active;
-	private float speed;
+	protected boolean active;
+	protected float speed;
 //	private float timePassed;
-	private float size;
-	private int type;
-	private float damage;
+	protected float size;
+	protected int type;
+	protected float damage;
 	protected Drawable appearance;
 	public static float energyCosts;
-	private float range;
+	protected float range;
 	
 	public Projectile()
 	{
@@ -73,6 +73,7 @@ public class Projectile extends Collidable
 		setPosX(pos.getX());
 		setPosY(pos.getY());
 		direction = dir;
+		direction.normalize();
 	}
 	
 	public Projectile(Vector2f pos, Vector2f dir, int type)
@@ -100,6 +101,18 @@ public class Projectile extends Collidable
 				break;
 			case 3:		// ice
 				((Sprite)appearance).setTextureRegion(7*128, 1*128+3*32, 32, 32);
+				break;
+			case 10:		// ice
+				((Sprite)appearance).setTextureRegion(1*128, 0*128, 64, 64);
+				break;
+			case 11:		// ice
+				((Sprite)appearance).setTextureRegion(1*128+64, 0*128, 64, 64);
+				break;
+			case 12:		// ice
+				((Sprite)appearance).setTextureRegion(1*128+64, 0*128+64, 64, 64);
+				break;
+			case 13:		// ice
+				((Sprite)appearance).setTextureRegion(1*128, 0*128+64, 64, 64);
 				break;
 			default:
 //				texture = null;

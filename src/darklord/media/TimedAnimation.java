@@ -90,6 +90,18 @@ public class TimedAnimation implements Drawable
 		this.sizeY = sizeY;
 	}
 	
+	public void reset()
+	{
+		for (TimedTextureRegion theRegion : timedTextureRegions)
+		{
+			theRegion.getTimer().setCurrent(0.f);
+		}
+		currentTextureRegionNumber = 0;
+		currentTextureRegion = timedTextureRegions.firstElement().getTextureRegion();
+		
+		finished = false;
+	}
+	
 	public void update(float dt)
 	{
 		if(!timedTextureRegions.get(currentTextureRegionNumber).getTimer().increase(dt))

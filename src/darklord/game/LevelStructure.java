@@ -122,6 +122,7 @@ public class LevelStructure implements Serializable
             } else
             {
             	Print.err("room name not specified");
+            	s.close();
             	return null;
             }
             
@@ -141,11 +142,13 @@ public class LevelStructure implements Serializable
                 } else
                 {
                 	Print.err("SizeY not specified");
+                	s.close();
                 	return null;
                 }
             } else
             {
             	Print.err("SizeX not specified");
+            	s.close();
             	return null;
             }
             if (sizeX > 0 && sizeY > 0)
@@ -154,6 +157,7 @@ public class LevelStructure implements Serializable
                 tmpRoom.setName(roomName);
             } else
             {
+            	s.close();
             	return null;
             }
 
@@ -184,6 +188,7 @@ public class LevelStructure implements Serializable
             		if (tmpEnemy != null) tmpRoom.addEnemy(tmpEnemy);
             	}
 			}
+			s.close();
 		}  catch (Exception e)
 		{
 			e.printStackTrace();
@@ -255,6 +260,7 @@ public class LevelStructure implements Serializable
         			}
             	}
 			}
+			s.close();
 		}  catch (Exception e)
 		{
 			e.printStackTrace();

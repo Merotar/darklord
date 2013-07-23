@@ -38,6 +38,9 @@ public abstract class Enemy extends Collidable implements Serializable
 	private Venom venom;
 	private float visibility;
 	private Collectable dropItem;
+	private boolean invulnerable;
+	private boolean damgeOnContact;
+	private boolean solid;
 	
 	public Enemy()
 	{
@@ -52,6 +55,8 @@ public abstract class Enemy extends Collidable implements Serializable
 		visibility = 1.f;
 		bubbleTimer = new RefillingStore(0.5f, 1.f);
 		dropItem = null;
+		invulnerable = false;
+		damgeOnContact = true;
 	}
 	
 	public boolean isInside(Vector2f thePosition)
@@ -154,14 +159,18 @@ public abstract class Enemy extends Collidable implements Serializable
 	 */
 	public boolean decreaseHp(float f)
 	{
-		hp -= f;
-		damaged = true;
-		if (hp<=0)
+		if (!invulnerable)
 		{
-			dead = true;
-			
-			return true;
+			hp -= f;
+			damaged = true;
+			if (hp<=0)
+			{
+				dead = true;
+				
+				return true;
+			}
 		}
+		
 		return false;
 	}
 
@@ -288,5 +297,21 @@ public abstract class Enemy extends Collidable implements Serializable
 
 	public void setDropItem(Collectable dropItem) {
 		this.dropItem = dropItem;
+	}
+
+	public boolean isInvulnerable() {
+		return invulnerable;
+	}
+
+	public void setInvulnerable(boolean invulnerable) {
+		this.invulnerable = invulnerable;
+	}
+
+	public boolean isDamgeOnContact() {
+		return damgeOnContact;
+	}
+
+	public void setDamgeOnContact(boolean damgeOnContact) {
+		this.damgeOnContact = damgeOnContact;
 	}
 }

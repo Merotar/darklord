@@ -19,6 +19,7 @@ public abstract class Collidable implements Serializable
 	protected float sizeX;
 	protected float sizeY;
 	protected float angle = 0.f;
+	private boolean solid = true;
 	
 //	public abstract boolean collide(Collidable obj);
 	
@@ -301,5 +302,13 @@ public abstract class Collidable implements Serializable
 
 	public void setAngle(float angle) {
 		this.angle = angle;
+	}
+
+	public boolean isSolid() {
+		return solid;
+	}
+
+	public void setSolid(boolean solid) {
+		this.solid = solid;
 	}
 }

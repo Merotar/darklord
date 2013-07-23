@@ -7,6 +7,7 @@ import darklord.enemies.BounceEnemy;
 import darklord.enemies.ChasingBlockEnemy;
 import darklord.enemies.Enemy;
 import darklord.enemies.EnemyRandomMove;
+import darklord.enemies.ExplodingStoneEnemy;
 import darklord.enemies.StaticEnemyCrystal;
 import darklord.enemies.StaticEnemyOneShot;
 import darklord.game.BlockType;
@@ -79,5 +80,7 @@ public class DevUIEnemies extends UI
         ButtonEnemy buttonBuildBounceEnemy = new ButtonEnemy(new TextureRegion(0*128, 5*128, 128, 128), "enemy_bounce", new BounceEnemy());
         buildOptions.addUIObject(buttonBuildBounceEnemy, aspectRatio);
         
+        ButtonEnemy buttonBuildExplodingStoneEnemy = new ButtonEnemy(new TextureRegion(0*128, 6*128, 128, 128), "enemy_exploding_stone", new ExplodingStoneEnemy());
+        buildOptions.addUIObject(buttonBuildExplodingStoneEnemy, aspectRatio);
 	}
 }

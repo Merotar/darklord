@@ -1261,44 +1261,47 @@ public class GameEngine
 				for (Iterator<Enemy> obj2 = map.getEnemies().iterator(); obj2.hasNext();)
 				{
 					Enemy e = obj2.next();
-					boolean collideWithEnemy;
-					if (tmp instanceof ShockWave)
+					
+					if (e.getVisibility() > 0.f)
 					{
-						if (e.collideWithRotation(tmp))
+						if (tmp instanceof ShockWave)
 						{
-							if (e.addVenom(new Venom(1.f, 0.5f, 4.f)))
+							if (e.collideWithRotation(tmp))
 							{
-								addBamBubble(e);
+								if (e.addVenom(new Venom(1.f, 0.5f, 4.f)))
+								{
+									addBamBubble(e);
+									Darklord.sounds.explosion.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
+								}
+							}
+						} else
+						{
+							if (e.collide(tmp))
+							{
 								Darklord.sounds.explosion.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
+								
+//									System.out.println("Enemy damaged by projectile");
+								
+//									mainPlayer.decreaseBlocksRed();
+								if (e.decreaseHp(tmp)) 
+								{
+									mainPlayer.addXp(e.getXp());
+									Vector2f tmpPos = new Vector2f(mainPlayer.getCenter());
+									tmpPos.addY(-1.0f);
+									movingTexts.add(new MovingText("+"+e.getXp()+"XP", tmpPos));
+//									obj2.remove();
+								}
+								
+//								if (tmp.getType() == 0 && e instanceof StaticEnemyCrystal)	// red projectile
+//								{
+//									System.out.println("crystal damaged by projectile");
+////									mainPlayer.decreaseBlocksBlue();
+//									if (e.decreaseHp(tmp.getDamage())) obj2.remove();	
+//								}
+								
+								object.remove();
+								break;
 							}
-						}
-					} else
-					{
-						if (e.collide(tmp))
-						{
-							Darklord.sounds.explosion.playAsSoundEffect(1.f, Darklord.sounds.volumeEffects, false);
-							
-//								System.out.println("Enemy damaged by projectile");
-							
-//								mainPlayer.decreaseBlocksRed();
-							if (e.decreaseHp(tmp)) 
-							{
-								mainPlayer.addXp(e.getXp());
-								Vector2f tmpPos = new Vector2f(mainPlayer.getCenter());
-								tmpPos.addY(-1.0f);
-								movingTexts.add(new MovingText("+"+e.getXp()+"XP", tmpPos));
-//								obj2.remove();
-							}
-							
-//							if (tmp.getType() == 0 && e instanceof StaticEnemyCrystal)	// red projectile
-//							{
-//								System.out.println("crystal damaged by projectile");
-////								mainPlayer.decreaseBlocksBlue();
-//								if (e.decreaseHp(tmp.getDamage())) obj2.remove();	
-//							}
-							
-							object.remove();
-							break;
 						}
 					}
 					
@@ -1335,64 +1338,61 @@ public class GameEngine
 				continue;
 			}
 			
-			int projectileX = (int)Math.floor(tmp.getPosX());
-			int projectileY = (int)Math.floor(tmp.getPosY());
-			
-			// check for collision with block
-			boolean destroyed = false;
-			
-			int tmpProjectileX, tmpProjectileY;
-			// check block top left
-			tmpProjectileX = projectileX;
-			tmpProjectileY = projectileY;
-			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
-			{
-//				Print.outln("remove1");
-				object.remove();
-				destroyed = true;
-				continue;
-			}
-			
 			if (tmp.collide(mainPlayer))
 			{
 				mainPlayer.decreaseHp(tmp.getDamage());
 				Print.outln("player lost "+tmp.getDamage()+" HP (hit by projectile)");
 				object.remove();
-				destroyed = true;
 			}
 			
-			// check block top right
-			tmpProjectileX = projectileX+1;
-			tmpProjectileY = projectileY;
-			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+			if (tmp.isSolid())
 			{
-//				Print.outln("remove2");
-				object.remove();
-				destroyed = true;
-				continue;
+				// check for collision with block
+				int projectileX = (int)Math.floor(tmp.getPosX());
+				int projectileY = (int)Math.floor(tmp.getPosY());
+				
+				int tmpProjectileX, tmpProjectileY;
+				// check block top left
+				tmpProjectileX = projectileX;
+				tmpProjectileY = projectileY;
+				if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+				{
+//					Print.outln("remove1");
+					object.remove();
+					continue;
+				}
+				
+				// check block top right
+				tmpProjectileX = projectileX+1;
+				tmpProjectileY = projectileY;
+				if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+				{
+//					Print.outln("remove2");
+					object.remove();
+					continue;
+				}
+				
+				// check block bottom left
+				tmpProjectileX = projectileX;
+				tmpProjectileY = projectileY+1;
+				if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+				{
+					Print.outln("remove3");
+					object.remove();
+					continue;
+				}
+				
+				// check block bottom right
+				tmpProjectileX = projectileX+1;
+				tmpProjectileY = projectileY+1;
+				if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
+				{
+					Print.outln("remove4");
+					object.remove();
+					continue;
+				}
 			}
 			
-			// check block bottom left
-			tmpProjectileX = projectileX;
-			tmpProjectileY = projectileY+1;
-			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
-			{
-				Print.outln("remove3");
-				object.remove();
-				destroyed = true;
-				continue;
-			}
-			
-			// check block bottom right
-			tmpProjectileX = projectileX+1;
-			tmpProjectileY = projectileY+1;
-			if (collideProjectileWithBlock(tmp, tmpProjectileX, tmpProjectileY))
-			{
-				Print.outln("remove4");
-				object.remove();
-				destroyed = true;
-				continue;
-			}
 		}
 	}
 	
@@ -1436,7 +1436,7 @@ public class GameEngine
 				addBamBubble(e);
 			}
 			
-			if (mainPlayer.collide(e))
+			if (mainPlayer.collide(e) && e.isDamgeOnContact())
 			{
 				if (!mainPlayer.isInvulnerable())
 				{
